@@ -1,3 +1,5 @@
+18  December 2024 - v0.1.6
+ - Added support for LastSeenActiveTasks setting.
 25   October 2024 - v0.1.5
  - Added support for the Show All Bench Seats setting.
 21   October 2024 - v0.1.4
