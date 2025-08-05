@@ -1,3 +1,5 @@
+ 5    August 2025 - v0.3.10
+ - Properly sharing settings with the BrivGemFarm.
 30      July 2025 - v0.3.9
  - Randomising the 8 hour delay to ± 30 minutes so the timers don't all try to check around the same time every 8 hours. Hopefully it'll help spread them out a bit - but still average around 8 hours.
  - When a Trial is not running and is on cooldown - the Trials Status message will tell you when it can be joined.

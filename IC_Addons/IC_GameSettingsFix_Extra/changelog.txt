@@ -1,3 +1,5 @@
+ 5    August 2025 - v0.1.12
+ - Properly sharing settings with the BrivGemFarm.
  3    August 2025 - v0.1.11
  - Fixing positions of the profile buttons that were messy in some situations.
 22      July 2025 - v0.1.10

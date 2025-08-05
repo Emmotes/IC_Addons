@@ -256,6 +256,21 @@ Class IC_ClaimDailyPlatinum_Component
 		return madeEdit
 	}
 	
+	UpdateSharedSettings()
+	{
+		if (IC_ClaimDailyPlatinum_Functions.UpdateSharedSettings())
+		{
+			for k,v in this.TimerFunctions
+			{
+				if (v == 1234)
+				{
+					SetTimer, %k%, Off
+					SetTimer, %k%, Delete
+				}
+			}
+		}
+	}
+	
 	; ======================
 	; ===== MAIN STUFF =====
 	; ======================
@@ -574,6 +589,8 @@ Class IC_ClaimDailyPlatinum_Component
 		this.TimerFunctions := {}
 		fncToCallOnTimer := ObjBindMethod(this, "MainLoop")
 		this.TimerFunctions[fncToCallOnTimer] := this.MainLoopCD
+		fncToCallOnTimer := ObjBindMethod(this, "UpdateSharedSettings")
+		this.TimerFunctions[fncToCallOnTimer] := 1234
 	}
 
 	; Starts the saved timed functions (typically to be started when briv gem farm is started)

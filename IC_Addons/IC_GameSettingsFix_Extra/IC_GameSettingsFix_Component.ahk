@@ -414,6 +414,21 @@ Class IC_GameSettingsFix_Component
 		this.UpdateProfilesDDL(this.CurrentProfile)
 	}
 	
+	UpdateSharedSettings()
+	{
+		if (IC_GameSettingsFix_Functions.UpdateSharedSettings())
+		{
+			for k,v in this.TimerFunctions
+			{
+				if (v == 1234)
+				{
+					SetTimer, %k%, Off
+					SetTimer, %k%, Delete
+				}
+			}
+		}
+	}
+	
 	; ======================
 	; ===== MAIN STUFF =====
 	; ======================
@@ -581,8 +596,10 @@ Class IC_GameSettingsFix_Component
 	CreateTimedFunctions()
 	{
 		this.TimerFunctions := {}
-		fncToCallOnTimer :=  ObjBindMethod(this, "UpdateGameSettingsFix")
+		fncToCallOnTimer := ObjBindMethod(this, "UpdateGameSettingsFix")
 		this.TimerFunctions[fncToCallOnTimer] := 1000
+		fncToCallOnTimer := ObjBindMethod(this, "UpdateSharedSettings")
+		this.TimerFunctions[fncToCallOnTimer] := 1234
 	}
 
 	; Starts the saved timed functions (typically to be started when briv gem farm is started)

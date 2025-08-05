@@ -9,9 +9,7 @@ class IC_EGSOverlaySwatter_SharedData_Class extends IC_SharedData_Class
         if (!IsObject(settings))
             return false
 		for k,v in settings
-		{
 			g_BrivUserSettingsFromAddons[ "EGSOS_" k ] := v
-		}
     }
 	
 }

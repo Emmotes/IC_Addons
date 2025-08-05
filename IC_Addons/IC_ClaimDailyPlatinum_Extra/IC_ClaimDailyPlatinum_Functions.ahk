@@ -10,7 +10,9 @@ class IC_ClaimDailyPlatinum_Functions
 		try {
 			SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
 			SharedRunData.CDP_UpdateSettingsFromFile(IC_ClaimDailyPlatinum_Component.SettingsPath)
+			return true
 		}
+		return false
 	}
 	
 	IsGameClosed()

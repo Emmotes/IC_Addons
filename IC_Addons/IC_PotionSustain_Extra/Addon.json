@@ -1,6 +1,6 @@
 {
 	"Name":"Potion Sustain",
-	"Version": "v0.2.9",
+	"Version": "v0.2.10",
 	"Includes" : "IC_PotionSustain_Component.ahk",
 	"Author" : "Emmote",
 	"Url" : "https://github.com/emmotes/IC_Addons/tree/main/IC_Addons/IC_PotionSustain_Extra",

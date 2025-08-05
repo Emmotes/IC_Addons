@@ -9,14 +9,7 @@ class IC_GameSettingsFix_SharedData_Class extends IC_SharedData_Class
         if (!IsObject(settings))
             return false
 		for k,v in settings
-		{
 			g_BrivUserSettingsFromAddons[ "GSF_" k ] := v
-		}
     }
 	
-}
-
-class IC_GameSettingsFix_BrivGemFarm_Class extends IC_BrivSharedFunctions_Class
-{
-
 }

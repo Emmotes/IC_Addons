@@ -197,6 +197,21 @@ Class IC_EGSOverlaySwatter_Component
 		;g_MouseToolTips[EGSFolderLocationTT] := "The location where you have installed EGS."
 	}
 	
+	UpdateSharedSettings()
+	{
+		if (IC_EGSOverlaySwatter_Functions.UpdateSharedSettings())
+		{
+			for k,v in this.TimerFunctions
+			{
+				if (v == 1234)
+				{
+					SetTimer, %k%, Off
+					SetTimer, %k%, Delete
+				}
+			}
+		}
+	}
+	
 	; ======================
 	; ===== MAIN STUFF =====
 	; ======================
@@ -358,6 +373,8 @@ Class IC_EGSOverlaySwatter_Component
 		this.TimerFunctions := {}
 		fncToCallOnTimer :=  ObjBindMethod(this, "UpdateEGSOverlaySwatter")
 		this.TimerFunctions[fncToCallOnTimer] := 1000
+		fncToCallOnTimer := ObjBindMethod(this, "UpdateSharedSettings")
+		this.TimerFunctions[fncToCallOnTimer] := 1234
 	}
 
 	; Starts the saved timed functions (typically to be started when briv gem farm is started)

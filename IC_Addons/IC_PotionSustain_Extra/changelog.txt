@@ -1,3 +1,5 @@
+ 5    August 2025 - v0.2.10
+ - Properly sharing settings with the BrivGemFarm.
 03  February 2025 - v0.2.9
  - Lowering the default threshold values to be better suited for newer players.
  - Added a button to reset to default settings.

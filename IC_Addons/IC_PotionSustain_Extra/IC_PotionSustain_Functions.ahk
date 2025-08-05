@@ -208,7 +208,9 @@ Class IC_PotionSustain_Component
 		try {
 			SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
 			SharedRunData.PSBGF_UpdateSettingsFromFile()
+			return true
 		}
+		return false
 	}
 	
 	SanityCheckSettings()
@@ -330,6 +332,21 @@ Class IC_PotionSustain_Component
 			}
 		}
 		return madeEdit
+	}
+	
+	RepeatUpdateSharedSettings()
+	{
+		if (this.UpdateSharedSettings())
+		{
+			for k,v in this.TimerFunctions
+			{
+				if (v == 1234)
+				{
+					SetTimer, %k%, Off
+					SetTimer, %k%, Delete
+				}
+			}
+		}
 	}
 	
 	; ======================
@@ -867,6 +884,8 @@ Class IC_PotionSustain_Component
 		this.TimerFunctions := {}
 		fncToCallOnTimer := ObjBindMethod(this, "UpdateTick")
 		this.TimerFunctions[fncToCallOnTimer] := 2000
+		fncToCallOnTimer := ObjBindMethod(this, "RepeatUpdateSharedSettings")
+		this.TimerFunctions[fncToCallOnTimer] := 1234
 		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(this, "Start"))
 		g_BrivFarmAddonStopFunctions.Push(ObjBindMethod(this, "Stop"))
 	}

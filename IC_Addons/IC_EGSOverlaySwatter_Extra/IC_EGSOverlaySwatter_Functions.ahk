@@ -10,7 +10,9 @@ class IC_EGSOverlaySwatter_Functions
 		try {
 			SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
 			SharedRunData.EGSOS_UpdateSettingsFromFile(IC_EGSOverlaySwatter_Component.SettingsPath)
+			return true
 		}
+		return false
 	}
 	
 	IsGameClosed()

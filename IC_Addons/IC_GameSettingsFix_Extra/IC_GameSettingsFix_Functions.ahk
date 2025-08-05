@@ -10,7 +10,9 @@ Class IC_GameSettingsFix_Functions
 		try {
 			SharedRunData := ComObjActive(g_BrivFarm.GemFarmGUID)
 			SharedRunData.GSF_UpdateSettingsFromFile(IC_GameSettingsFix_Component.SettingsPath)
+			return true
 		}
+		return false
 	}
 	
 	IsGameClosed()
