@@ -2,13 +2,13 @@
 
 There are various situations in which the game will overwrite any custom changes you've made to your `localSettings.json`. This usually happens when you visit the in-game settings menu and it resets FPS back to 60 and Particles back to 25. Sometimes even when the developers push updates they'll include their own settings which overwrite your own.
 
-When this happens - your BPH will suffer. This is an AddOn for Script Hub that will try to fix the settings when that happens.
+When this happens - your BPH will suffer. This is an AddOn that will fix the settings again on game-load so you don't have to worry about it.
 
 > [!CAUTION]
-> *If your Idle Champions install location is in Program Files or any other Windows protected folder - Script Hub will need to run with Admin privileges to be able to modify the localSettings.json file. This is non-negotiable.*
+> *If your Idle Champions install location is in a Windows protected folder - Script Hub will need to run with Admin privileges to be able to modify the localSettings.json file. This is non-negotiable.*
 
 > [!NOTE]
-> *This can only change the settings while the game is closed. So - typically during offline stacking - but it may also catch it if the Gem Farm script forces a game restart due to getting stuck or the like.*
+> *This can only change the settings while the game is closed.*
 
 ___
 
@@ -129,15 +129,8 @@ Found in-game: `Settings -> General -> Never Open Active Tasks`
 
 ___
 
-## Info
+## Settings File Location
 
-Just a bit of information telling you how many times the addon has fixed your settings for you during the current session - and the location of your settings file in-case you wish to make any other changes yourself.
+Just a UI element to let you now where your settings file is.
 
 ___
-
-## On Demand
-
-This contains a button which will let you fix the settings... well... on-demand. You press the button - the settings get fixed.
-
-> [!WARNING]
-> *This will not work if the game is on.*
