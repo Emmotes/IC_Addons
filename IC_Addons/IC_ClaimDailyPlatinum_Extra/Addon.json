@@ -1,7 +1,7 @@
 {
 	"Name":"Claim Daily Platinum",
-	"Version": "v0.3.10",
-	"Includes" : "IC_ClaimDailyPlatinum_Component.ahk",
+	"Version": "v0.4.0",
+	"Includes" : "IC_ClaimDailyPlatinum_Includes.ahk",
 	"Author" : "Emmote",
 	"Url" : "https://github.com/emmotes/IC_Addons/tree/main/IC_Addons/IC_ClaimDailyPlatinum_Extra",
 	"Info" : "An add on that will claim your daily platinum automagically so you don't have to.",

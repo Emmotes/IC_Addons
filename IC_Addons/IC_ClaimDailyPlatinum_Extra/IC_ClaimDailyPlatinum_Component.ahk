@@ -1,114 +1,25 @@
-#include %A_LineFile%\..\..\..\SharedFunctions\ObjRegisterActive.ahk
 #include %A_LineFile%\..\IC_ClaimDailyPlatinum_Functions.ahk
-#include %A_LineFile%\..\..\..\ServerCalls\IC_ServerCalls_Class.ahk
+#include %A_LineFile%\..\IC_ClaimDailyPlatinum_GUI.ahk
 
-GUIFunctions.AddTab("Claim Daily Platinum")
 global g_ClaimDailyPlatinum := new IC_ClaimDailyPlatinum_Component
-global g_ServerCalls := new IC_ServerCalls_Class
-
-Gui, ICScriptHub:Tab, Claim Daily Platinum
-GUIFunctions.UseThemeTextColor("HeaderTextColor")
-Gui, ICScriptHub:Add, Text, x15 y+15, Claim Daily Platinum:
-GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, Button, x145 y+-15 w100 vg_ClaimDailyPlatinumSave_Clicked, `Save Settings
-buttonFunc := ObjBindMethod(g_ClaimDailyPlatinum, "SaveSettings")
-GuiControl,ICScriptHub: +g, g_ClaimDailyPlatinumSave_Clicked, % buttonFunc
-Gui, ICScriptHub:Add, Text, x5 y+10 w130 +Right, Status:
-Gui, ICScriptHub:Add, Text, x145 y+-13 w400 vg_CDP_StatusText, % IC_ClaimDailyPlatinum_Component.WaitingMessage
-
-GuiControlGet, pos, ICScriptHub:Pos, g_CDP_StatusText
-g_CDP_infoGap := 5
-g_CDP_infoDist := 15
-g_CDP_lineHeight := posH
-g_CDP_gbCol1 := 15
-g_CDP_gbCol2 := 273
-g_CDP_gbWidth := 252
-g_CDP_gbHeight1 := 100
-g_CDP_gbHeight2 := g_CDP_gbHeight1 + g_CDP_lineHeight + g_CDP_infoGap
-g_CDP_cbDist := 25
-g_CDP_col1x := 15
-g_CDP_col1w := 120
-g_CDP_col2x := g_CDP_col1x + g_CDP_col1w + g_CDP_infoGap
-g_CDP_col2w := 105
-
-; Claim Daily Platinum - is tall due to daily boost line.
-Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x%g_CDP_gbCol1% y+10 Section w%g_CDP_gbWidth% h%g_CDP_gbHeight2%, Claim Daily Platinum
-Gui, ICScriptHub:Font, w400
-Gui, ICScriptHub:Add, Checkbox, vg_CDP_ClaimPlatinum xs%g_CDP_col1x% ys+%g_CDP_cbDist%, Claim Daily Platinum?
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoDist% w%g_CDP_col1w% +Right, Platinum Days Claimed:
-Gui, ICScriptHub:Add, Text, vg_CDP_PlatinumDaysCount xs%g_CDP_col2x% y+-%g_CDP_lineHeight% w%g_CDP_col2w%, 
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoGap% w%g_CDP_col1w% +Right, Time Until Next Check:
-Gui, ICScriptHub:Add, Text, vg_CDP_PlatinumTimer xs%g_CDP_col2x% y+-%g_CDP_lineHeight% w%g_CDP_col2w%, 
-Gui, ICScriptHub:Add, Text, vg_CDP_DailyBoostHeader xs%g_CDP_col1x% y+%g_CDP_infoGap% w%g_CDP_col1w% +Right, 
-Gui, ICScriptHub:Add, Text, vg_CDP_DailyBoostExpires xs%g_CDP_col2x% y+-%g_CDP_lineHeight% w%g_CDP_col2w%, 
-
-; Claim Trials Rewards - is tall due to trials status.
-Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x%g_CDP_gbCol2% ys+0 Section w%g_CDP_gbWidth% h%g_CDP_gbHeight2%, Claim Trials Rewards
-Gui, ICScriptHub:Font, w400
-Gui, ICScriptHub:Add, Checkbox, vg_CDP_ClaimTrials xs%g_CDP_col1x% ys+%g_CDP_cbDist%, Claim Trials Rewards?
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoDist% w%g_CDP_col1w% +Right, Rewards Claimed:
-Gui, ICScriptHub:Add, Text, vg_CDP_TrialsRewardsCount xs%g_CDP_col2x% y+-%g_CDP_lineHeight%  w%g_CDP_col2w%, 
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoGap% w%g_CDP_col1w% +Right, Time Until Next Check:
-Gui, ICScriptHub:Add, Text, vg_CDP_TrialsTimer xs%g_CDP_col2x% y+-%g_CDP_lineHeight% w%g_CDP_col2w%, 
-Gui, ICScriptHub:Add, Text, vg_CDP_TrialsStatusHeader xs%g_CDP_col1x% y+%g_CDP_infoGap% w%g_CDP_col1w% +Right, 
-Gui, ICScriptHub:Add, Text, vg_CDP_TrialsStatus xs%g_CDP_col2x% y+-%g_CDP_lineHeight% w%g_CDP_col2w%, 
-
-; Claim Free Weekly Shop Offers - short.
-Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x%g_CDP_gbCol1% ys+%g_CDP_gbHeight2%+5 Section w%g_CDP_gbWidth% h%g_CDP_gbHeight1%, Claim Free Weekly Shop Offers
-Gui, ICScriptHub:Font, w400
-Gui, ICScriptHub:Add, Checkbox, vg_CDP_ClaimFreeOffer xs%g_CDP_col1x% ys+%g_CDP_cbDist%, Claim Free Weekly Shop Offers?
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoDist% w%g_CDP_col1w% +Right, Free Offers Claimed:
-Gui, ICScriptHub:Add, Text, vg_CDP_FreeOffersCount xs%g_CDP_col2x% y+-%g_CDP_lineHeight%  w%g_CDP_col2w%, 
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoGap% w%g_CDP_col1w% +Right, Time Until Next Check:
-Gui, ICScriptHub:Add, Text, vg_CDP_FreeOfferTimer xs%g_CDP_col2x% y+-%g_CDP_lineHeight% w%g_CDP_col2w%, 
-
-; Claim Guide Quest Rewards - short.
-Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x%g_CDP_gbCol2% ys+0 Section w%g_CDP_gbWidth% h%g_CDP_gbHeight1%, Claim Guide Quest Rewards
-Gui, ICScriptHub:Font, w400
-Gui, ICScriptHub:Add, Checkbox, vg_CDP_ClaimGuideQuests xs%g_CDP_col1x% ys+%g_CDP_cbDist%, Claim Guide Quest Rewards?
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoDist% w%g_CDP_col1w% +Right, Rewards Claimed:
-Gui, ICScriptHub:Add, Text, vg_CDP_GuideQuestsCount xs%g_CDP_col2x% y+-%g_CDP_lineHeight%  w%g_CDP_col2w%, 
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoGap% w%g_CDP_col1w% +Right, Time Until Next Check:
-Gui, ICScriptHub:Add, Text, vg_CDP_GuideQuestsTimer xs%g_CDP_col2x% y+-%g_CDP_lineHeight% w%g_CDP_col2w%, 
-
-; Claim Free Premium Pack Bonus Chests - short.
-Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x%g_CDP_gbCol1% ys+%g_CDP_gbHeight1%+5 Section w%g_CDP_gbWidth% h%g_CDP_gbHeight1%, Claim Free Premium Pack Bonus Chests
-Gui, ICScriptHub:Font, w400
-Gui, ICScriptHub:Add, Checkbox, vg_CDP_ClaimBonusChests xs%g_CDP_col1x% ys+%g_CDP_cbDist%, Claim Free Premium Pack Bonus Chests?
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoDist% w%g_CDP_col1w% +Right, Bonus Chests Claimed:
-Gui, ICScriptHub:Add, Text, vg_CDP_BonusChestsCount xs%g_CDP_col2x% y+-%g_CDP_lineHeight%  w%g_CDP_col2w%, 
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoGap% w%g_CDP_col1w% +Right, Time Until Next Check:
-Gui, ICScriptHub:Add, Text, vg_CDP_BonusChestsTimer xs%g_CDP_col2x% y+-%g_CDP_lineHeight% w%g_CDP_col2w%, 
-
-; Claim Celebration Rewards - short.
-Gui, ICScriptHub:Font, w700
-Gui, ICScriptHub:Add, GroupBox, x%g_CDP_gbCol2% ys+0 Section w%g_CDP_gbWidth% h%g_CDP_gbHeight1%, Claim Celebration Rewards
-Gui, ICScriptHub:Font, w400
-Gui, ICScriptHub:Add, Checkbox, vg_CDP_ClaimCelebrations xs%g_CDP_col1x% ys+%g_CDP_cbDist%, Claim Celebration Rewards?
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoDist% w%g_CDP_col1w% +Right, Rewards Claimed:
-Gui, ICScriptHub:Add, Text, vg_CDP_CelebrationRewardsCount xs%g_CDP_col2x% y+-%g_CDP_lineHeight%  w%g_CDP_col2w%, 
-Gui, ICScriptHub:Add, Text, xs%g_CDP_col1x% y+%g_CDP_infoGap% w%g_CDP_col1w% +Right, Time Until Next Check:
-Gui, ICScriptHub:Add, Text, vg_CDP_CelebrationsTimer xs%g_CDP_col2x% y+-%g_CDP_lineHeight% w%g_CDP_col2w%, 
 
 if(IsObject(IC_BrivGemFarm_Component))
 {
-	g_ClaimDailyPlatinum.InjectAddon()
+	IC_ClaimDailyPlatinum_Functions.InjectAddon()
+	global g_ClaimDailyPlatinum := new IC_ClaimDailyPlatinum_Component
+	global g_ClaimDailyPlatinumGUI := new IC_ClaimDailyPlatinum_GUI
+	g_ClaimDailyPlatinumGUI.Init()
+	g_ClaimDailyPlatinum.Init()
 }
-
-g_ClaimDailyPlatinum.Init()
+else
+{
+	GuiControl, ICScriptHub:Text, CDP_StatusText, WARNING: This addon needs IC_BrivGemFarm enabled.
+	return
+}
 
 Class IC_ClaimDailyPlatinum_Component
 {
-	static SettingsPath := A_LineFile . "\..\ClaimDailyPlatinum_Settings.json"
-	static WaitingMessage := "Waiting for BrivGemFarm to Start."
 	
-	Injected := false
-	Running := false
 	TimerFunctions := {}
 	DefaultSettings := {"Platinum":true,"Trials":true,"FreeOffer":true,"GuideQuests":true,"BonusChests":true,"Celebrations":true}
 	Settings := {}
@@ -144,29 +55,20 @@ Class IC_ClaimDailyPlatinum_Component
 	InstanceID := ""
 	GameVersion := ""
 	Platform := ""
+	
+	DisplayStatusTimeout := 0
+	MessageStickyTimer := 8000
+	
+	; =======================================
+	; ===== Initialisation and Settings =====
+	; =======================================
 
-	; ================================
-	; ===== LOADING AND SETTINGS =====
-	; ================================
-
-	InjectAddon()
+	Init()
 	{
-		local splitStr := StrSplit(A_LineFile, "\")
-		local addonDirLoc := splitStr[(splitStr.Count()-1)]
-		local addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_ClaimDailyPlatinum_Addon.ahk`n"
-		FileAppend, %addonLoc%, %g_BrivFarmModLoc%
+		this.LoadSettings()
 		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(g_ClaimDailyPlatinum, "CreateTimedFunctions"))
 		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(g_ClaimDailyPlatinum, "StartTimedFunctions"))
 		g_BrivFarmAddonStopFunctions.Push(ObjBindMethod(g_ClaimDailyPlatinum, "StopTimedFunctions"))
-		this.Injected := true
-	}
-	
-	Init()
-	{
-		Global
-		if (!this.Injected)
-			return
-		this.LoadSettings()
 	}
 	
 	LoadSettings()
@@ -174,7 +76,7 @@ Class IC_ClaimDailyPlatinum_Component
 		Global
 		Gui, Submit, NoHide
 		writeSettings := false
-		this.Settings := g_SF.LoadObjectFromJSON(IC_ClaimDailyPlatinum_Component.SettingsPath)
+		this.Settings := g_SF.LoadObjectFromJSON(IC_ClaimDailyPlatinum_Functions.SettingsPath)
 		if(!IsObject(this.Settings))
 		{
 			this.SetDefaultSettings()
@@ -183,13 +85,13 @@ Class IC_ClaimDailyPlatinum_Component
 		if (this.CheckMissingOrExtraSettings())
 			writeSettings := true
 		if(writeSettings)
-			g_SF.WriteObjectToJSON(IC_ClaimDailyPlatinum_Component.SettingsPath, this.Settings)
-		GuiControl, ICScriptHub:, g_CDP_ClaimPlatinum, % this.Settings["Platinum"]
-		GuiControl, ICScriptHub:, g_CDP_ClaimTrials, % this.Settings["Trials"]
-		GuiControl, ICScriptHub:, g_CDP_ClaimFreeOffer, % this.Settings["FreeOffer"]
-		GuiControl, ICScriptHub:, g_CDP_ClaimGuideQuests, % this.Settings["GuideQuests"]
-		GuiControl, ICScriptHub:, g_CDP_ClaimBonusChests, % this.Settings["BonusChests"]
-		GuiControl, ICScriptHub:, g_CDP_ClaimCelebrations, % this.Settings["Celebrations"]
+			g_SF.WriteObjectToJSON(IC_ClaimDailyPlatinum_Functions.SettingsPath, this.Settings)
+		GuiControl, ICScriptHub:, CDP_ClaimPlatinum, % this.Settings["Platinum"]
+		GuiControl, ICScriptHub:, CDP_ClaimTrials, % this.Settings["Trials"]
+		GuiControl, ICScriptHub:, CDP_ClaimFreeOffer, % this.Settings["FreeOffer"]
+		GuiControl, ICScriptHub:, CDP_ClaimGuideQuests, % this.Settings["GuideQuests"]
+		GuiControl, ICScriptHub:, CDP_ClaimBonusChests, % this.Settings["BonusChests"]
+		GuiControl, ICScriptHub:, CDP_ClaimCelebrations, % this.Settings["Celebrations"]
 		for k,v in this.Settings
 			if (!v)
 				this.CurrentCD[k] := -1
@@ -204,16 +106,21 @@ Class IC_ClaimDailyPlatinum_Component
 		;local sanityChecked := this.SanityCheckSettings()
 		this.CheckMissingOrExtraSettings()
 		
-		this.Settings["Platinum"] := g_CDP_ClaimPlatinum
-		this.Settings["Trials"] := g_CDP_ClaimTrials
-		this.Settings["FreeOffer"] := g_CDP_ClaimFreeOffer
-		this.Settings["GuideQuests"] := g_CDP_ClaimGuideQuests
-		this.Settings["BonusChests"] := g_CDP_ClaimBonusChests
-		this.Settings["Celebrations"] := g_CDP_ClaimCelebrations
+		GuiControlGet,CDP_ClaimPlatinum, ICScriptHub:, CDP_ClaimPlatinum
+		GuiControlGet,CDP_ClaimTrials, ICScriptHub:, CDP_ClaimTrials
+		GuiControlGet,CDP_ClaimFreeOffer, ICScriptHub:, CDP_ClaimFreeOffer
+		GuiControlGet,CDP_ClaimGuideQuests, ICScriptHub:, CDP_ClaimGuideQuests
+		GuiControlGet,CDP_ClaimBonusChests, ICScriptHub:, CDP_ClaimBonusChests
+		GuiControlGet,CDP_ClaimCelebrations, ICScriptHub:, CDP_ClaimCelebrations
+		this.Settings["Platinum"] := CDP_ClaimPlatinum
+		this.Settings["Trials"] := CDP_ClaimTrials
+		this.Settings["FreeOffer"] := CDP_ClaimFreeOffer
+		this.Settings["GuideQuests"] := CDP_ClaimGuideQuests
+		this.Settings["BonusChests"] := CDP_ClaimBonusChests
+		this.Settings["Celebrations"] := CDP_ClaimCelebrations
 		
-		g_SF.WriteObjectToJSON(IC_ClaimDailyPlatinum_Component.SettingsPath, this.Settings)
+		g_SF.WriteObjectToJSON(IC_ClaimDailyPlatinum_Functions.SettingsPath, this.Settings)
 		IC_ClaimDailyPlatinum_Functions.UpdateSharedSettings()
-		;if (!sanityChecked)
 		CDP_LoopCounter := 1
 		for k,v in this.Settings
 		{
@@ -256,21 +163,6 @@ Class IC_ClaimDailyPlatinum_Component
 		return madeEdit
 	}
 	
-	UpdateSharedSettings()
-	{
-		if (IC_ClaimDailyPlatinum_Functions.UpdateSharedSettings())
-		{
-			for k,v in this.TimerFunctions
-			{
-				if (v == 1234)
-				{
-					SetTimer, %k%, Off
-					SetTimer, %k%, Delete
-				}
-			}
-		}
-	}
-	
 	; ======================
 	; ===== MAIN STUFF =====
 	; ======================
@@ -278,7 +170,6 @@ Class IC_ClaimDailyPlatinum_Component
 	; This loop gets called once per MainLoopCD.
 	MainLoop()
 	{
-		this.UpdateMainStatus("Checking...")
 		if (!IC_ClaimDailyPlatinum_Functions.IsGameClosed())
 		{
 			this.InstanceID := g_SF.Memory.ReadInstanceID()
@@ -299,11 +190,15 @@ Class IC_ClaimDailyPlatinum_Component
 				{
 					; If it's not claimable - check if it can be claimed.
 					if (!this.Claimable[k])
+					{
+						this.UpdateMainStatus("Checking " . this.Names[k] . ".")
 						this.CallCheckClaimable(k)
+						this.UpdateMainStatus("Checked " . this.Names[k] . ".")
+					}
 					; If it now is claimable - claim it.
 					if (this.Claimable[k])
 					{
-						this.UpdateMainStatus("Claiming " . (this.Names[k]))
+						this.UpdateMainStatus("Claiming " . this.Names[k] . ".")
 						this.Claim(k)
 						this.CurrentCD[k] := A_TickCount + this.SafetyDelay
 						this.Claimable[k] := false
@@ -311,7 +206,6 @@ Class IC_ClaimDailyPlatinum_Component
 				}
 			}
 		}
-		this.UpdateMainStatus("Idle.")
 		this.UpdateGUI()
 	}
 	
@@ -324,10 +218,10 @@ Class IC_ClaimDailyPlatinum_Component
 	
 	CheckClaimable(CDP_key)
 	{
+        g_SF.ResetServerCall()
 		if (CDP_key == "Platinum")
 		{
-			params := this.GetBoilerplate()
-			response := g_ServerCalls.ServerCall("getdailyloginrewards",params)
+			response := IC_ClaimDailyPlatinum_Functions.ServerCall("getdailyloginrewards", "")
 			if (IsObject(response) && response.success)
 			{
 				CDP_num := 1 << (response.daily_login_details.today_index)
@@ -348,8 +242,7 @@ Class IC_ClaimDailyPlatinum_Component
 		else if (CDP_key == "Trials")
 		{
 			this.TrialsCampaignID := 0
-			params := this.GetBoilerplate()
-			response := g_ServerCalls.ServerCall("trialsrefreshdata",params)
+			response := IC_ClaimDailyPlatinum_Functions.ServerCall("trialsrefreshdata", "")
 			if (IsObject(response) && response.success)
 			{
 				CDP_trialsData := response.trials_data
@@ -398,9 +291,8 @@ Class IC_ClaimDailyPlatinum_Component
 		else if (CDP_key == "FreeOffer")
 		{
 			this.FreeOfferIDs := []
-			params := this.GetBoilerplate()
-			g_ServerCalls.ServerCall("revealalacarteoffers",params)
-			response := g_ServerCalls.ServerCall("getalacarteoffers",params)
+			IC_ClaimDailyPlatinum_Functions.ServerCall("revealalacarteoffers", "")
+			response := IC_ClaimDailyPlatinum_Functions.ServerCall("getalacarteoffers", "")
 			if (IsObject(response) && response.success)
 			{
 				for k,v in response.offers.offers
@@ -417,8 +309,7 @@ Class IC_ClaimDailyPlatinum_Component
 		}
 		else if (CDP_key == "GuideQuests")
 		{
-			params := this.GetBoilerplate()
-			response := g_ServerCalls.ServerCall("getcompletiondata",params)
+			response := IC_ClaimDailyPlatinum_Functions.ServerCall("getcompletiondata", "")
 			if (IsObject(response) && response.success)
 			{
 				for k,v in response.data.guidequest
@@ -432,9 +323,8 @@ Class IC_ClaimDailyPlatinum_Component
 		else if (CDP_key == "BonusChests")
 		{
 			this.BonusChestIDs := []
-			params := this.GetBoilerplate()
-			extraParams := params . "&return_all_items_live=1&return_all_items_ever=0&show_hard_currency=1&prioritize_item_category=recommend"
-			response := g_ServerCalls.ServerCall("getshop",extraParams)
+			params := "&return_all_items_live=1&return_all_items_ever=0&show_hard_currency=1&prioritize_item_category=recommend"
+			response := IC_ClaimDailyPlatinum_Functions.ServerCall("getshop", params)
 			if (IsObject(response) && response.success)
 			{
 				for k,v in response.package_deals
@@ -459,9 +349,8 @@ Class IC_ClaimDailyPlatinum_Component
 				currMatches := IC_ClaimDailyPlatinum_Functions.GetAllRegexMatches(webRequestLog, """dialog"": ?""([^""]+)""")
 				for k,v in currMatches
 				{
-					params := this.GetBoilerplate()
-					extraParams := params . "&dialog=" . v . "&ui_type=standard"
-					response := g_ServerCalls.ServerCall("getdynamicdialog",extraParams)
+					params := "&dialog=" . v . "&ui_type=standard"
+					response := IC_ClaimDailyPlatinum_Functions.ServerCall("getdynamicdialog", params)
 					if (IsObject(response) && response.success)
 					{
 						for l,b in response.dialog_data.elements
@@ -489,25 +378,25 @@ Class IC_ClaimDailyPlatinum_Component
 	
 	Claim(CDP_key)
 	{
-		params := this.GetBoilerplate()
+        g_SF.ResetServerCall()
 		if (CDP_key == "Platinum")
 		{
-			extraParams := "&is_boost=0" . params
-			response := g_ServerCalls.ServerCall("claimdailyloginreward",extraParams)
+			params := "&is_boost=0"
+			response := IC_ClaimDailyPlatinum_Functions.ServerCall("claimdailyloginreward", params)
 			if (IsObject(response) && response.success)
 			{
 				if (response.daily_login_details.premium_active)
 				{
-					extraParams := "&is_boost=1" . params
-					response := g_ServerCalls.ServerCall("claimdailyloginreward",extraParams)
+					params := "&is_boost=1"
+					response := IC_ClaimDailyPlatinum_Functions.ServerCall("claimdailyloginreward", params)
 				}
 				this.Claimed[CDP_key] += 1
 			}
 		}
 		else if (CDP_key == "Trials")
 		{
-			extraParams := "&campaign_id=" . (this.TrialsCampaignID) . params
-			response := g_ServerCalls.ServerCall("trialsclaimrewards",extraParams)
+			params := "&campaign_id=" . (this.TrialsCampaignID)
+			response := IC_ClaimDailyPlatinum_Functions.ServerCall("trialsclaimrewards", params)
 			this.TrialsCampaignID := 0
 			if (!IsObject(response) || !response.success)
 			{
@@ -522,8 +411,8 @@ Class IC_ClaimDailyPlatinum_Component
 		{
 			for k,v in this.FreeOfferIDs
 			{
-				extraParams := "&offer_id=" . v . params
-				response := g_ServerCalls.ServerCall("PurchaseALaCarteOffer",extraParams)
+				params := "&offer_id=" . v
+				response := IC_ClaimDailyPlatinum_Functions.ServerCall("PurchaseALaCarteOffer", params)
 				if (!IsObject(response) || !response.success)
 				{
 					; server call failed
@@ -536,8 +425,8 @@ Class IC_ClaimDailyPlatinum_Component
 		}
 		else if (CDP_key == "GuideQuests")
 		{
-			extraParams := "&collection_quest_id=-1" . params
-			response := g_ServerCalls.ServerCall("claimcollectionquestrewards",extraParams)
+			params := "&collection_quest_id=-1"
+			response := IC_ClaimDailyPlatinum_Functions.ServerCall("claimcollectionquestrewards", params)
 			if (IsObject(response) && response.success && response.awarded_items.success)
 			{
 				CDP_numGuideQuestsClaimed := this.ArrSize(response.awarded_items.rewards_claimed_quest_ids)
@@ -549,8 +438,8 @@ Class IC_ClaimDailyPlatinum_Component
 		{
 			for k,v in this.BonusChestIDs
 			{
-				extraParams := "&premium_item_id=" . v . params
-				response := g_ServerCalls.ServerCall("claimsalebonus",extraParams)
+				params := "&premium_item_id=" . v
+				response := IC_ClaimDailyPlatinum_Functions.ServerCall("claimsalebonus", params)
 				if (!IsObject(response) || !response.success)
 				{
 					; server call failed
@@ -565,8 +454,8 @@ Class IC_ClaimDailyPlatinum_Component
 		{
 			for k,v in this.CelebrationCodes
 			{
-				extraParams := "&code=" . v . params
-				response := g_ServerCalls.ServerCall("redeemcoupon",extraParams)
+				params := "&code=" . v
+				response := IC_ClaimDailyPlatinum_Functions.ServerCall("redeemcoupon", params)
 				if (!IsObject(response) || !response.success)
 				{
 					; server call failed
@@ -577,27 +466,26 @@ Class IC_ClaimDailyPlatinum_Component
 			this.Claimed[CDP_key] += this.ArrSize(this.CelebrationCodes)
 			this.CelebrationCodes := []
 		}
+		this.UpdateMainStatus("Claimed " . this.Names[CDP_key] . ".")
 	}
 	
 	; =======================
 	; ===== TIMER STUFF =====
 	; =======================
 	
-	; Adds timed functions (typically to be started when briv gem farm is started)
 	CreateTimedFunctions()
 	{
 		this.TimerFunctions := {}
 		fncToCallOnTimer := ObjBindMethod(this, "MainLoop")
 		this.TimerFunctions[fncToCallOnTimer] := this.MainLoopCD
-		fncToCallOnTimer := ObjBindMethod(this, "UpdateSharedSettings")
-		this.TimerFunctions[fncToCallOnTimer] := 1234
+		fncToCallOnTimer := ObjBindMethod(this, "UpdateMainStatus")
+		this.TimerFunctions[fncToCallOnTimer] := 1000
 	}
 
-	; Starts the saved timed functions (typically to be started when briv gem farm is started)
 	StartTimedFunctions()
 	{
 		this.Running := true
-		this.UpdateMainStatus("Idle.")
+		this.UpdateMainStatus("Started.")
 		this.UserID := g_SF.Memory.ReadUserID()
 		this.UserHash := g_SF.Memory.ReadUserHash()
 		this.Platform := g_SF.Memory.ReadPlatform()
@@ -609,11 +497,10 @@ Class IC_ClaimDailyPlatinum_Component
 		this.UpdateGUI()
 	}
 
-	; Stops the saved timed functions (typically to be stopped when briv gem farm is stopped)
 	StopTimedFunctions()
 	{
 		this.Running := false
-		this.UpdateMainStatus(this.WaitingMessage)
+		this.UpdateMainStatus(IC_ClaimDailyPlatinum_GUI.WaitingMessage)
 		for k,v in this.TimerFunctions
 		{
 			SetTimer, %k%, Off
@@ -636,9 +523,24 @@ Class IC_ClaimDailyPlatinum_Component
 	; ===== GUI STUFF =====
 	; =====================
 	
-	UpdateMainStatus(status)
+	UpdateMainStatus(status := "")
 	{
-		GuiControl, ICScriptHub:Text, g_CDP_StatusText, % status
+		if (status == "")
+		{
+			CDP_TimerIsUp := A_TickCount - this.DisplayStatusTimeout >= this.MessageStickyTimer
+			if (CDP_TimerIsUp)
+				status := ""
+			else
+			{
+				GuiControlGet,CDP_StatusText, ICScriptHub:, CDP_StatusText
+				status := CDP_StatusText
+			}
+		}
+		else
+			this.DisplayStatusTimeout := A_TickCount
+		if (status == "")
+			status := "Idle."
+		GuiControl, ICScriptHub:Text, CDP_StatusText, % status
 		Gui, Submit, NoHide
 	}
 	
@@ -652,23 +554,23 @@ Class IC_ClaimDailyPlatinum_Component
 		if (this.TrialsStatus[1] == 3 && this.TrialsStatus[2] < A_TickCount)
 			this.TrialsStatus := [1,3]
 	
-		GuiControl, ICScriptHub:, g_CDP_PlatinumTimer, % this.ProduceGUITimerMessage("Platinum")
-		GuiControl, ICScriptHub:, g_CDP_TrialsTimer, % this.ProduceGUITimerMessage("Trials")
-		GuiControl, ICScriptHub:, g_CDP_FreeOfferTimer, % this.ProduceGUITimerMessage("FreeOffer")
-		GuiControl, ICScriptHub:, g_CDP_GuideQuestsTimer, % this.ProduceGUITimerMessage("GuideQuests")
-		GuiControl, ICScriptHub:, g_CDP_BonusChestsTimer, % this.ProduceGUITimerMessage("BonusChests")
-		GuiControl, ICScriptHub:, g_CDP_CelebrationsTimer, % this.ProduceGUITimerMessage("Celebrations")
-		GuiControl, ICScriptHub:, g_CDP_PlatinumDaysCount, % this.ProduceGUIClaimedMessage("Platinum")
-		GuiControl, ICScriptHub:, g_CDP_TrialsRewardsCount, % this.ProduceGUIClaimedMessage("Trials")
-		GuiControl, ICScriptHub:, g_CDP_FreeOffersCount, % this.ProduceGUIClaimedMessage("FreeOffer")
-		GuiControl, ICScriptHub:, g_CDP_GuideQuestsCount, % this.ProduceGUIClaimedMessage("GuideQuests")
-		GuiControl, ICScriptHub:, g_CDP_BonusChestsCount, % this.ProduceGUIClaimedMessage("BonusChests")
-		GuiControl, ICScriptHub:, g_CDP_CelebrationRewardsCount, % this.ProduceGUIClaimedMessage("Celebrations")
+		GuiControl, ICScriptHub:, CDP_PlatinumTimer, % this.ProduceGUITimerMessage("Platinum")
+		GuiControl, ICScriptHub:, CDP_TrialsTimer, % this.ProduceGUITimerMessage("Trials")
+		GuiControl, ICScriptHub:, CDP_FreeOfferTimer, % this.ProduceGUITimerMessage("FreeOffer")
+		GuiControl, ICScriptHub:, CDP_GuideQuestsTimer, % this.ProduceGUITimerMessage("GuideQuests")
+		GuiControl, ICScriptHub:, CDP_BonusChestsTimer, % this.ProduceGUITimerMessage("BonusChests")
+		GuiControl, ICScriptHub:, CDP_CelebrationsTimer, % this.ProduceGUITimerMessage("Celebrations")
+		GuiControl, ICScriptHub:, CDP_PlatinumDaysCount, % this.ProduceGUIClaimedMessage("Platinum")
+		GuiControl, ICScriptHub:, CDP_TrialsRewardsCount, % this.ProduceGUIClaimedMessage("Trials")
+		GuiControl, ICScriptHub:, CDP_FreeOffersCount, % this.ProduceGUIClaimedMessage("FreeOffer")
+		GuiControl, ICScriptHub:, CDP_GuideQuestsCount, % this.ProduceGUIClaimedMessage("GuideQuests")
+		GuiControl, ICScriptHub:, CDP_BonusChestsCount, % this.ProduceGUIClaimedMessage("BonusChests")
+		GuiControl, ICScriptHub:, CDP_CelebrationRewardsCount, % this.ProduceGUIClaimedMessage("Celebrations")
 		
-		GuiControl, ICScriptHub:, g_CDP_TrialsStatusHeader, % (this.TrialsPresetStatuses[1][this.TrialsStatus[1]]) . ":"
-		GuiControl, ICScriptHub:, g_CDP_TrialsStatus, % (this.TrialsStatus[1] == 1 ? this.TrialsPresetStatuses[2][this.TrialsStatus[2]] : (this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.TrialsStatus[2])) . (this.TrialsStatus[1] == 2 ? " (est)" : "")))
-		GuiControl, ICScriptHub:, g_CDP_DailyBoostHeader, % "Daily Boost" . (this.DailyBoostExpires > 0 ? " Expires" : "") . ":"
-		GuiControl, ICScriptHub:, g_CDP_DailyBoostExpires, % (this.DailyBoostExpires > 0 ? this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.DailyBoostExpires)) : (this.DailyBoostExpires == 0 ? "Inactive" : ""))
+		GuiControl, ICScriptHub:, CDP_TrialsStatusHeader, % (this.TrialsPresetStatuses[1][this.TrialsStatus[1]]) . ":"
+		GuiControl, ICScriptHub:, CDP_TrialsStatus, % (this.TrialsStatus[1] == 1 ? this.TrialsPresetStatuses[2][this.TrialsStatus[2]] : (this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.TrialsStatus[2])) . (this.TrialsStatus[1] == 2 ? " (est)" : "")))
+		GuiControl, ICScriptHub:, CDP_DailyBoostHeader, % "Daily Boost" . (this.DailyBoostExpires > 0 ? " Expires" : "") . ":"
+		GuiControl, ICScriptHub:, CDP_DailyBoostExpires, % (this.DailyBoostExpires > 0 ? this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.DailyBoostExpires)) : (this.DailyBoostExpires == 0 ? "Inactive" : ""))
 		Gui, Submit, NoHide
 	}
 	
