@@ -1,5 +1,6 @@
 class IC_GameSettingsFix_SharedData_Class extends IC_SharedData_Class
 {
+	GSF_HotkeyReplacements := {}
 
 	GSF_UpdateSettingsFromFile(fileName := "")
 	{
@@ -14,6 +15,7 @@ class IC_GameSettingsFix_SharedData_Class extends IC_SharedData_Class
 		this.GSF_Settings := settings
 		if (this.GSF_FixedCounter == "")
 			this.GSF_FixedCounter := 0
+		this.GSF_HotkeyReplacements := {"load_formation_1":"Q","load_formation_2":"W","load_formation_3":"E","go_to_previous_area":"LeftArrow","go_to_next_area":"RightArrow","toggle_auto_progress":"G"}
 	}
 
 }
@@ -53,17 +55,32 @@ class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
 		{
 			if (k == "CurrentProfile")
 				continue
-			g_GSF_before := GSF_settingsFile
-			g_GSF_after := RegExReplace(g_GSF_before, """" k """: (false|true)", """" k """: " (v ? "true" : "false"))
-			if (g_GSF_before != g_GSF_after) {
-				GSF_settingsFile := g_GSF_after
-				madeChanges := true
-				continue
+			if (k == "Hotkeys")
+			{
+				for k,v in g_SharedData.GSF_HotkeyReplacements
+				{
+					GSF_before := GSF_settingsFile
+					GSF_after := RegExReplace(GSF_before, "(""" . k . """: +[^""]+"")[^""]+"",?[`n`r]+(?:[^`n`r\Q]\E]*[`n`r]+)*( +])", "$1" . v . """`r`n$2")
+					if (GSF_before != GSF_after) {
+						GSF_SettingsFile := GSF_after
+						madeChanges := true
+					}
+				}
 			}
-			g_GSF_after := RegExReplace(g_GSF_before, """" k """: ([0-9]+)", """" k """: " v)
-			if (g_GSF_before != g_GSF_after) {
-				GSF_settingsFile := g_GSF_after
-				madeChanges := true
+			else
+			{
+				GSF_before := GSF_settingsFile
+				GSF_after := RegExReplace(GSF_before, """" k """: (false|true)", """" k """: " (v ? "true" : "false"))
+				if (GSF_before != GSF_after) {
+					GSF_settingsFile := GSF_after
+					madeChanges := true
+					continue
+				}
+				GSF_after := RegExReplace(GSF_before, """" k """: ([0-9]+)", """" k """: " v)
+				if (GSF_before != GSF_after) {
+					GSF_settingsFile := GSF_after
+					madeChanges := true
+				}
 			}
 		}
 		if (madeChanges)

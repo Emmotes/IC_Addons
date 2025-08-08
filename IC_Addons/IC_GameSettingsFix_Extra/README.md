@@ -127,6 +127,18 @@ The active tasks menu will slow the game down so this should always be checked.
 
 Found in-game: `Settings -> General -> Never Open Active Tasks`
 
+### Fix Script Required Hotkeys
+
+This will fix any hotkeys required by the script to function.
+- `load_formation_1`: Q
+- `load_formation_2`: W
+- `load_formation_3`: E
+- `go_to_previous_area`: LeftArrow
+- `go_to_next_area`: RightArrow
+- `toggle_auto_progress`: G
+
+As these are mission-critical for running the script - this setting is mandatory.
+
 ___
 
 ## Settings File Location

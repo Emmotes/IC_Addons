@@ -1,3 +1,9 @@
+ 8    August 2025 - v0.2.1
+ - Adding support for Mission-Critical-script-required hotkeys.
+ 6    August 2025 - v0.2.0
+ - Mostly rebuilt this addon from the ground up to fix the game settings just before the game loads - rather than on a 1 second timer (which was starting to be too short for some people).
+ - This is Script Hub v.4.0.0/v4.0.1 agnostic.
+ - For other addon creators - this Overrides OpenIC().
  5    August 2025 - v0.1.12
  - Properly sharing settings with the BrivGemFarm.
  3    August 2025 - v0.1.11

@@ -19,7 +19,7 @@ class IC_GameSettingsFix_Component
 {
 
 	TimerFunctions := {}
-	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":3,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"ShowAllHeroBoxes":true,"NeverOpenActiveTasks":true,"CurrentProfile":""}
+	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":3,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"ShowAllHeroBoxes":true,"NeverOpenActiveTasks":true,"Hotkeys":true,"CurrentProfile":""}
 	Settings := {}
 	CurrentProfile := this.DefaultSettings["CurrentProfile"]
 	ReadOnly := false
@@ -143,6 +143,7 @@ class IC_GameSettingsFix_Component
 		GuiControl, ICScriptHub:, GSF_NarrowHeroBoxes, % this.Settings["NarrowHeroBoxes"]
 		GuiControl, ICScriptHub:, GSF_ShowAllHeroBoxes, % this.Settings["ShowAllHeroBoxes"]
 		GuiControl, ICScriptHub:, GSF_NeverOpenActiveTasks, % this.Settings["NeverOpenActiveTasks"]
+		GuiControl, ICScriptHub:, GSF_Hotkeys, % this.Settings["Hotkeys"]
 		this.CurrentProfile := this.Settings["CurrentProfile"]
 		IC_GameSettingsFix_Functions.UpdateSharedSettings()
 	}
@@ -162,6 +163,7 @@ class IC_GameSettingsFix_Component
 		GuiControlGet,GSF_FormationSaveIncludeFeatsCheck, ICScriptHub:, GSF_FormationSaveIncludeFeatsCheck
 		GuiControlGet,GSF_NarrowHeroBoxes, ICScriptHub:, GSF_NarrowHeroBoxes
 		GuiControlGet,GSF_NeverOpenActiveTasks, ICScriptHub:, GSF_NeverOpenActiveTasks
+		GuiControlGet,GSF_Hotkeys, ICScriptHub:, GSF_Hotkeys
 		local sanityChecked := this.SanityCheckSettings()
 		this.CheckMissingOrExtraSettings()
 		this.Settings["TargetFramerate"] := GSF_TargetFramerate
@@ -176,6 +178,7 @@ class IC_GameSettingsFix_Component
 		this.Settings["NarrowHeroBoxes"] := GSF_NarrowHeroBoxes
 		this.Settings["ShowAllHeroBoxes"] := GSF_ShowAllHeroBoxes
 		this.Settings["NeverOpenActiveTasks"] := GSF_NeverOpenActiveTasks
+		this.Settings["Hotkeys"] := GSF_Hotkeys
 		this.Settings["CurrentProfile"] := this.CurrentProfile
 		g_SF.WriteObjectToJSON(IC_GameSettingsFix_Functions.SettingsPath, this.Settings)
 		IC_GameSettingsFix_Functions.UpdateSharedSettings()
