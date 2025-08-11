@@ -75,7 +75,7 @@ class IC_ClaimDailyPlatinum_GUI
 		Gui, ICScriptHub:Add, GroupBox, Section vCDP_BoxRow2 x%CDP_gbCol1% ys+%CDP_gbHeight2% w%CDP_gbWidth% h%CDP_gbHeight1%,
 		Gui, ICScriptHub:Add, Checkbox, vCDP_ClaimFreeOffer xs8 ys2, Claim Free Weekly Shop Offers
 		Gui, ICScriptHub:Font, w400
-		Gui, ICScriptHub:Add, Text, xs15 ys%CDP_firstLineY% w%CDP_col1w% +Right, Platinum Days Claimed:
+		Gui, ICScriptHub:Add, Text, xs15 ys%CDP_firstLineY% w%CDP_col1w% +Right, Weekly Offers Claimed:
 		Gui, ICScriptHub:Add, Text, vCDP_FreeOffersCount xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
 		Gui, ICScriptHub:Add, Text, xs15 y+%CDP_infoGap% w%CDP_col1w% +Right, Time Until Next Check:
 		Gui, ICScriptHub:Add, Text, vCDP_FreeOfferTimer xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
@@ -96,7 +96,7 @@ class IC_ClaimDailyPlatinum_GUI
 		Gui, ICScriptHub:Add, GroupBox, Section vCDP_BoxRow3 x%CDP_gbCol1% ys+%CDP_gbHeight1% w%CDP_gbWidth% h%CDP_gbHeight1%,
 		Gui, ICScriptHub:Add, Checkbox, vCDP_ClaimBonusChests xs8 ys2, Claim Free Premium Bonus Chests
 		Gui, ICScriptHub:Font, w400
-		Gui, ICScriptHub:Add, Text, xs15 ys%CDP_firstLineY% w%CDP_col1w% +Right, Platinum Days Claimed:
+		Gui, ICScriptHub:Add, Text, xs15 ys%CDP_firstLineY% w%CDP_col1w% +Right, Bonus Chests Claimed:
 		Gui, ICScriptHub:Add, Text, vCDP_BonusChestsCount xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
 		Gui, ICScriptHub:Add, Text, xs15 y+%CDP_infoGap% w%CDP_col1w% +Right, Time Until Next Check:
 		Gui, ICScriptHub:Add, Text, vCDP_BonusChestsTimer xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 

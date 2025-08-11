@@ -1,3 +1,12 @@
+11    August 2025 - v0.4.1
+ - Fixed some copy-paste visual errors. (Nothing functional.)
+ 8    August 2025 - v0.4.0
+ - Functionally this should be no different than before. Visually it is a little different. This update is Script Hub version agnostic.
+ - Refactored addon a little.
+ - Using the g_ServerCall class properly this time. There should be no change in functionality - just now more in-line with standards.
+ - Changed GUI to be more similar to the new Game Settings Fix.
+ - Changed the group box headers to be the actual checkboxes.
+ - Made the status message sticky for up to 8 seconds.
  5    August 2025 - v0.3.10
  - Properly sharing settings with the BrivGemFarm.
 30      July 2025 - v0.3.9
