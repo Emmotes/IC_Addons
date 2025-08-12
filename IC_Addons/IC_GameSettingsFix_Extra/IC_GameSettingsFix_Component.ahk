@@ -19,7 +19,7 @@ class IC_GameSettingsFix_Component
 {
 
 	TimerFunctions := {}
-	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":3,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"ShowAllHeroBoxes":true,"NeverOpenActiveTasks":true,"HKsRequired":true,"HKsSwap1025":false,"CurrentProfile":""}
+	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":3,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"ShowAllHeroBoxes":true,"NeverOpenActiveTasks":true,"HKsRequired":true,"HKsSwap25100":false,"CurrentProfile":""}
 	Settings := {}
 	CurrentProfile := this.DefaultSettings["CurrentProfile"]
 	ReadOnly := false
@@ -144,7 +144,7 @@ class IC_GameSettingsFix_Component
 		GuiControl, ICScriptHub:, GSF_ShowAllHeroBoxes, % this.Settings["ShowAllHeroBoxes"]
 		GuiControl, ICScriptHub:, GSF_NeverOpenActiveTasks, % this.Settings["NeverOpenActiveTasks"]
 		GuiControl, ICScriptHub:, GSF_HKsRequired, % this.Settings["HKsRequired"]
-		GuiControl, ICScriptHub:, GSF_HKsSwap1025, % this.Settings["HKsSwap1025"]
+		GuiControl, ICScriptHub:, GSF_HKsSwap25100, % this.Settings["HKsSwap25100"]
 		this.CurrentProfile := this.Settings["CurrentProfile"]
 		IC_GameSettingsFix_Functions.UpdateSharedSettings()
 	}
@@ -165,7 +165,7 @@ class IC_GameSettingsFix_Component
 		GuiControlGet,GSF_NarrowHeroBoxes, ICScriptHub:, GSF_NarrowHeroBoxes
 		GuiControlGet,GSF_NeverOpenActiveTasks, ICScriptHub:, GSF_NeverOpenActiveTasks
 		GuiControlGet,GSF_HKsRequired, ICScriptHub:, GSF_HKsRequired
-		GuiControlGet,GSF_HKsSwap1025, ICScriptHub:, GSF_HKsSwap1025
+		GuiControlGet,GSF_HKsSwap25100, ICScriptHub:, GSF_HKsSwap25100
 		local sanityChecked := this.SanityCheckSettings()
 		this.CheckMissingOrExtraSettings()
 		this.Settings["TargetFramerate"] := GSF_TargetFramerate
@@ -181,7 +181,7 @@ class IC_GameSettingsFix_Component
 		this.Settings["ShowAllHeroBoxes"] := GSF_ShowAllHeroBoxes
 		this.Settings["NeverOpenActiveTasks"] := GSF_NeverOpenActiveTasks
 		this.Settings["HKsRequired"] := GSF_HKsRequired
-		this.Settings["HKsSwap1025"] := GSF_HKsSwap1025
+		this.Settings["HKsSwap25100"] := GSF_HKsSwap25100
 		this.Settings["CurrentProfile"] := this.CurrentProfile
 		g_SF.WriteObjectToJSON(IC_GameSettingsFix_Functions.SettingsPath, this.Settings)
 		IC_GameSettingsFix_Functions.UpdateSharedSettings()

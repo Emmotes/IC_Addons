@@ -67,11 +67,12 @@ class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
 					}
 				}
 			}
-			else if (k == "HKsSwap1025" && v)
+			else if (k == "HKsSwap25100" && v)
 			{
 				GSF_before := GSF_settingsFile
-				GSF_after := RegExReplace(GSF_before, "(""hero_level_10"": +\[)([^]]+)]", "$1`r`n            ""LeftShift"",`r`n            ""LeftControl""`r`n        ]")
-				GSF_after := RegExReplace(GSF_after, "(""hero_level_25"": +\[)([^]]+)]", "$1`r`n            ""LeftShift""`r`n        ]")
+				GSF_after := RegExReplace(GSF_before, "(""hero_level_10"": +\[)([^]]+)]", "$1`r`n            ""LeftShift""`r`n        ]")
+				GSF_after := RegExReplace(GSF_after, "(""hero_level_25"": +\[)([^]]+)]", "$1`r`n            ""LeftControl""`r`n        ]")
+				GSF_after := RegExReplace(GSF_after, "(""hero_level_100"": +\[)([^]]+)]", "$1`r`n            ""LeftShift"",`r`n            ""LeftControl""`r`n        ]")
 				if (GSF_before != GSF_after) {
 					GSF_SettingsFile := GSF_after
 					madeChanges := true

@@ -147,8 +147,8 @@ class IC_GameSettingsFix_GUI
 		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_HKsRequired Disabled,
 		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Mandatory
 		GSF_ypos += 25
-		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_HKsSwap1025H, Swap x10 and x25 Mode Hotkeys:
-		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_HKsSwap1025,
+		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_HKsSwap25100H, Swap x25 and x100 Mode Hotkeys:
+		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_HKsSwap25100,
 		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Personal Preference
 
 		Gui, ICScriptHub:Font, w700
@@ -176,7 +176,7 @@ class IC_GameSettingsFix_GUI
 		GUIFunctions.AddToolTip("GSF_ShowAllHeroBoxesH", "Settings -> Interface -> Show All Bench Seats:`nDetermines whether you can see all champions on the bench even`nif you can't afford to unlock them yet.")
 		GUIFunctions.AddToolTip("GSF_NeverOpenActiveTasksH", "Settings -> General -> Never Open Active Tasks`nDetermines whether the Active Tasks menu will pop up once per day.")
 		GUIFunctions.AddToolTip("GSF_HKsRequiredH", "This will fix any hotkeys required by the script to function.`n  load_formation_1: Q`n  load_formation_2: W`n  load_formation_3: E`n  go_to_previous_area: LeftArrow`n  go_to_next_area: RightArrow`n  toggle_auto_progress: G")
-		GUIFunctions.AddToolTip("GSF_HKsSwap1025H", "This will swap the keybindings of x10 level up mode and`nx25 level up mode.`n  hero_level_10: LeftShift + LeftControl (Default: LeftShift)`n  hero_level_25: LeftShift (Default: LeftShift + LeftControl)")
+		GUIFunctions.AddToolTip("GSF_HKsSwap25100H", "This will swap the keybindings of x25 level up mode and x100 level`nup mode. It also resets x10 level up mode to default.`n  hero_level_10: LeftShift (Default: LeftShift)`n  hero_level_25: LeftControl (Default: LeftShift + LeftControl)`n  hero_level_100: LeftShift + LeftControl (Default: LeftControl)")
 	}
 	
 }
