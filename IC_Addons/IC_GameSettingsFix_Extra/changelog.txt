@@ -1,3 +1,6 @@
+11    August 2025 - v0.2.2
+ - Moved Hotkeys to their own section.
+ - Added an option for swapping x10 and x25 hotkeys. It will only change them if the option is ticked.
  8    August 2025 - v0.2.1
  - Adding support for Mission-Critical-script-required hotkeys.
  6    August 2025 - v0.2.0

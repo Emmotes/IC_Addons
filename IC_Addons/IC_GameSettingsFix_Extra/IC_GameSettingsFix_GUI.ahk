@@ -73,7 +73,7 @@ class IC_GameSettingsFix_GUI
 		Gui, ICScriptHub:Add, Button, xs%GSF_xpos% ys13 w85 h23 vGSF_DeleteProfile gGSF_DeleteProfile, `Delete Profile
 
 		Gui, ICScriptHub:Font, w700
-		GSF_gboxhSettings := 363
+		GSF_gboxhSettings := 338
 		Gui, ICScriptHub:Add, GroupBox, Section x15 ys+%GSF_gboxhProfiles% w500 h%GSF_gboxhSettings%, Settings
 		GSF_SettingX := GSF_col1x + 60
 		GSF_SettingW := GSF_col1w - 60
@@ -137,15 +137,24 @@ class IC_GameSettingsFix_GUI
 		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_NeverOpenActiveTasksH, NeverOpenActiveTasks:
 		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_NeverOpenActiveTasks,
 		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Checked
-		GSF_ypos += 25
-		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_HotkeysH, Fix Script Required Hotkeys:
-		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_Hotkeys Disabled,
+		
+		Gui, ICScriptHub:Font, w700
+		GSF_gboxhHotkeys := 68
+		Gui, ICScriptHub:Add, GroupBox, Section x15 ys+%GSF_gboxhSettings% w500 h%GSF_gboxhHotkeys%, Hotkeys
+		Gui, ICScriptHub:Font, w400
+		GSF_ypos := 18
+		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_HKsRequiredH, Fix Script Required Hotkeys:
+		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_HKsRequired Disabled,
 		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Mandatory
+		GSF_ypos += 25
+		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_HKsSwap1025H, Swap x10 and x25 Mode Hotkeys:
+		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_HKsSwap1025,
+		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Personal Preference
 
 		Gui, ICScriptHub:Font, w700
 		GUIFunctions.UseThemeTextColor("TableTextColor")
-		GSF_gboxhSettings += 6
-		Gui, ICScriptHub:Add, ListView, Section x15 ys+%GSF_gboxhSettings% w499 r2 vGSF_SettingsFileLocation, Settings File Location
+		GSF_gboxhHotkeys += 6
+		Gui, ICScriptHub:Add, ListView, Section x15 ys+%GSF_gboxhHotkeys% w499 r2 vGSF_SettingsFileLocation, Settings File Location
 		GUIFunctions.UseThemeListViewBackgroundColor("GSF_SettingsFileLocation")
 		GuiControlGet, pos, ICScriptHub:Pos, GSF_SettingsFileLocation
 		GSF_gboxhSettingsLoc := posH
@@ -166,7 +175,8 @@ class IC_GameSettingsFix_GUI
 		GUIFunctions.AddToolTip("GSF_NarrowHeroBoxesH", "Settings -> Interface -> Narrow Bench Boxes:`nDetermines whether you can see all champions on the bench on low`nresolutions or not.")
 		GUIFunctions.AddToolTip("GSF_ShowAllHeroBoxesH", "Settings -> Interface -> Show All Bench Seats:`nDetermines whether you can see all champions on the bench even`nif you can't afford to unlock them yet.")
 		GUIFunctions.AddToolTip("GSF_NeverOpenActiveTasksH", "Settings -> General -> Never Open Active Tasks`nDetermines whether the Active Tasks menu will pop up once per day.")
-		GUIFunctions.AddToolTip("GSF_HotkeysH", "This will fix any hotkeys required by the script to function.`n  load_formation_1: Q`n  load_formation_2: W`n  load_formation_3: E`n  go_to_previous_area: LeftArrow`n  go_to_next_area: RightArrow`n  toggle_auto_progress: G")
+		GUIFunctions.AddToolTip("GSF_HKsRequiredH", "This will fix any hotkeys required by the script to function.`n  load_formation_1: Q`n  load_formation_2: W`n  load_formation_3: E`n  go_to_previous_area: LeftArrow`n  go_to_next_area: RightArrow`n  toggle_auto_progress: G")
+		GUIFunctions.AddToolTip("GSF_HKsSwap1025H", "This will swap the keybindings of x10 level up mode and`nx25 level up mode.`n  hero_level_10: LeftShift + LeftControl (Default: LeftShift)`n  hero_level_25: LeftShift (Default: LeftShift + LeftControl)")
 	}
 	
 }

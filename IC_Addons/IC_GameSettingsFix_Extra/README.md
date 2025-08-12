@@ -127,6 +127,10 @@ The active tasks menu will slow the game down so this should always be checked.
 
 Found in-game: `Settings -> General -> Never Open Active Tasks`
 
+___
+
+## Hotkeys
+
 ### Fix Script Required Hotkeys
 
 This will fix any hotkeys required by the script to function.
@@ -138,6 +142,15 @@ This will fix any hotkeys required by the script to function.
 - `toggle_auto_progress`: G
 
 As these are mission-critical for running the script - this setting is mandatory.
+
+### Swap x10 and x25 Modes Hotkeys
+
+This will swap the keybindings of x10 level up mode and x25 level up mode.
+- `hero_level_10`: LeftShift + LeftControl (Default: LeftShift)
+- `hero_level_25`: LeftShift (Default: LeftShift + LeftControl)
+
+> [!NOTE]
+> *This setting will only change the hotkeys of these two modes if it is enabled. Otherwise it leaves them alone.*
 
 ___
 

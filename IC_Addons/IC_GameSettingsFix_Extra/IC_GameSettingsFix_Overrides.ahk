@@ -1,6 +1,6 @@
 class IC_GameSettingsFix_SharedData_Class extends IC_SharedData_Class
 {
-	GSF_HotkeyReplacements := {}
+	GSF_HotkeyRequiredReplacements := {}
 
 	GSF_UpdateSettingsFromFile(fileName := "")
 	{
@@ -15,7 +15,7 @@ class IC_GameSettingsFix_SharedData_Class extends IC_SharedData_Class
 		this.GSF_Settings := settings
 		if (this.GSF_FixedCounter == "")
 			this.GSF_FixedCounter := 0
-		this.GSF_HotkeyReplacements := {"load_formation_1":"Q","load_formation_2":"W","load_formation_3":"E","go_to_previous_area":"LeftArrow","go_to_next_area":"RightArrow","toggle_auto_progress":"G"}
+		this.GSF_HotkeyRequiredReplacements := {"load_formation_1":"Q","load_formation_2":"W","load_formation_3":"E","go_to_previous_area":"LeftArrow","go_to_next_area":"RightArrow","toggle_auto_progress":"G"}
 	}
 
 }
@@ -55,9 +55,9 @@ class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
 		{
 			if (k == "CurrentProfile")
 				continue
-			if (k == "Hotkeys")
+			if (k == "HKsRequired")
 			{
-				for k,v in g_SharedData.GSF_HotkeyReplacements
+				for k,v in g_SharedData.GSF_HotkeyRequiredReplacements
 				{
 					GSF_before := GSF_settingsFile
 					GSF_after := RegExReplace(GSF_before, "(""" . k . """: +[^""]+"")[^""]+"",?[`n`r]+(?:[^`n`r\Q]\E]*[`n`r]+)*( +])", "$1" . v . """`r`n$2")
@@ -65,6 +65,16 @@ class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
 						GSF_SettingsFile := GSF_after
 						madeChanges := true
 					}
+				}
+			}
+			else if (k == "HKsSwap1025" && v)
+			{
+				GSF_before := GSF_settingsFile
+				GSF_after := RegExReplace(GSF_before, "(""hero_level_10"": +\[)([^]]+)]", "$1`r`n            ""LeftShift"",`r`n            ""LeftControl""`r`n        ]")
+				GSF_after := RegExReplace(GSF_after, "(""hero_level_25"": +\[)([^]]+)]", "$1`r`n            ""LeftShift""`r`n        ]")
+				if (GSF_before != GSF_after) {
+					GSF_SettingsFile := GSF_after
+					madeChanges := true
 				}
 			}
 			else
