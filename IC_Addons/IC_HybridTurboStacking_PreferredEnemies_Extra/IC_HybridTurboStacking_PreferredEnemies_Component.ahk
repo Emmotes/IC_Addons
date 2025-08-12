@@ -38,8 +38,8 @@ Class IC_HybridTurboStacking_PreferredEnemies_Component
 		Gui, ICScriptHub:Font, w400
 		
 		posY += 25
-		Gui, ICScriptHub:Add, DropDownList, x%posX% y%posY% AltSubmit w165 vHTSPE_PreferredEnemies
-		choices := "All||TT: Ranged-only|TT: Mixed-only|TT: Melee-only|TT: Ranged+Mixed|TT: Mixed+Melee"
+		Gui, ICScriptHub:Add, DropDownList, x%posX% y%posY% AltSubmit w175 vHTSPE_PreferredEnemies
+		choices := "All||TT: Ranged-only|TT: Mixed-only|TT: Melee-only|TT: Ranged+Mixed|TT: Mixed+Melee|TT: 14/9j z21+ Ranged+Mixed"
 		GuiControl, ICScriptHub:, HTSPE_PreferredEnemies, % "|" . choices
 		newWidth := this.DropDownSize(choices,,, 8)
 		GuiControlGet, hnwd, ICScriptHub:Hwnd, HTSPE_PreferredEnemies
@@ -63,6 +63,7 @@ HTSPE_SetAndSave()
 		case 4: bitfield := 157642895327715
 		case 5: bitfield := 387147382176780
 		case 6: bitfield := 544785880825327
+		case 7: bitfield := 387147382128640
 	}
 	if (bitfield > 0)
 	{

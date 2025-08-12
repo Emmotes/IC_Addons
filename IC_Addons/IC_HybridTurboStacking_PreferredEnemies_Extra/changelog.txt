@@ -1,3 +1,5 @@
+12    August 2025 - v0.0.3
+ - Added `TT: 14/9j z21+ Ranged+Mixed` which is exactly what it says. Ranged+Mixed but only z21 or higher. So that if 14/9j can stack on a pure ranged zone - it will.
 26      July 2025 - v0.0.2
  - Fixing an issue with posX of the added UI elements.
 20      July 2025 - v0.0.1
