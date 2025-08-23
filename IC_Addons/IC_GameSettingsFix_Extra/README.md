@@ -119,14 +119,6 @@ Ironically they actually increase the size of the champion portraits on higher r
 
 Found in-game: `Settings -> Interface -> Narrow Bench Boxes`
 
-### NeverOpenActiveTasks
-
-Determines whether the Active Tasks menu will pop up once per day.
-
-The active tasks menu will slow the game down so this should always be checked.
-
-Found in-game: `Settings -> General -> Never Open Active Tasks`
-
 ___
 
 ## Hotkeys

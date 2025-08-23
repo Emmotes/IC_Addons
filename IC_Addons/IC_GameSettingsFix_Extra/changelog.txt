@@ -1,3 +1,5 @@
+23    August 2025 - v0.2.4
+ - Removing the NeverOpenActiveTasks settings. It has been removed from the game as of v631.
 12    August 2025 - v0.2.3
  - Changed the x10 and x25 swap mode to swap x25 and x100 instead. (And reset x10 to default.)
 11    August 2025 - v0.2.2

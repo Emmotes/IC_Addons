@@ -19,7 +19,7 @@ class IC_GameSettingsFix_Component
 {
 
 	TimerFunctions := {}
-	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":3,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"ShowAllHeroBoxes":true,"NeverOpenActiveTasks":true,"HKsRequired":true,"HKsSwap25100":false,"CurrentProfile":""}
+	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":3,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"ShowAllHeroBoxes":true,"HKsRequired":true,"HKsSwap25100":false,"CurrentProfile":""}
 	Settings := {}
 	CurrentProfile := this.DefaultSettings["CurrentProfile"]
 	ReadOnly := false
@@ -142,7 +142,6 @@ class IC_GameSettingsFix_Component
 		GuiControl, ICScriptHub:, GSF_FormationSaveIncludeFeatsCheck, % this.Settings["FormationSaveIncludeFeatsCheck"]
 		GuiControl, ICScriptHub:, GSF_NarrowHeroBoxes, % this.Settings["NarrowHeroBoxes"]
 		GuiControl, ICScriptHub:, GSF_ShowAllHeroBoxes, % this.Settings["ShowAllHeroBoxes"]
-		GuiControl, ICScriptHub:, GSF_NeverOpenActiveTasks, % this.Settings["NeverOpenActiveTasks"]
 		GuiControl, ICScriptHub:, GSF_HKsRequired, % this.Settings["HKsRequired"]
 		GuiControl, ICScriptHub:, GSF_HKsSwap25100, % this.Settings["HKsSwap25100"]
 		this.CurrentProfile := this.Settings["CurrentProfile"]
@@ -163,7 +162,6 @@ class IC_GameSettingsFix_Component
 		GuiControlGet,GSF_UseConsolePortraits, ICScriptHub:, GSF_UseConsolePortraits
 		GuiControlGet,GSF_FormationSaveIncludeFeatsCheck, ICScriptHub:, GSF_FormationSaveIncludeFeatsCheck
 		GuiControlGet,GSF_NarrowHeroBoxes, ICScriptHub:, GSF_NarrowHeroBoxes
-		GuiControlGet,GSF_NeverOpenActiveTasks, ICScriptHub:, GSF_NeverOpenActiveTasks
 		GuiControlGet,GSF_HKsRequired, ICScriptHub:, GSF_HKsRequired
 		GuiControlGet,GSF_HKsSwap25100, ICScriptHub:, GSF_HKsSwap25100
 		local sanityChecked := this.SanityCheckSettings()
@@ -179,7 +177,6 @@ class IC_GameSettingsFix_Component
 		this.Settings["FormationSaveIncludeFeatsCheck"] := GSF_FormationSaveIncludeFeatsCheck
 		this.Settings["NarrowHeroBoxes"] := GSF_NarrowHeroBoxes
 		this.Settings["ShowAllHeroBoxes"] := GSF_ShowAllHeroBoxes
-		this.Settings["NeverOpenActiveTasks"] := GSF_NeverOpenActiveTasks
 		this.Settings["HKsRequired"] := GSF_HKsRequired
 		this.Settings["HKsSwap25100"] := GSF_HKsSwap25100
 		this.Settings["CurrentProfile"] := this.CurrentProfile

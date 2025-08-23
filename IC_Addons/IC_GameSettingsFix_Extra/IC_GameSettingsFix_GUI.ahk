@@ -73,7 +73,7 @@ class IC_GameSettingsFix_GUI
 		Gui, ICScriptHub:Add, Button, xs%GSF_xpos% ys13 w85 h23 vGSF_DeleteProfile gGSF_DeleteProfile, `Delete Profile
 
 		Gui, ICScriptHub:Font, w700
-		GSF_gboxhSettings := 338
+		GSF_gboxhSettings := 38 + (11 * 25)
 		Gui, ICScriptHub:Add, GroupBox, Section x15 ys+%GSF_gboxhProfiles% w500 h%GSF_gboxhSettings%, Settings
 		GSF_SettingX := GSF_col1x + 60
 		GSF_SettingW := GSF_col1w - 60
@@ -133,13 +133,9 @@ class IC_GameSettingsFix_GUI
 		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_ShowAllHeroBoxesH, ShowAllHeroBoxes:
 		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_ShowAllHeroBoxes,
 		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Personal Preference
-		GSF_ypos += 25
-		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_NeverOpenActiveTasksH, NeverOpenActiveTasks:
-		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_NeverOpenActiveTasks,
-		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Checked
 		
 		Gui, ICScriptHub:Font, w700
-		GSF_gboxhHotkeys := 68
+		GSF_gboxhHotkeys := 25 + (2 * 25) - 7
 		Gui, ICScriptHub:Add, GroupBox, Section x15 ys+%GSF_gboxhSettings% w500 h%GSF_gboxhHotkeys%, Hotkeys
 		Gui, ICScriptHub:Font, w400
 		GSF_ypos := 18
@@ -174,7 +170,6 @@ class IC_GameSettingsFix_GUI
 		GUIFunctions.AddToolTip("GSF_UseConsolePortraitsH", "Settings -> Interface -> Console UI Portraits:`nDetermines whether the portraits for the champions on the bench are the`ncreepy ones that stare into your soul or not.")
 		GUIFunctions.AddToolTip("GSF_NarrowHeroBoxesH", "Settings -> Interface -> Narrow Bench Boxes:`nDetermines whether you can see all champions on the bench on low`nresolutions or not.")
 		GUIFunctions.AddToolTip("GSF_ShowAllHeroBoxesH", "Settings -> Interface -> Show All Bench Seats:`nDetermines whether you can see all champions on the bench even`nif you can't afford to unlock them yet.")
-		GUIFunctions.AddToolTip("GSF_NeverOpenActiveTasksH", "Settings -> General -> Never Open Active Tasks`nDetermines whether the Active Tasks menu will pop up once per day.")
 		GUIFunctions.AddToolTip("GSF_HKsRequiredH", "This will fix any hotkeys required by the script to function.`n  load_formation_1: Q`n  load_formation_2: W`n  load_formation_3: E`n  go_to_previous_area: LeftArrow`n  go_to_next_area: RightArrow`n  toggle_auto_progress: G")
 		GUIFunctions.AddToolTip("GSF_HKsSwap25100H", "This will swap the keybindings of x25 level up mode and x100 level`nup mode. It also resets x10 level up mode to default.`n  hero_level_10: LeftShift (Default: LeftShift)`n  hero_level_25: LeftControl (Default: LeftShift + LeftControl)`n  hero_level_100: LeftShift + LeftControl (Default: LeftControl)")
 	}
