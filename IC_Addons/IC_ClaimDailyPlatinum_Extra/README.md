@@ -63,6 +63,9 @@ The fourth section determines whether the script will try to claim the rewards f
 
 The timer for it is initialised to check 4 minutes after starting the Gem Farm script - and it will check again every 8 hours ± 30 minutes.
 
+> [!NOTE]
+> The amount of unclaimed guide quests can be memory read - and will be every minute. If it memory reads an unclaimed guide quest - it will claim it immediately - no matter how much time is left on the normal check.
+
 This setting is on by default.
 
 ___

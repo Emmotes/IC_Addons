@@ -1,3 +1,5 @@
+28    August 2025 - v0.4.2
+ - Guide Quest checking will now utilise a memory read. If it sees 1 or more guide quests are claimable - it will claim immediately - no matter what the check timer currently says.
 11    August 2025 - v0.4.1
  - Fixed some copy-paste visual errors. (Nothing functional.)
  8    August 2025 - v0.4.0

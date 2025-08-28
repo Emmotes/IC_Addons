@@ -50,11 +50,8 @@ Class IC_ClaimDailyPlatinum_Component
 	TiamatHP := [40,75,130,200,290,430,610,860,1200,1600]
 	StaggeredChecks := {"Platinum":1,"Trials":2,"FreeOffer":3,"GuideQuests":4,"BonusChests":5,"Celebrations":6}
 	
-	UserID := ""
-	UserHash := ""
+	MemoryReadCheckInstanceIDs := {"Platinum":"","Trials":"","FreeOffer":"","GuideQuests":"","BonusChests":"","Celebrations":""}
 	InstanceID := ""
-	GameVersion := ""
-	Platform := ""
 	
 	DisplayStatusTimeout := 0
 	MessageStickyTimer := 8000
@@ -173,19 +170,16 @@ Class IC_ClaimDailyPlatinum_Component
 		if (!IC_ClaimDailyPlatinum_Functions.IsGameClosed())
 		{
 			this.InstanceID := g_SF.Memory.ReadInstanceID()
-			if (this.UserID == "")
-				this.UserID := g_SF.Memory.ReadUserID()
-			if (this.UserHash == "")
-				this.UserHash := g_SF.Memory.ReadUserHash()
-			if (this.Platform == "")
-				this.Platform := g_SF.Memory.ReadPlatform()
-			if (this.GameVersion == "")
-				this.GameVersion := g_SF.Memory.ReadBaseGameVersion()
 			
 			for k,v in this.CurrentCD
 			{
 				if (!this.Settings[k])
 					continue
+				; If it's not claimable - check if it can be claimed via memory reads.
+				; - Prevent re-checking memory reads if it's been claimed during the current instance.
+				; - Because claiming via calls doesn't update the memory read.
+				if (!this.Claimable[k] && this.MemoryReadCheckInstanceIDs[CDP_key] != this.InstanceID)
+					this.CallMemoryReadCheckClaimable(k)
 				if (this.CurrentCD[k] <= A_TickCount)
 				{
 					; If it's not claimable - check if it can be claimed.
@@ -376,6 +370,26 @@ Class IC_ClaimDailyPlatinum_Component
 		return [false, A_TickCount + this.StartingCD]
 	}
 	
+	CallMemoryReadCheckClaimable(CDP_key)
+	{
+		CDP_CheckedClaimable := this.MemoryReadCheckClaimable(CDP_key) ; Check if it is claimable by memory reading.
+		if (CDP_CheckedClaimable == "")
+			return
+		this.Claimable[CDP_key] := CDP_CheckedClaimable[1] ; Claimable
+		this.CurrentCD[CDP_key] := CDP_CheckedClaimable[2] ; Claimable Cooldown
+	}
+	
+	MemoryReadCheckClaimable(CDP_key)
+	{
+		if (CDP_key == "GuideQuests")
+		{
+			numUnclaimedGuideQuests := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Screen.uiController.topBar.dpsMenuBox.menuBox.numberOfUnclaimedQuests.Read()
+			if (numUnclaimedGuideQuests > 0)
+				return [true, 0]
+		}
+		return ""
+	}
+	
 	Claim(CDP_key)
 	{
         g_SF.ResetServerCall()
@@ -466,6 +480,7 @@ Class IC_ClaimDailyPlatinum_Component
 			this.Claimed[CDP_key] += this.ArrSize(this.CelebrationCodes)
 			this.CelebrationCodes := []
 		}
+		this.MemoryReadCheckInstanceIDs[CDP_key] := this.InstanceID
 		this.UpdateMainStatus("Claimed " . this.Names[CDP_key] . ".")
 	}
 	
@@ -486,10 +501,6 @@ Class IC_ClaimDailyPlatinum_Component
 	{
 		this.Running := true
 		this.UpdateMainStatus("Started.")
-		this.UserID := g_SF.Memory.ReadUserID()
-		this.UserHash := g_SF.Memory.ReadUserHash()
-		this.Platform := g_SF.Memory.ReadPlatform()
-		this.GameVersion := g_SF.Memory.ReadBaseGameVersion()
 		for k,v in this.TimerFunctions
 			SetTimer, %k%, %v%, 0
 		for k,v in this.CurrentCD
@@ -631,11 +642,6 @@ Class IC_ClaimDailyPlatinum_Component
 			if (v == val)
 				return true
 		return false
-	}
-	
-	GetBoilerplate()
-	{
-		return "&user_id=" . (this.UserID) . "&hash=" . (this.UserHash) . "&instance_id=" . (this.InstanceID) . "&language_id=1&timestamp=0&request_id=0&network_id=" . (this.Platform) . "&mobile_client_version=" . (this.GameVersion) . "&instance_key=1&offline_v2_build=1&localization_aware=true"
 	}
 
 	RandInt(min,max)
