@@ -48,6 +48,7 @@ Class IC_ClaimDailyPlatinum_Component
 	TrialsPresetStatuses := [["Trials Status","Tiamat Dies in","Trial Joinable in"],["Unknown","Tiamat is Dead","Inactive","Sitting in Lobby",""]]
 	TrialsStatus := [1,5]
 	TiamatHP := [40,75,130,200,290,430,610,860,1200,1600]
+	FreeWeeklyRerolls := -1
 	StaggeredChecks := {"Platinum":1,"Trials":2,"FreeOffer":3,"GuideQuests":4,"BonusChests":5,"Celebrations":6}
 	
 	MemoryReadCheckInstanceIDs := {"Platinum":"","Trials":"","FreeOffer":"","GuideQuests":"","BonusChests":"","Celebrations":""}
@@ -285,6 +286,7 @@ Class IC_ClaimDailyPlatinum_Component
 		else if (CDP_key == "FreeOffer")
 		{
 			this.FreeOfferIDs := []
+			this.FreeWeeklyRerolls := -1
 			IC_ClaimDailyPlatinum_Functions.ServerCall("revealalacarteoffers", "")
 			response := IC_ClaimDailyPlatinum_Functions.ServerCall("getalacarteoffers", "")
 			if (IsObject(response) && response.success)
@@ -296,6 +298,7 @@ Class IC_ClaimDailyPlatinum_Component
 					if (!v.purchased)
 						this.FreeOfferIDs.Push(v.offer_id)
 				}
+				this.FreeWeeklyRerolls := (response.offers.reroll_cost == 0 ? response.offers.rerolls_remaining : 0)
 				if (this.ArrSize(this.FreeOfferIDs) > 0)
 					return [true, 0]
 				return [false, A_TickCount + (response.offers.time_remaining * 1000) + this.SafetyDelay]
@@ -561,6 +564,8 @@ Class IC_ClaimDailyPlatinum_Component
 			this.DailyBoostExpires := -1
 		if (CDP_clearStatuses || !this.Settings["Trials"])
 			this.TrialsStatus := [1,5]
+		if (CDP_clearStatuses || !this.Settings["FreeOffer"])
+			this.FreeWeeklyRerolls := -1
 			
 		if (this.TrialsStatus[1] == 3 && this.TrialsStatus[2] < A_TickCount)
 			this.TrialsStatus := [1,3]
@@ -578,10 +583,12 @@ Class IC_ClaimDailyPlatinum_Component
 		GuiControl, ICScriptHub:, CDP_BonusChestsCount, % this.ProduceGUIClaimedMessage("BonusChests")
 		GuiControl, ICScriptHub:, CDP_CelebrationRewardsCount, % this.ProduceGUIClaimedMessage("Celebrations")
 		
-		GuiControl, ICScriptHub:, CDP_TrialsStatusHeader, % (this.TrialsPresetStatuses[1][this.TrialsStatus[1]]) . ":"
-		GuiControl, ICScriptHub:, CDP_TrialsStatus, % (this.TrialsStatus[1] == 1 ? this.TrialsPresetStatuses[2][this.TrialsStatus[2]] : (this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.TrialsStatus[2])) . (this.TrialsStatus[1] == 2 ? " (est)" : "")))
 		GuiControl, ICScriptHub:, CDP_DailyBoostHeader, % "Daily Boost" . (this.DailyBoostExpires > 0 ? " Expires" : "") . ":"
 		GuiControl, ICScriptHub:, CDP_DailyBoostExpires, % (this.DailyBoostExpires > 0 ? this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.DailyBoostExpires)) : (this.DailyBoostExpires == 0 ? "Inactive" : ""))
+		GuiControl, ICScriptHub:, CDP_TrialsStatusHeader, % (this.TrialsPresetStatuses[1][this.TrialsStatus[1]]) . ":"
+		GuiControl, ICScriptHub:, CDP_TrialsStatus, % (this.TrialsStatus[1] == 1 ? this.TrialsPresetStatuses[2][this.TrialsStatus[2]] : (this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.TrialsStatus[2])) . (this.TrialsStatus[1] == 2 ? " (est)" : "")))
+		GuiControl, ICScriptHub:, CDP_FreeOfferRerollsHeader, % "Free Rerolls Remaining:"
+		GuiControl, ICScriptHub:, CDP_FreeOfferRerolls, % (this.FreeWeeklyRerolls >= 0 ? this.FreeWeeklyRerolls : "")
 		Gui, Submit, NoHide
 	}
 	

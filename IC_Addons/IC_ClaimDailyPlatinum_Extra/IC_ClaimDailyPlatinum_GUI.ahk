@@ -70,20 +70,22 @@ class IC_ClaimDailyPlatinum_GUI
 		Gui, ICScriptHub:Add, Text, vCDP_TrialsStatusHeader xs15 y+%CDP_infoGap% w%CDP_col1w% +Right, 
 		Gui, ICScriptHub:Add, Text, vCDP_TrialsStatus xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
 		
-		; Claim Free Weekly Shop Offers - short.
+		; Claim Free Weekly Shop Offers - is tall due to free rerolls status.
 		Gui, ICScriptHub:Font, w700
-		Gui, ICScriptHub:Add, GroupBox, Section vCDP_BoxRow2 x%CDP_gbCol1% ys+%CDP_gbHeight2% w%CDP_gbWidth% h%CDP_gbHeight1%,
+		Gui, ICScriptHub:Add, GroupBox, Section vCDP_BoxRow2 x%CDP_gbCol1% ys+%CDP_gbHeight2% w%CDP_gbWidth% h%CDP_gbHeight2%,
 		Gui, ICScriptHub:Add, Checkbox, vCDP_ClaimFreeOffer xs8 ys2, Claim Free Weekly Shop Offers
 		Gui, ICScriptHub:Font, w400
 		Gui, ICScriptHub:Add, Text, xs15 ys%CDP_firstLineY% w%CDP_col1w% +Right, Weekly Offers Claimed:
 		Gui, ICScriptHub:Add, Text, vCDP_FreeOffersCount xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
 		Gui, ICScriptHub:Add, Text, xs15 y+%CDP_infoGap% w%CDP_col1w% +Right, Time Until Next Check:
 		Gui, ICScriptHub:Add, Text, vCDP_FreeOfferTimer xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
+		Gui, ICScriptHub:Add, Text, vCDP_FreeOfferRerollsHeader xs15 y+%CDP_infoGap% w%CDP_col1w% +Right, 
+		Gui, ICScriptHub:Add, Text, vCDP_FreeOfferRerolls xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
 		
-		; Claim Guide Quest Rewards - short.
+		; Claim Guide Quest Rewards - is tall because Free Weekly Shop Offers is tall.
 		GuiControlGet, pos, ICScriptHub:Pos, CDP_BoxRow2
 		Gui, ICScriptHub:Font, w700
-		Gui, ICScriptHub:Add, GroupBox, Section x%CDP_gbCol2% y%posY% w%CDP_gbWidth% h%CDP_gbHeight1%,
+		Gui, ICScriptHub:Add, GroupBox, Section x%CDP_gbCol2% y%posY% w%CDP_gbWidth% h%CDP_gbHeight2%,
 		Gui, ICScriptHub:Add, Checkbox, vCDP_ClaimGuideQuests xs8 ys2, Claim Guide Quest Rewards
 		Gui, ICScriptHub:Font, w400
 		Gui, ICScriptHub:Add, Text, xs15 ys%CDP_firstLineY% w%CDP_col1w% +Right, Rewards Claimed:
@@ -93,7 +95,7 @@ class IC_ClaimDailyPlatinum_GUI
 		
 		; Claim Free Premium Pack Bonus Chests - short.
 		Gui, ICScriptHub:Font, w700
-		Gui, ICScriptHub:Add, GroupBox, Section vCDP_BoxRow3 x%CDP_gbCol1% ys+%CDP_gbHeight1% w%CDP_gbWidth% h%CDP_gbHeight1%,
+		Gui, ICScriptHub:Add, GroupBox, Section vCDP_BoxRow3 x%CDP_gbCol1% ys+%CDP_gbHeight2% w%CDP_gbWidth% h%CDP_gbHeight1%,
 		Gui, ICScriptHub:Add, Checkbox, vCDP_ClaimBonusChests xs8 ys2, Claim Free Premium Bonus Chests
 		Gui, ICScriptHub:Font, w400
 		Gui, ICScriptHub:Add, Text, xs15 ys%CDP_firstLineY% w%CDP_col1w% +Right, Bonus Chests Claimed:

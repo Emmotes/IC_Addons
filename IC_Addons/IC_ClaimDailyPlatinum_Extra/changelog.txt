@@ -1,3 +1,5 @@
+17 September 2025 - v0.4.3
+ - Adding the number of free rerolls to the Free Weekly Shop Offers box.
 28    August 2025 - v0.4.2
  - Guide Quest checking will now utilise a memory read. If it sees 1 or more guide quests are claimable - it will claim immediately - no matter what the check timer currently says.
 11    August 2025 - v0.4.1
