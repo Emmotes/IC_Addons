@@ -1,5 +1,11 @@
 # IC Addons by Emmote
 
+### Cazrin Books Farmer
+
+An addon that will aid in stacking Cazrin.
+
+Read the [Cazrin Books Farmer README](IC_CazrinBooksFarmer_Extra/README.md)
+
 ### Claim Daily Platinum
 
 An addon that will claim your daily platinum automagically so you don't have to.
@@ -38,12 +44,3 @@ This is a fork of Antilectual's [IC_NoModronAdventuring_Extra](https://github.co
 > *This addon is now dead. CNE changed some functions that broke how this addon works.*
 
 Read the [No Modron Adventuring README](IC_NoModronAdventuring_Extra/README.md)
-
-### Potion Sustain
-
-An addon of my own make that attempts to sustain potions by buying Silver chests when necessary and has the ability to alternate the potions set in the modron.
-
-> [!NOTE]
-> *It is now so easy to sustain Small+Medium+Large potions with a capped Ellywick and the Apothecary that this addon is now only recommended to people who have not yet capped Ellywick.*
-
-Read the [Potion Sustain README](IC_PotionSustain_Extra/README.md)
