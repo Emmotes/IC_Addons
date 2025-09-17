@@ -1,3 +1,5 @@
+17 September 2025 - v0.2.5
+ - Changed how the script overrides OpenIC. Shouldn't impact anybody except mod creators.
 23    August 2025 - v0.2.4
  - Removing the NeverOpenActiveTasks settings. It has been removed from the game as of v631.
 12    August 2025 - v0.2.3

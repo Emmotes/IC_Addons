@@ -113,37 +113,7 @@ class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
 	OpenIC()
 	{
 		this.GSF_FixGameSettings()
-		
-		timeoutVal := 32000 + 90000 ; 32s + waitforgameready timeout
-		loadingDone := false
-		g_SharedData.LoopString := "Starting Game"
-		WinGetActiveTitle, savedActive
-		this.SavedActiveWindow := savedActive
-		StartTime := A_TickCount
-		while ( !loadingZone AND ElapsedTime < timeoutVal )
-		{
-			this.Hwnd := 0
-			ElapsedTime := A_TickCount - StartTime
-			if(ElapsedTime < timeoutVal)
-				this.OpenProcessAndSetPID(timeoutVal - ElapsedTime)
-			ElapsedTime := A_TickCount - StartTime
-			if(ElapsedTime < timeoutVal)
-				this.SetLastActiveWindowWhileWaingForGameExe(timeoutVal - ElapsedTime)
-			Process, Priority, % this.PID, Realtime
-			this.ActivateLastWindow()
-			this.Memory.OpenProcessReader()
-			ElapsedTime := A_TickCount - StartTime
-			if(ElapsedTime < timeoutVal)
-				loadingZone := this.WaitForGameReady()
-			if(loadingZone)
-				this.ResetServerCall()
-			Sleep, 62
-			ElapsedTime := A_TickCount - StartTime
-		}
-		if(ElapsedTime >= timeoutVal)
-			return -1 ; took too long to open
-		else
-			return 0
+		base.OpenIC()
 	}
 	
 }
