@@ -2,46 +2,6 @@ class IC_NMA_Functions
 {
     endScript := false
 
-    DirectedInputNoCritical(hold := 1, release := 1, s* )
-    {
-        timeout := 5000
-        directedInputStart := A_TickCount
-        hwnd := g_SF.Hwnd
-        ControlFocus,, ahk_id %hwnd%
-        values := s
-        if(IsObject(values))
-        {
-            if(hold)
-            {
-                for k, v in values
-                {
-                    g_InputsSent++
-                    key := g_KeyMap[v]
-                    SendMessage, 0x0100, %key%, 0,, ahk_id %hwnd%,,,,%timeout%
-                }
-            }
-            if(release)
-            {
-                for k, v in values
-                {
-                    key := g_KeyMap[v]
-                    SendMessage, 0x0101, %key%, 0xC0000001,, ahk_id %hwnd%,,,,%timeout%
-                }
-            }
-        }
-        else
-        {
-            key := g_KeyMap[values]
-            if(hold)
-            {
-                g_InputsSent++
-                SendMessage, 0x0100, %key%, 0,, ahk_id %hwnd%,,,,%timeout%
-            }
-            if(release)
-                SendMessage, 0x0101, %key%, 0xC0000001,, ahk_id %hwnd%,,,,%timeout%
-        }
-    }
-
     GetHeroDefines()
     {
         start := A_TickCount
@@ -281,7 +241,7 @@ class IC_NMA_Functions
             if(currChampLevel == lastChampLevel) ; leveling failed, wait for next call
                 break
             lastChampLevel := currChampLevel
-            this.DirectedInputNoCritical(,, inputKey)
+            this.DirectedInput(,, inputKey)
             for k, v in specSettings[champID]
             {
                 if (v.RequiredLvl == g_SF.Memory.ReadChampLvlByID(champID) AND NMA_ChooseSpecs)
@@ -380,7 +340,7 @@ class IC_NMA_Functions
         champLvl := g_SF.Memory.ReadChampLvlByID(champID)
         seat := g_SF.Memory.ReadChampSeatByID(champID)
         inputKey := "{F" . seat . "}"
-        this.DirectedInputNoCritical(,, inputKey)
+        this.DirectedInput(,, inputKey)
         sleep, 33
         global g_NMAlvlObj
 		global NMA_ChooseSpecs
@@ -403,7 +363,7 @@ class IC_NMA_Functions
             if(k AND k != -1 AND NMA_FireUlts)
             {
                 ultButton := g_SF.GetUltimateButtonByChampID(k)
-                this.DirectedInputNoCritical(,, ultButton)
+                this.DirectedInput(,, ultButton)
             }   
         }
     }
