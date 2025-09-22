@@ -199,7 +199,7 @@ Class IC_EGSOverlaySwatter_Component
 	
 	UpdateSharedSettings()
 	{
-		if (IC_EGSOverlaySwatter_Functions.UpdateSharedSettings()) ; Calls itself? Infinite recursion??
+		if (IC_EGSOverlaySwatter_Functions.UpdateSharedSettings())
 		{
 			for k,v in this.TimerFunctions
 			{
