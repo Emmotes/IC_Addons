@@ -1,7 +1,5 @@
-class IC_GameSettingsFix_SharedData_Class extends IC_SharedData_Class
+class IC_GameSettingsFix_SharedData_Added_Class ; Added to IC_SharedData_Class
 {
-	GSF_HotkeyRequiredReplacements := {}
-
 	GSF_UpdateSettingsFromFile(fileName := "")
 	{
 		if (fileName == "")
@@ -17,13 +15,20 @@ class IC_GameSettingsFix_SharedData_Class extends IC_SharedData_Class
 			this.GSF_FixedCounter := 0
 		this.GSF_HotkeyRequiredReplacements := {"load_formation_1":"Q","load_formation_2":"W","load_formation_3":"E","go_to_previous_area":"LeftArrow","go_to_next_area":"RightArrow","toggle_auto_progress":"G"}
 	}
+}
 
+class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
+{
+	OpenIC()
+	{
+		this.GSF_FixGameSettings()
+		base.OpenIC()
+	}
 }
 
 ; Overrides: OpenIC()
-class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
+class IC_GameSettingsFix_SharedFunctions_Added_Class ; Added to IC_SharedFunctions_Class
 {
-
 	GSF_FixGameSettings()
 	{
 		GSF_CurrSettingsFileLoc := g_SharedData.GSF_GameSettingsFileLocation
@@ -109,11 +114,4 @@ class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
 		g_SharedData.GSF_Status := "The game settings file has been fixed."
 		g_SharedData.GSF_FixedCounter++
 	}
-
-	OpenIC()
-	{
-		this.GSF_FixGameSettings()
-		base.OpenIC()
-	}
-	
 }

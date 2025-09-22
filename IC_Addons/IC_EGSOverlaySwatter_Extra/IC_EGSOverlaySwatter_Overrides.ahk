@@ -1,6 +1,5 @@
-class IC_EGSOverlaySwatter_SharedData_Class extends IC_SharedData_Class
+class IC_EGSOverlaySwatter_SharedData_Added_Class ; Added to IC_SharedData_Class
 {
-
     EGSOS_UpdateSettingsFromFile(fileName := "")
     {
         if (fileName == "")
@@ -11,10 +10,4 @@ class IC_EGSOverlaySwatter_SharedData_Class extends IC_SharedData_Class
 		for k,v in settings
 			g_BrivUserSettingsFromAddons[ "EGSOS_" k ] := v
     }
-	
-}
-
-class IC_EGSOverlaySwatter_BrivGemFarm_Class extends IC_BrivSharedFunctions_Class
-{
-
 }

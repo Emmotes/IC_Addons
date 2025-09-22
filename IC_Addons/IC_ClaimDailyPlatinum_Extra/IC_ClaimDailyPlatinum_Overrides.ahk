@@ -1,6 +1,5 @@
-class IC_ClaimDailyPlatinum_SharedData_Class extends IC_SharedData_Class
+class IC_ClaimDailyPlatinum_SharedData_Added_Class ; Added to IC_SharedData_Class
 {
-
     CDP_UpdateSettingsFromFile(fileName := "")
     {
         if (fileName == "")
@@ -11,5 +10,4 @@ class IC_ClaimDailyPlatinum_SharedData_Class extends IC_SharedData_Class
 		for k,v in settings
 			g_BrivUserSettingsFromAddons[ "CDP_" k ] := v
     }
-	
 }
