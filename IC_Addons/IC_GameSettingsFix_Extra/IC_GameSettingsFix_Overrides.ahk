@@ -17,6 +17,7 @@ class IC_GameSettingsFix_SharedData_Added_Class ; Added to IC_SharedData_Class
 	}
 }
 
+; Overrides: OpenIC()
 class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
 {
 	OpenIC()
@@ -26,7 +27,6 @@ class IC_GameSettingsFix_SharedFunctions_Class extends IC_SharedFunctions_Class
 	}
 }
 
-; Overrides: OpenIC()
 class IC_GameSettingsFix_SharedFunctions_Added_Class ; Added to IC_SharedFunctions_Class
 {
 	GSF_FixGameSettings()
