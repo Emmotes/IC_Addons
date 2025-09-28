@@ -92,6 +92,8 @@ class IC_ClaimDailyPlatinum_GUI
 		Gui, ICScriptHub:Add, Text, vCDP_GuideQuestsCount xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
 		Gui, ICScriptHub:Add, Text, xs15 y+%CDP_infoGap% w%CDP_col1w% +Right, Time Until Next Check:
 		Gui, ICScriptHub:Add, Text, vCDP_GuideQuestsTimer xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
+		Gui, ICScriptHub:Add, Text, vCDP_GuideQuestsUnclaimedHeader xs15 y+%CDP_infoGap% w%CDP_col1w% +Right, 
+		Gui, ICScriptHub:Add, Text, vCDP_GuideQuestsUnclaimed xs%CDP_col2x% y+-%CDP_lineHeight% w%CDP_col2w%, 
 		
 		; Claim Free Premium Pack Bonus Chests - short.
 		Gui, ICScriptHub:Font, w700
