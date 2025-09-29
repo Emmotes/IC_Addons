@@ -1,3 +1,9 @@
+23 September 2025 - v0.4.4
+ - Adding a number of memory reads to make things a little more response.
+   - Daily Platinum: Rewards Claimed / Boost Rewards Claimed.
+   - Trials Rewards: Whether a Trial is claimable or not.
+   - Free Weekly Shop Offers: Number of free rerolls.
+ - Adding a counter for Unclaimed Guide Quests to Guide Quests. Mostly just to fill in the gap.
 17 September 2025 - v0.4.3
  - Adding the number of free rerolls to the Free Weekly Shop Offers box.
 28    August 2025 - v0.4.2

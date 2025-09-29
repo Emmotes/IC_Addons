@@ -49,6 +49,7 @@ Class IC_ClaimDailyPlatinum_Component
 	TrialsStatus := [1,5]
 	TiamatHP := [40,75,130,200,290,430,610,860,1200,1600]
 	FreeWeeklyRerolls := -1
+	UnclaimedGuideQuests := -1
 	StaggeredChecks := {"Platinum":1,"Trials":2,"FreeOffer":3,"GuideQuests":4,"BonusChests":5,"Celebrations":6}
 	
 	MemoryReadCheckInstanceIDs := {"Platinum":"","Trials":"","FreeOffer":"","GuideQuests":"","BonusChests":"","Celebrations":""}
@@ -176,6 +177,8 @@ Class IC_ClaimDailyPlatinum_Component
 			{
 				if (!this.Settings[k])
 					continue
+				; Memory read stuff that doesn't care about claiming via calls.
+				this.MemoryReadSimpleStuff(k)
 				; If it's not claimable - check if it can be claimed via memory reads.
 				; - Prevent re-checking memory reads if it's been claimed during the current instance.
 				; - Because claiming via calls doesn't update the memory read.
@@ -202,6 +205,17 @@ Class IC_ClaimDailyPlatinum_Component
 			}
 		}
 		this.UpdateGUI()
+	}
+	
+	MemoryReadSimpleStuff(CDP_key)
+	{
+		if (CDP_key == "FreeOffer")
+		{
+			; Update Free Reroll count.
+			rerollCost := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.ShopHandler.ALaCarteHandler_k__BackingField.RerollCost_k__BackingField.Read()
+			rerollsRemaining := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.ShopHandler.ALaCarteHandler_k__BackingField.RerollsRemaining_k__BackingField.Read()
+			this.FreeWeeklyRerolls := (rerollCost == 0 && rerollsRemaining > 0) ? rerollsRemaining : 0
+		}
 	}
 	
 	CallCheckClaimable(CDP_key)
@@ -384,9 +398,31 @@ Class IC_ClaimDailyPlatinum_Component
 	
 	MemoryReadCheckClaimable(CDP_key)
 	{
-		if (CDP_key == "GuideQuests")
+		if (CDP_key == "Platinum")
+		{
+			dayIndex := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.DailyLoginHandler.CurrentDay.Read()
+			todayFreeClaimed := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.DailyLoginHandler.RewardsClaimed.Read()
+			todayBoostClaimed := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.DailyLoginHandler.PremiumRewardsClaimed.Read()
+			if (dayIndex != "" && todayFreeClaimed != "" && todayBoostClaimed != "")
+			{
+				claimNum := 1 << dayIndex
+				if ((todayFreeClaimed & CDP_num) == 0 || (this.DailyBoostExpires > 0 && (todayBoostClaimed & CDP_num) == 0))
+					return [true, 0]
+			}
+		}
+		else if (CDP_key == "Trials")
+		{
+			unclaimedCampID := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.TrialsHandler.pendingUnclaimedCampaignID.Read()
+			if (unclaimedCampID > 0)
+			{
+				this.TrialsCampaignID := unclaimedCampID
+				return [true, 0]
+			}
+		}
+		else if (CDP_key == "GuideQuests")
 		{
 			numUnclaimedGuideQuests := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Screen.uiController.topBar.dpsMenuBox.menuBox.numberOfUnclaimedQuests.Read()
+			this.UnclaimedGuideQuests := numUnclaimedGuideQuests
 			if (numUnclaimedGuideQuests > 0)
 				return [true, 0]
 		}
@@ -448,7 +484,10 @@ Class IC_ClaimDailyPlatinum_Component
 			{
 				CDP_numGuideQuestsClaimed := this.ArrSize(response.awarded_items.rewards_claimed_quest_ids)
 				if (CDP_numGuideQuestsClaimed > 0)
+				{
 					this.Claimed[CDP_key] += CDP_numGuideQuestsClaimed
+					this.UnclaimedGuideQuests := 0
+				}
 			}
 		}
 		else if (CDP_key == "BonusChests")
@@ -533,6 +572,27 @@ Class IC_ClaimDailyPlatinum_Component
 		return this.NoTimerDelay + this.RandInt(-this.NoTimerDelayRNG, this.NoTimerDelayRNG)
 	}
 	
+	ConvertCNESimpleTimerToSeconds(simpleTimer)
+	{
+		secondsExpire = 1970
+		secondsExpire += (Floor(simpleTimer / 1000) - 62135596800),s
+		secondsExpire -= A_NOW,s
+		return secondsExpire
+	}
+	
+	UpdateCooldownTimerIfSimpleTimerIsSooner(CDP_key, simpleTimer, addSafetyDelay := true)
+	{
+		simpleTime := this.ConvertCNESimpleTimerToSeconds(simpleTimer)
+		if (simpleTimer > 0)
+		{
+			simpleTimer := A_TickCount + (simpleTimer * 1000)
+			if (addSafetyDelay)
+				simpleTimer += this.SafetyDelay
+			if (simpleTimer < this.CurrentCD[CDP_key])
+				this.CurrentCD[CDP_key] := simpleTimer
+		}
+	}
+	
 	; =====================
 	; ===== GUI STUFF =====
 	; =====================
@@ -589,6 +649,8 @@ Class IC_ClaimDailyPlatinum_Component
 		GuiControl, ICScriptHub:, CDP_TrialsStatus, % (this.TrialsStatus[1] == 1 ? this.TrialsPresetStatuses[2][this.TrialsStatus[2]] : (this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.TrialsStatus[2])) . (this.TrialsStatus[1] == 2 ? " (est)" : "")))
 		GuiControl, ICScriptHub:, CDP_FreeOfferRerollsHeader, % "Free Rerolls Remaining:"
 		GuiControl, ICScriptHub:, CDP_FreeOfferRerolls, % (this.FreeWeeklyRerolls >= 0 ? this.FreeWeeklyRerolls : "")
+		GuiControl, ICScriptHub:, CDP_GuideQuestsUnclaimedHeader, % "Unclaimed Guide Quests:"
+		GuiControl, ICScriptHub:, CDP_GuideQuestsUnclaimed, % (this.UnclaimedGuideQuests >= 0 ? this.UnclaimedGuideQuests : "")
 		Gui, Submit, NoHide
 	}
 	
