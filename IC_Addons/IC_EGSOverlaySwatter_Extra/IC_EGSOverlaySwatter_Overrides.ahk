@@ -11,12 +11,10 @@ class IC_EGSOverlaySwatter_SharedData_Added_Class ; Added to IC_SharedData_Class
 			g_BrivUserSettingsFromAddons[ "EGSOS_" k ] := v
 		this.EGSOS_Settings := settings
     }
-	
 }
 
-class IC_EGSOverlaySwatter_SharedFunctions_Class extends IC_SharedFunctions_Class
+class IC_EGSOverlaySwatter_SharedFunctions_Added_Class
 {
-
 	EGSOS_ToggleOverlayNow()
 	{
 		previousState := g_SharedData.EGSOS_OverlayCurrentlyDisabled
@@ -45,7 +43,10 @@ class IC_EGSOverlaySwatter_SharedFunctions_Class extends IC_SharedFunctions_Clas
 			g_SharedData.EGSOS_RenamedFiles := ""
 		}
 	}
-	
+}
+
+class IC_EGSOverlaySwatter_SharedFunctions_Class extends IC_SharedFunctions_Class
+{
 	OpenIC()
 	{
 		this.EGSOS_ToggleOverlayNow()
