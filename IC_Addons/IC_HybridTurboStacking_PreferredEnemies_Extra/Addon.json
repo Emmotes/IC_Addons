@@ -1,6 +1,6 @@
 {
 	"Name":"HybridTurboStacking PreferredEnemies",
-	"Version": "v0.0.3",
+	"Version": "v0.0.4",
 	"Includes" : "IC_HybridTurboStacking_PreferredEnemies_Component.ahk",
 	"Author" : "Emmote",
 	"Url" : "https://github.com/emmotes/IC_Addons/tree/main/IC_Addons/IC_HybridTurboStacking_PreferredEnemies_Extra",

@@ -1,3 +1,5 @@
+12   October 2025 - v0.0.4
+ - Adding a checkbox to allow avoiding issues with routes that land on z5 bosses.
 12    August 2025 - v0.0.3
  - Added `TT: 14/9j z21+ Ranged+Mixed` which is exactly what it says. Ranged+Mixed but only z21 or higher. So that if 14/9j can stack on a pure ranged zone - it will.
 26      July 2025 - v0.0.2
