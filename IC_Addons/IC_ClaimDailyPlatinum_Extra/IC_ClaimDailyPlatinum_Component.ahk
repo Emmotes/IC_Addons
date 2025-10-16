@@ -29,6 +29,7 @@ Class IC_ClaimDailyPlatinum_Component
 	MainLoopCD := 60000 ; in milliseconds = 1 minute.
 	; The starting cooldown for each type:
 	StartingCD := 60000 ; in milliseconds = 1 minute.
+	UpdateGUIDelay := 20000 ; delay between a server call and a new GUI update. Give server call time to update data.
 	; The delay between when the server says a timer resets and when to check (for safety):
 	SafetyDelay := 30000 ; in milliseconds = 30 seconds.
 	; No Timer Delay (for when I can't find a timer in the data)
@@ -230,6 +231,8 @@ Class IC_ClaimDailyPlatinum_Component
 				this.RunServerCalls()
 		}
 		this.UpdateGUI()
+		delayedUpdate := ObjBindMethod(this, "UpdateGUI") ; try to wait until after server call data has updated.
+		SetTimer, %delayedUpdate%, %UpdateGUIDelay%
 	}
 	
 	MemoryReadSimpleStuff(CDP_key)
