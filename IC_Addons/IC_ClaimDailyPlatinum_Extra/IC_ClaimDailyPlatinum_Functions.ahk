@@ -8,8 +8,10 @@ class IC_ClaimDailyPlatinum_Functions
 		local addonDirLoc := splitStr[(splitStr.Count()-1)]
 		local addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_ClaimDailyPlatinum_Addon.ahk`n"
 		FileAppend, %addonLoc%, %g_BrivFarmModLoc%
+		local addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_ClaimDailyPlatinum_Servercalls.ahk`n"
+		FileAppend, %addonLoc%, %g_BrivFarmServerCallModLoc%
 	}
-	
+
 	; ======================
 	; ===== MAIN STUFF =====
 	; ======================
