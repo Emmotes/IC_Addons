@@ -22,18 +22,6 @@ class IC_ClaimDailyPlatinum_Functions
 			return true
 		return false
 	}
-
-	GetAllRegexMatches(haystack,needle)
-	{
-		matches := []
-		while n := RegExMatch(haystack,"O)" needle,match,n?n+1:1)
-		{
-			index := matches.length()+1
-			loop % match.count()
-				matches.push(match.value(a_index))
-		}
-		return matches
-	}
 	
 	ServerCall(callIdent,params)
 	{

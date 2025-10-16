@@ -1,4 +1,7 @@
 
+#include %A_LineFile%\..\..\IC_Core\IC_SharedFunctions_Class.ahk
+global g_SF := new IC_SharedFunctions_Class
+global g_UserSettings := SH_SharedFunctions.LoadObjectFromJSON( A_LineFile . "\..\..\..\Settings.json" )
 class IC_BrivGemFarmRun_ClaimDailyPlatinum_Coms_Class ; Activated/shared by cdp servercall overrides
 {
     Claimed := ""
@@ -43,16 +46,18 @@ class IC_ClaimDailyPlatinum_Servercalls
     ; this.CurrentCD := {"Platinum":0,"Trials":0,"FreeOffer":0,"GuideQuests":0,"BonusChests":0,"Celebrations":0}
     ; this.TrialsCampaignID := 0
     ; this.FreeWeeklyRerolls
-    ;
     ; this.FreeOfferIDs := []
     ; this.CelebrationCodes := []
     ; this.TiamatHP := [40,75,130,200,290,430,610,860,1200,1600]
 	; this.MainLoopCD := 60000 ; in milliseconds = 1 minute.
     ; this.StartingCD := 60000 ; in milliseconds = 1 minute.
 	; this.SafetyDelay := 30000 ; in milliseconds = 30 seconds.
+	; NoTimerDelay := 28800000 ; in milliseconds = 8 hours.
+	; NoTimerDelayRNG := 1800000 ; in milliseconds = 30 minutes.
     ; ==============
 
-    InitClaimPremium()
+
+    InitClaimPremium() ; declare class variables here since they are not copied by updatesclass
     {
         if (A_Args[1] != "") ; all claim calls are done via file, not args.
             return
@@ -65,8 +70,11 @@ class IC_ClaimDailyPlatinum_Servercalls
         this.StartingCD := 60000 ; in milliseconds = 1 minute.
 	    ; The delay between when the server says a timer resets and when to check (for safety):
 	    this.SafetyDelay := 30000 ; in milliseconds = 30 seconds.
-        this.TrialsCampaignID := 0
-
+        this.TrialsCampaignID := 5
+        this.BonusChestIDs := []
+        this.FreeOfferIDs := []
+        this.NoTimerDelay := 28800000 ; in milliseconds = 8 hours.
+        this.NoTimerDelayRNG := 1800000 ; in milliseconds = 30 minutes.
         SHSharedData := new IC_BrivGemFarmRun_ClaimDailyPlatinum_Coms_Class
         guid := ComObjCreate("Scriptlet.TypeLib").Guid
         ObjRegisterActive(SHSharedData, guid)
@@ -76,7 +84,10 @@ class IC_ClaimDailyPlatinum_Servercalls
             ScriptHubComs := ComObjActive(this.LoadObjectFromJSON(A_LineFile . "\..\..\IC_BrivGemFarm_Performance\LastGUID_BrivGemFarmComponent.json"))
         }
         if(IsObject(ScriptHubComs))
-            ScriptHubComs.ResetCDPComponentComs() ; tell script to load coms and set trials campaign ID
+            ScriptHubComs.ResetCDPComponentComs() ; tell script to load coms and set trials campaign ID / Free Offers
+        this.TrialsCampaignID := this.SHSharedData.TrialsCampaignID == "" ? this.TrialsCampaignID : this.SHSharedData.TrialsCampaignID
+        this.FreeOfferIDs := this.SHSharedData.FreeOfferIDs == "" ? this.FreeOfferIDs : g_SF.ComObjectCopy(this.SHSharedData.FreeOfferIDs)
+        this.BonusChestIDs := this.SHSharedData.BonusChestIDs == "" ? this.BonusChestIDs : g_SF.ComObjectCopy(this.SHSharedData.BonusChestIDs)
         ScriptHubComs := ""
         ; The amount of times each type has been claimed:
         this.Claimed := {"Platinum":0,"Trials":0,"FreeOffer":0,"GuideQuests":0,"BonusChests":0,"Celebrations":0}
@@ -129,7 +140,7 @@ class IC_ClaimDailyPlatinum_Servercalls
                     return
                 }
             }
-            this.claimed[CDP_key] += this.ArrSize(this.FreeOfferIDs)
+            this.claimed[CDP_key] += g_SF.ArrSize(this.FreeOfferIDs)
             this.FreeOfferIDs := []
         }
         else if (CDP_key == "GuideQuests")
@@ -138,7 +149,7 @@ class IC_ClaimDailyPlatinum_Servercalls
             response := g_BrivServerCall.ServerCall("claimcollectionquestrewards", params)
             if (IsObject(response) && response.success && response.awarded_items.success)
             {
-                CDP_numGuideQuestsClaimed := this.ArrSize(response.awarded_items.rewards_claimed_quest_ids)
+                CDP_numGuideQuestsClaimed := g_SF.ArrSize(response.awarded_items.rewards_claimed_quest_ids)
                 if (CDP_numGuideQuestsClaimed > 0 )
                 {
                     this.claimed[CDP_key] += CDP_numGuideQuestsClaimed
@@ -159,7 +170,7 @@ class IC_ClaimDailyPlatinum_Servercalls
                     return
                 }
             }
-            this.claimed[CDP_key] += this.ArrSize(this.BonusChestIDs)
+            this.claimed[CDP_key] += g_SF.ArrSize(this.BonusChestIDs)
             this.BonusChestIDs := []
         }
         else if (CDP_key == "Celebrations")
@@ -175,7 +186,7 @@ class IC_ClaimDailyPlatinum_Servercalls
                     return
                 }
             }
-            this.claimed[CDP_key] += this.ArrSize(this.CelebrationCodes)
+            this.claimed[CDP_key] += g_SF.ArrSize(this.CelebrationCodes)
             this.CelebrationCodes := []
         }
     }
@@ -223,7 +234,7 @@ class IC_ClaimDailyPlatinum_Servercalls
                     return [true, 0]
                 }
                 CDP_trialsCampaigns := CDP_trialsData.campaigns
-                CDP_trialsCampaignsSize := this.ArrSize(CDP_trialsCampaigns)
+                CDP_trialsCampaignsSize := g_SF.ArrSize(CDP_trialsCampaigns)
                 if (CDP_trialsCampaigns != "" && CDP_trialsCampaignsSize > 0 && CDP_trialsCampaigns[1].started)
                 {
                     CDP_trialsCampaign := CDP_trialsCampaigns[1]
@@ -274,7 +285,7 @@ class IC_ClaimDailyPlatinum_Servercalls
                         this.FreeOfferIDs.Push(v.offer_id)
                 }
                 this.FreeWeeklyRerolls := (response.offers.reroll_cost == 0 ? response.offers.rerolls_remaining : 0)
-                if (this.ArrSize(this.FreeOfferIDs) > 0)
+                if (g_SF.ArrSize(this.FreeOfferIDs) > 0)
                     return [true, 0]
                 return [false, A_TickCount + (response.offers.time_remaining * 1000) + this.SafetyDelay]
             }
@@ -300,16 +311,18 @@ class IC_ClaimDailyPlatinum_Servercalls
             if (IsObject(response) && response.success)
             {
                 for k,v in response.package_deals
-                    if (v.bonus_status == "0" && this.ArrSize(v.bonus_item) > 0)
+                    if (v.bonus_status == "0" && g_SF.ArrSize(v.bonus_item) > 0)
                         this.BonusChestIDs.Push(v.item_id)
-                if (this.ArrSize(this.BonusChestIDs) > 0)
+                if (g_SF.ArrSize(this.BonusChestIDs) > 0)
                     return [true, 0]
             }
             return [false, A_TickCount + this.CalcNoTimerDelay()]
         }
         else if (CDP_key == "Celebrations")
         {
+            global g_SF
             this.CelebrationCodes := []
+            g_SF.Memory.OpenProcessReader()
             wrlLoc := g_SF.Memory.GetWebRequestLogLocation()
             if (wrlLoc == "")
                 return [false, A_TickCount + this.CalcNoTimerDelay()]
@@ -318,7 +331,7 @@ class IC_ClaimDailyPlatinum_Servercalls
             CDP_nextClaimSeconds := 9999999
             if (InStr(webRequestLog, """dialog"":"))
             {
-                currMatches := g_BrivServerCall.GetAllRegexMatches(webRequestLog, """dialog"": ?""([^""]+)""")
+                currMatches := this.GetAllRegexMatches(webRequestLog, """dialog"": ?""([^""]+)""")
                 for k,v in currMatches
                 {
                     params := "&dialog=" . v . "&ui_type=standard"
@@ -338,7 +351,7 @@ class IC_ClaimDailyPlatinum_Servercalls
                 }
             }
             webRequestLog := ""
-            if (this.ArrSize(this.CelebrationCodes) > 0)
+            if (g_SF.ArrSize(this.CelebrationCodes) > 0)
                 return [true, 0]
             if (CDP_nextClaimSeconds < 9999999)
                 return [false, A_TickCount + (CDP_nextClaimSeconds * 1000) + this.SafetyDelay]
@@ -362,6 +375,8 @@ class IC_ClaimDailyPlatinum_Servercalls
             this.SHSharedData.DailyBoostExpires := this.DailyBoostExpires
             this.SHSharedData.FreeWeeklyRerolls := this.FreeWeeklyRerolls
             this.SHSharedData.TrialsStatus := this.TrialsStatus
+            this.SHSharedData.FreeOfferIDs := this.FreeOfferIDs
+            this.SHSharedData.BonusChestIDs := this.BonusChestIDs
         }
         try
         {
@@ -375,6 +390,33 @@ class IC_ClaimDailyPlatinum_Servercalls
         Critical, Off
         ScriptHubComs := ""
     }
+
+	; ======================
+	; ===== MISC STUFF =====
+	; ======================
+	CalcNoTimerDelay()
+	{
+		return this.NoTimerDelay + this.RandInt(-this.NoTimerDelayRNG, this.NoTimerDelayRNG)
+	}
+
+	RandInt(min,max)
+	{
+		r := min
+		Random,r,min,max
+		return r
+	}
+
+	GetAllRegexMatches(haystack,needle)
+	{
+		matches := []
+		while n := RegExMatch(haystack,"O)" needle,match,n?n+1:1)
+		{
+			index := matches.length()+1
+			loop % match.count()
+				matches.push(match.value(a_index))
+		}
+		return matches
+	}
 }
 SH_UpdateClass.UpdateClassFunctions(g_BrivServerCall, IC_ClaimDailyPlatinum_Servercalls_Overrides)
 SH_UpdateClass.AddClassFunctions(g_BrivServerCall, IC_ClaimDailyPlatinum_Servercalls)

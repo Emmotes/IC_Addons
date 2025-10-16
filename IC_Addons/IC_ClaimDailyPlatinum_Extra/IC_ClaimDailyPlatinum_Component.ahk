@@ -32,8 +32,6 @@ Class IC_ClaimDailyPlatinum_Component
 	; The delay between when the server says a timer resets and when to check (for safety):
 	SafetyDelay := 30000 ; in milliseconds = 30 seconds.
 	; No Timer Delay (for when I can't find a timer in the data)
-	NoTimerDelay := 28800000 ; in milliseconds = 8 hours.
-	NoTimerDelayRNG := 1800000 ; in milliseconds = 30 minutes.
 	; The current cooldown for each type:
 	CurrentCD := {"Platinum":0,"Trials":0,"FreeOffer":0,"GuideQuests":0,"BonusChests":0,"Celebrations":0}
 	; The amount of times each type has been claimed:
@@ -51,6 +49,13 @@ Class IC_ClaimDailyPlatinum_Component
 	StaggeredChecks := {"Platinum":1,"Trials":2,"FreeOffer":3,"GuideQuests":4,"BonusChests":5,"Celebrations":6}
 	SharedData := ""
 	LastServerCallsTime := 0
+	; flags for which calls have been made
+	CallsMade := {}
+	CallsMade.Claimed := {}
+	CallsMade.Claimable := {}
+	CallsMade.TrialsStatus := False
+	FreeOfferIDs := []
+	ComsLock := False ; prevents mainloop from running multiple instances at the same time.
 	
 	MemoryReadCheckInstanceIDs := {"Platinum":"","Trials":"","FreeOffer":"","GuideQuests":"","BonusChests":"","Celebrations":""}
 	InstanceID := ""
@@ -170,7 +175,6 @@ Class IC_ClaimDailyPlatinum_Component
 	; This loop gets called once per MainLoopCD.
 	MainLoop()
 	{
-		this.ComsLock := False
 		if (!IC_ClaimDailyPlatinum_Functions.IsGameClosed())
 		{
 			runCalls := False
@@ -193,12 +197,15 @@ Class IC_ClaimDailyPlatinum_Component
 					this.CallMemoryReadCheckClaimable(k)
 				if (this.CurrentCD[k] <= A_TickCount)
 				{
+					if(k == "Trials")
+						this.CallsMade.TrialsStatus := True
 					; If it's not claimable - check if it can be claimed.
 					if (!this.Claimable[k])
 					{
 						this.UpdateMainStatus("Checking " . this.Names[k] . ".")
 						; servercall check claimable
 						this.CallCheckClaimable(k)
+						this.CallsMade.Claimable[k] := True ; Tested agains k existing, not if tested is True.
 						runCalls := True
 					}
 					; If it now is claimable - claim it.
@@ -206,6 +213,8 @@ Class IC_ClaimDailyPlatinum_Component
 					{
 						this.UpdateMainStatus("Claiming " . this.Names[k] . ".")
 						this.Claim(k)
+						this.CallsMade.Claimed[k] := True
+						this.CallsMade.Claimable.delete(k)
 						this.CurrentCD[k] := A_TickCount + this.SafetyDelay
 						this.Claimable[k] := false
 					}
@@ -315,11 +324,6 @@ Class IC_ClaimDailyPlatinum_Component
 			this.Claimable[k] := false
 		}
 		this.UpdateGUI(true)
-	}
-	
-	CalcNoTimerDelay()
-	{
-		return this.NoTimerDelay + this.RandInt(-this.NoTimerDelayRNG, this.NoTimerDelayRNG)
 	}
 	
 	ConvertCNESimpleTimerToSeconds(simpleTimer)
@@ -495,21 +499,11 @@ Class IC_ClaimDailyPlatinum_Component
 	
 	CeilMillisecondsToNearestMainLoopCDSeconds(CDP_timer)
 	{
+		if (CDP_timer <= A_TickCount)
+			return 0
 		return (Ceil((CDP_timer - A_TickCount) / this.MainLoopCD) * this.MainLoopCD) / 1000
 	}
-	
-	ArrSize(arr)
-	{
-		if (IsObject(arr))
-		{
-			CDP_currArrSize := arr.MaxIndex()
-			if (CDP_currArrSize == "")
-				return 0
-			return CDP_currArrSize
-		}
-		return 0
-	}
-	
+
 	ArrHasValue(arr,val)
 	{
 		for k,v in arr
@@ -517,13 +511,6 @@ Class IC_ClaimDailyPlatinum_Component
 				return true
 		return false
 	}
-
-	RandInt(min,max)
-	{
-		r := min
-		Random,r,min,max
-		return r
-	}	
 }
 
 SH_UpdateClass.AddClassFunctions(g_BrivFarmComsObj, IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class)
