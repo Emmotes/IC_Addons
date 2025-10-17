@@ -59,7 +59,6 @@ Class IC_ClaimDailyPlatinum_Component
 	CallsRunning := False ; flag to indicate that calls are busy running
 	
 	SettingsFileLoc := A_LineFile . "\..\ServerCall_Settings.json"
-	lastGUIDFileLoc := A_LineFile . "\..\LastGUID_ClaimDailyPremium.json"
 	MemoryReadCheckInstanceIDs := {"Platinum":"","Trials":"","FreeOffer":"","GuideQuests":"","BonusChests":"","Celebrations":""}
 	InstanceID := ""
 	
@@ -74,7 +73,6 @@ Class IC_ClaimDailyPlatinum_Component
 	{
 		global g_globalTempSettingsFiles
 		g_globalTempSettingsFiles.Push(this.SettingsFileLoc)
-		g_globalTempSettingsFiles.Push(this.lastGUIDFileLoc)
 		this.LoadSettings()
 		this.ResetComponentComs()
 		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(g_ClaimDailyPlatinum, "CreateTimedFunctions"))

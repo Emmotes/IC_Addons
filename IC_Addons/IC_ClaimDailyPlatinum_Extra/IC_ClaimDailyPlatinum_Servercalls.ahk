@@ -31,11 +31,12 @@ class IC_ClaimDailyPlatinum_Servercalls_Overrides
         this.ReportClaims()
     }
 
-    RemoveOverride()
+    RemoveOverrides()
     {
         filename := this.SettingsFileLoc
         if(FileExist(filename))
             FileDelete, %filename%
+        base.RemoveOverrides()
     }
 }
 
@@ -69,6 +70,9 @@ class IC_ClaimDailyPlatinum_Servercalls
     {
         if (A_Args[1] != "") ; all claim calls are done via file, not args.
             return
+            
+	    this.lastGUIDFileLoc := A_LineFile . "\..\LastGUID_ClaimDailyPremium.json"
+        g_globalTempSettingsFiles.Push(this.lastGUIDFileLoc) ; removal not implemented yet
         this.FreeOfferIDs := []
 	    this.CelebrationCodes := []
 	    this.TiamatHP := [40,75,130,200,290,430,610,860,1200,1600]
@@ -87,7 +91,7 @@ class IC_ClaimDailyPlatinum_Servercalls
         guid := ComObjCreate("Scriptlet.TypeLib").Guid
         ObjRegisterActive(SHSharedData, guid)
         this.SHSharedData := SHSharedData
-        this.WriteObjectToJSON(A_LineFile . "\..\LastGUID_ClaimDailyPremium.json", guid)
+        this.WriteObjectToJSON(this.lastGUIDFileLoc, guid)
         try {
             ScriptHubComs := ComObjActive(this.LoadObjectFromJSON(A_LineFile . "\..\..\IC_BrivGemFarm_Performance\LastGUID_BrivGemFarmComponent.json"))
         }
