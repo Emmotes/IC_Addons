@@ -30,13 +30,20 @@ Class IC_HybridTurboStacking_PreferredEnemies_Component
 	{
 		Global
 		Gui, ICScriptHub:Tab, BrivGF HybridTurboStacking
+		
+		GuiControlGet, pos, ICScriptHub:Pos, BGFHTS_MelfGroup
+		posH += 80
+		GuiControl, ICScriptHub:Move, BGFHTS_MelfGroup, h%posH%
+		
 		GuiControlGet, pos, ICScriptHub:Pos, BGFHTS_BrivStack_Mod_50_41
 		
-		posY += 40
+		posY += 25
 		Gui, ICScriptHub:Font, w700
 		Gui, ICScriptHub:Add, Text, x%posX% y%posY% w400, Quick Select Preferred Enemy Types:
 		Gui, ICScriptHub:Font, w400
 		
+		posY += 20
+		Gui, ICScriptHub:Add, CheckBox, x%posX% y%posY% vHTSPE_AvoidBossIssues, Avoid issues with routes that land on z5 bosses?
 		posY += 25
 		Gui, ICScriptHub:Add, DropDownList, x%posX% y%posY% AltSubmit w175 vHTSPE_PreferredEnemies
 		choices := "All||TT: Ranged-only|TT: Mixed-only|TT: Melee-only|TT: Ranged+Mixed|TT: Mixed+Melee|TT: 14/9j z21+ Ranged+Mixed"
@@ -53,16 +60,17 @@ Class IC_HybridTurboStacking_PreferredEnemies_Component
 
 HTSPE_SetAndSave()
 {
+	GuiControlGet, htspe_bossIssues, ICScriptHub:, HTSPE_AvoidBossIssues
 	GuiControlGet, htspe_prefChoice, ICScriptHub:, HTSPE_PreferredEnemies
 	bitfield := 0
 	switch htspe_prefChoice
 	{
-		case 1: bitfield := 544790277504495
+		case 1: bitfield := htspe_bossIssues ? 544790277488655 : 544790277504495
 		case 2: bitfield := 4396679168
-		case 3: bitfield := 387142985497612
-		case 4: bitfield := 157642895327715
-		case 5: bitfield := 387147382176780
-		case 6: bitfield := 544785880825327
+		case 3: bitfield := htspe_bossIssues ? 387142985482252 : 387142985497612
+		case 4: bitfield := htspe_bossIssues ? 157642895327235 : 157642895327715
+		case 5: bitfield := htspe_bossIssues ? 387147382161420 : 387147382176780
+		case 6: bitfield := htspe_bossIssues ? 544785880809487 : 544785880825327
 		case 7: bitfield := 387147382128640
 	}
 	if (bitfield > 0)
