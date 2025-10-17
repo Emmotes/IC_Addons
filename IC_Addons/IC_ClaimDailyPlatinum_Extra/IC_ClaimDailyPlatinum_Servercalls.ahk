@@ -24,10 +24,18 @@ class IC_ClaimDailyPlatinum_Servercalls_Overrides
 
     LaunchCalls()
     {
+        this.SettingsFileLoc := A_LineFile . "\..\ServerCall_Settings.json"
         base.LaunchCalls()
         if (A_Args[1] != "") ; all claim calls are done via file, not args.
             return
         this.ReportClaims()
+    }
+
+    RemoveOverride()
+    {
+        filename := this.SettingsFileLoc
+        if(FileExist(filename))
+            FileDelete, %filename%
     }
 }
 

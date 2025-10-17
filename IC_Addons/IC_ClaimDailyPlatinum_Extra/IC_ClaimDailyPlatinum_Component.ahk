@@ -4,7 +4,6 @@
 
 
 global g_ClaimDailyPlatinum := new IC_ClaimDailyPlatinum_Component
-g_globalTempSettingsFiles.Push(A_LineFile . "\..\ServerCall_Settings.json")
 
 if(IsObject(IC_BrivGemFarm_Component))
 {
@@ -58,6 +57,7 @@ Class IC_ClaimDailyPlatinum_Component
 	FreeOfferIDs := []
 	ComsLock := False ; prevents mainloop from running multiple instances at the same time.
 	
+	SettingsFileLoc := A_LineFile . "\..\ServerCall_Settings.json"
 	MemoryReadCheckInstanceIDs := {"Platinum":"","Trials":"","FreeOffer":"","GuideQuests":"","BonusChests":"","Celebrations":""}
 	InstanceID := ""
 	
@@ -70,6 +70,8 @@ Class IC_ClaimDailyPlatinum_Component
 
 	Init()
 	{
+		global g_globalTempSettingsFiles
+		g_globalTempSettingsFiles.Push(this.SettingsFileLoc)
 		this.LoadSettings()
 		this.ResetComponentComs()
 		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(g_ClaimDailyPlatinum, "CreateTimedFunctions"))
@@ -441,7 +443,7 @@ Class IC_ClaimDailyPlatinum_Component
 			jsonObj["Calls"] := []
         jsonObj["Calls"].Push({"Claim" : [CDP_key]})
 		jsonObj["InstanceID"] := this.InstanceID
-        g_SF.WriteObjectToJSON(A_LineFile . "\..\ServerCall_Settings.json" , jsonObj)
+        g_SF.WriteObjectToJSON(this.SettingsFileLoc, jsonObj)
         this.MemoryReadCheckInstanceIDs[CDP_key] := this.InstanceID
 		this.ClaimStatusText .= "Claiming " . this.Names[CDP_key] . ".`n"
 	}
@@ -453,12 +455,12 @@ Class IC_ClaimDailyPlatinum_Component
 			jsonObj["Calls"] := []
         jsonObj["Calls"].Push({"CallCheckClaimable" : [CDP_key]})
 		jsonObj["InstanceID"] := this.InstanceID
-        g_SF.WriteObjectToJSON(A_LineFile . "\..\ServerCall_Settings.json" , jsonObj)
+        g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
 	}
 
 	GetSettingsJsonObj()
 	{
-        jsonObj := g_SF.LoadObjectFromJSON(A_LineFile . "\..\ServerCall_Settings.json") ; pull local
+        jsonObj := g_SF.LoadObjectFromJSON(this.SettingsFileLoc) ; pull local
 		if (jsonObj == "" OR jsonObj == """""")
 		{
 			jsonObj := g_SF.LoadObjectFromJSON(A_LineFile . "\..\..\IC_BrivGemFarm_Performance\ServerCall_Settings.json") ; pull base
