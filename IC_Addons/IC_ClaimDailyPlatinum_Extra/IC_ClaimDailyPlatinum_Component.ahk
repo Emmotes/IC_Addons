@@ -28,7 +28,6 @@ Class IC_ClaimDailyPlatinum_Component
 	MainLoopCD := 60000 ; in milliseconds = 1 minute.
 	; The starting cooldown for each type:
 	StartingCD := 60000 ; in milliseconds = 1 minute.
-	UpdateGUIDelay := -20000 ; delay between a server call and a new GUI update. Give server call time to update data.
 	; The delay between when the server says a timer resets and when to check (for safety):
 	SafetyDelay := 30000 ; in milliseconds = 30 seconds.
 	; No Timer Delay (for when I can't find a timer in the data)
@@ -56,6 +55,8 @@ Class IC_ClaimDailyPlatinum_Component
 	CallsMade.TrialsStatus := False
 	FreeOfferIDs := []
 	ComsLock := False ; prevents mainloop from running multiple instances at the same time.
+	UpdateGUIReady := False ; Flag to allow GUI update after server calls
+	CallsRunning := False ; flag to indicate that calls are busy running
 	
 	SettingsFileLoc := A_LineFile . "\..\ServerCall_Settings.json"
 	MemoryReadCheckInstanceIDs := {"Platinum":"","Trials":"","FreeOffer":"","GuideQuests":"","BonusChests":"","Celebrations":""}
@@ -178,10 +179,15 @@ Class IC_ClaimDailyPlatinum_Component
 	; This loop gets called once per MainLoopCD.
 	MainLoop()
 	{
+		if(this.CallsRunning)
+			return
 		if (!IC_ClaimDailyPlatinum_Functions.IsGameClosed())
 		{
 			runCalls := False
-			this.InstanceID := g_SF.Memory.ReadInstanceID()
+			instanceID := g_SF.Memory.ReadInstanceID()
+			this.InstanceID := instanceID != "" ? instanceID : this.InstanceID ; Do not accidentally wipe instance id
+			if(this.InstanceID == "") ; Don't make any calls if there is no InstanceID
+				return
 			if(this.ComsLock OR (A_TickCount - this.LastServerCallsTime) <= this.MainLoopCD)
 				return
 			if(!IsObject(g_BrivFarmComsObj)) ; check for failed com activation only, not creation
@@ -232,9 +238,6 @@ Class IC_ClaimDailyPlatinum_Component
 			if(runCalls)
 				this.RunServerCalls()
 		}
-		this.UpdateGUI()
-		delayedUpdate := ObjBindMethod(this, "UpdateGUI") ; try to wait until after server call data has updated.
-		SetTimer, %delayedUpdate%, %UpdateGUIDelay%
 	}
 	
 	MemoryReadSimpleStuff(CDP_key)
@@ -358,6 +361,12 @@ Class IC_ClaimDailyPlatinum_Component
 	
 	UpdateMainStatus(status := "")
 	{
+		if(this.UpdateGUIReady)
+		{
+			this.UpdateGUI()
+			this.CallsRunning := False
+			this.UpdateGUIReady := False
+		}
 		if (status == "")
 		{
 			CDP_TimerIsUp := A_TickCount - this.DisplayStatusTimeout >= this.MessageStickyTimer
@@ -442,7 +451,6 @@ Class IC_ClaimDailyPlatinum_Component
 		if (!IsObject(jsonObj["Calls"]))
 			jsonObj["Calls"] := []
         jsonObj["Calls"].Push({"Claim" : [CDP_key]})
-		jsonObj["InstanceID"] := this.InstanceID
         g_SF.WriteObjectToJSON(this.SettingsFileLoc, jsonObj)
         this.MemoryReadCheckInstanceIDs[CDP_key] := this.InstanceID
 		this.ClaimStatusText .= "Claiming " . this.Names[CDP_key] . ".`n"
@@ -454,7 +462,6 @@ Class IC_ClaimDailyPlatinum_Component
 		if (!IsObject(jsonObj["Calls"]))
 			jsonObj["Calls"] := []
         jsonObj["Calls"].Push({"CallCheckClaimable" : [CDP_key]})
-		jsonObj["InstanceID"] := this.InstanceID
         g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
 	}
 
@@ -476,9 +483,11 @@ Class IC_ClaimDailyPlatinum_Component
 			serverSettingsLoc := { "loc" : A_LineFile . "\..\..\IC_ClaimDailyPlatinum_Extra\ServerCall_Settings.json"}
 			serverOverrideSettingsLoc := A_LineFile . "\..\..\IC_BrivGemFarm_Performance\ServerCallLocationOverride_Settings.json"
         	g_SF.WriteObjectToJSON(serverOverrideSettingsLoc, serverSettingsLoc)
+			this.UpdateSettingsInstanceID()
         	scriptLocation := A_LineFile . "\..\..\IC_BrivGemFarm_Performance\IC_BrivGemFarm_ServerCalls.ahk"
 			if(FileExist(serverOverrideSettingsLoc) AND FileExist(scriptLocation) AND FileExist(serverOverrideSettingsLoc))
         		Run, %A_AhkPath% "%scriptLocation%"
+			this.CallsRunning := True
 			this.LastServerCallsTime := A_TickCount
         	this.UpdateMainStatus(this.ClaimStatusText)
 		}
@@ -486,6 +495,15 @@ Class IC_ClaimDailyPlatinum_Component
 		{
 			this.LastServerCallsTime := A_TickCount - MainLoopCD ; servercall run failed, allow retries
 		}
+	 }
+
+	 UpdateSettingsInstanceID()
+	 {
+        jsonObj := g_SF.LoadObjectFromJSON(this.SettingsFileLoc) ; pull local
+		instanceID := g_SF.Memory.ReadInstanceID()
+		if(jsonObj != "")
+			jsonObj.InstanceID := this.InstanceID := instanceID != "" ? instanceID : this.InstanceID
+        g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
 	 }
 	
 	; ======================

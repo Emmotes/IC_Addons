@@ -56,8 +56,8 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class ; Updates IC_BrivGem
             g_ClaimDailyPlatinum.CallsMade.TrialStatus := False
         }
         g_ClaimDailyPlatinum.HasComsUpdated := A_TickCount - this.MainLoopCD
+        g_ClaimDailyPlatinum.UpdateGUIReady := True
         Critical, Off
-        g_ClaimDailyPlatinum.UpdateGUI()
     }
 
     ; Filters the response down to only call returns that were requested e.g. if e was requested {a:b, c:d, e:f} -> {e:f}
