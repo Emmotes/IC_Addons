@@ -536,5 +536,7 @@ Class IC_ClaimDailyPlatinum_Component
 	}
 }
 
+
+g_globalTempSettingsFiles.Push(A_LineFile . "\..\LastGUID_ClaimDailyPremium.json") ; to be removed on script hub exit.
 SH_UpdateClass.AddClassFunctions(g_BrivFarmComsObj, IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class)
 IC_BrivGemFarm_Component.StartComs() ; restart coms with overridden startcoms function.
