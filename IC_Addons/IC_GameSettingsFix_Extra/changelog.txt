@@ -1,3 +1,5 @@
+19 October 2025 - v0.2.6
+    - Fixes/changes to work with BrivGemFarm 4.4.3
 17 September 2025 - v0.2.5
  - Changed how the script overrides OpenIC. Shouldn't impact anybody except mod creators.
 23    August 2025 - v0.2.4

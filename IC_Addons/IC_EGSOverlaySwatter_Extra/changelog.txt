@@ -1,3 +1,7 @@
+19 October 2025 - v0.1.1
+    - Fixes/changes to work with BrivGemFarm 4.4.3
+28 September 2025 - v0.1.0
+ - Refactoring the entire addon so it works better.
  5    August 2025 - v0.0.5
  - Properly sharing settings with the BrivGemFarm.
 16 September 2024 - v0.2.4

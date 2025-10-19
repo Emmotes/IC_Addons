@@ -1,5 +1,7 @@
 #include %A_LineFile%\..\IC_ClaimDailyPlatinum_Functions.ahk
 #include %A_LineFile%\..\IC_ClaimDailyPlatinum_GUI.ahk
+#include %A_LineFile%\..\IC_ClaimDailyPlatinum_Overrides.ahk
+
 
 global g_ClaimDailyPlatinum := new IC_ClaimDailyPlatinum_Component
 
@@ -19,7 +21,6 @@ else
 
 Class IC_ClaimDailyPlatinum_Component
 {
-	
 	TimerFunctions := {}
 	DefaultSettings := {"Platinum":true,"Trials":true,"FreeOffer":true,"GuideQuests":true,"BonusChests":true,"Celebrations":true}
 	Settings := {}
@@ -30,8 +31,6 @@ Class IC_ClaimDailyPlatinum_Component
 	; The delay between when the server says a timer resets and when to check (for safety):
 	SafetyDelay := 30000 ; in milliseconds = 30 seconds.
 	; No Timer Delay (for when I can't find a timer in the data)
-	NoTimerDelay := 28800000 ; in milliseconds = 8 hours.
-	NoTimerDelayRNG := 1800000 ; in milliseconds = 30 minutes.
 	; The current cooldown for each type:
 	CurrentCD := {"Platinum":0,"Trials":0,"FreeOffer":0,"GuideQuests":0,"BonusChests":0,"Celebrations":0}
 	; The amount of times each type has been claimed:
@@ -40,18 +39,26 @@ Class IC_ClaimDailyPlatinum_Component
 	Claimable := {"Platinum":false,"Trials":false,"FreeOffer":false,"GuideQuests":false,"BonusChests":false,"Celebrations":false}
 	; The names of each type
 	Names := {"Platinum":"Daily Platinum","Trials":"Trials Rewards","FreeOffer":"Weekly Offers","GuideQuests":"Guide Quests","BonusChests":"Premium Bonus Chests","Celebrations":"Celebration Rewards"}
-	FreeOfferIDs := []
-	BonusChestIDs := []
-	CelebrationCodes := []
 	DailyBoostExpires := -1
-	TrialsCampaignID := 0
 	TrialsPresetStatuses := [["Trials Status","Tiamat Dies in","Trial Joinable in"],["Unknown","Tiamat is Dead","Inactive","Sitting in Lobby",""]]
 	TrialsStatus := [1,5]
-	TiamatHP := [40,75,130,200,290,430,610,860,1200,1600]
 	FreeWeeklyRerolls := -1
 	UnclaimedGuideQuests := -1
+	ClaimStatusText := ""
 	StaggeredChecks := {"Platinum":1,"Trials":2,"FreeOffer":3,"GuideQuests":4,"BonusChests":5,"Celebrations":6}
+	SharedData := ""
+	LastServerCallsTime := 0
+	; flags for which calls have been made
+	CallsMade := {}
+	CallsMade.Claimed := {}
+	CallsMade.Claimable := {}
+	CallsMade.TrialsStatus := False
+	FreeOfferIDs := []
+	ComsLock := False ; prevents mainloop from running multiple instances at the same time.
+	UpdateGUIReady := False ; Flag to allow GUI update after server calls
+	CallsRunning := False ; flag to indicate that calls are busy running
 	
+	SettingsFileLoc := A_LineFile . "\..\ServerCall_Settings.json"
 	MemoryReadCheckInstanceIDs := {"Platinum":"","Trials":"","FreeOffer":"","GuideQuests":"","BonusChests":"","Celebrations":""}
 	InstanceID := ""
 	
@@ -64,7 +71,10 @@ Class IC_ClaimDailyPlatinum_Component
 
 	Init()
 	{
+		global g_globalTempSettingsFiles
+		g_globalTempSettingsFiles.Push(this.SettingsFileLoc)
 		this.LoadSettings()
+		this.ResetComponentComs()
 		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(g_ClaimDailyPlatinum, "CreateTimedFunctions"))
 		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(g_ClaimDailyPlatinum, "StartTimedFunctions"))
 		g_BrivFarmAddonStopFunctions.Push(ObjBindMethod(g_ClaimDailyPlatinum, "StopTimedFunctions"))
@@ -169,10 +179,20 @@ Class IC_ClaimDailyPlatinum_Component
 	; This loop gets called once per MainLoopCD.
 	MainLoop()
 	{
+		if(this.CallsRunning)
+			return
 		if (!IC_ClaimDailyPlatinum_Functions.IsGameClosed())
 		{
-			this.InstanceID := g_SF.Memory.ReadInstanceID()
-			
+			runCalls := False
+			instanceID := g_SF.Memory.ReadInstanceID()
+			this.InstanceID := instanceID != "" ? instanceID : this.InstanceID ; Do not accidentally wipe instance id
+			if(this.InstanceID == "") ; Don't make any calls if there is no InstanceID
+				return
+			if(this.ComsLock OR (A_TickCount - this.LastServerCallsTime) <= this.MainLoopCD)
+				return
+			if(!IsObject(g_BrivFarmComsObj)) ; check for failed com activation only, not creation
+				IC_BrivGemFarm_Component.StartComs()
+			this.ComsLock := True
 			for k,v in this.CurrentCD
 			{
 				if (!this.Settings[k])
@@ -186,25 +206,38 @@ Class IC_ClaimDailyPlatinum_Component
 					this.CallMemoryReadCheckClaimable(k)
 				if (this.CurrentCD[k] <= A_TickCount)
 				{
+					if(k == "Trials")
+						this.CallsMade.TrialsStatus := True
 					; If it's not claimable - check if it can be claimed.
 					if (!this.Claimable[k])
 					{
 						this.UpdateMainStatus("Checking " . this.Names[k] . ".")
+						; servercall check claimable
 						this.CallCheckClaimable(k)
-						this.UpdateMainStatus("Checked " . this.Names[k] . ".")
+						this.CallsMade.Claimable[k] := True ; Tested agains k existing, not if tested is True.
+						runCalls := True
 					}
 					; If it now is claimable - claim it.
 					if (this.Claimable[k])
 					{
 						this.UpdateMainStatus("Claiming " . this.Names[k] . ".")
 						this.Claim(k)
+						this.CallsMade.Claimed[k] := True
+						this.CallsMade.Claimable.delete(k)
 						this.CurrentCD[k] := A_TickCount + this.SafetyDelay
 						this.Claimable[k] := false
 					}
+
 				}
 			}
+			this.ComsLock := False
+			; test for claimable items
+			for k,v in this.Claimable
+				if (v == True)
+					runCalls := True, Break
+			if(runCalls)
+				this.RunServerCalls()
 		}
-		this.UpdateGUI()
 	}
 	
 	MemoryReadSimpleStuff(CDP_key)
@@ -214,179 +247,10 @@ Class IC_ClaimDailyPlatinum_Component
 			; Update Free Reroll count.
 			rerollCost := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.ShopHandler.ALaCarteHandler_k__BackingField.RerollCost_k__BackingField.Read()
 			rerollsRemaining := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.ShopHandler.ALaCarteHandler_k__BackingField.RerollsRemaining_k__BackingField.Read()
-			this.FreeWeeklyRerolls := (rerollCost == 0 && rerollsRemaining > 0) ? rerollsRemaining : 0
+				this.FreeWeeklyRerolls := (rerollCost == 0 && rerollsRemaining > 0) ? rerollsRemaining : 0
 		}
 	}
-	
-	CallCheckClaimable(CDP_key)
-	{
-		CDP_CheckedClaimable := this.CheckClaimable(CDP_key) ; Check if it is claimable (and when if not)
-		this.Claimable[CDP_key] := CDP_CheckedClaimable[1] ; Claimable
-		this.CurrentCD[CDP_key] := CDP_CheckedClaimable[2] ; Claimable Cooldown
-	}
-	
-	CheckClaimable(CDP_key)
-	{
-        g_SF.ResetServerCall()
-		if (CDP_key == "Platinum")
-		{
-			response := IC_ClaimDailyPlatinum_Functions.ServerCall("getdailyloginrewards", "")
-			if (IsObject(response) && response.success)
-			{
-				CDP_num := 1 << (response.daily_login_details.today_index)
-				if (response.daily_login_details.premium_active && response.daily_login_details.premium_expire_seconds > 0)
-					this.DailyBoostExpires := A_TickCount + (response.daily_login_details.premium_expire_seconds * 1000)
-				else
-					this.DailyBoostExpires := 0
-				if ((response.daily_login_details.rewards_claimed & CDP_num) > 0)
-				{
-					CDP_nextClaimSeconds := response.daily_login_details.next_claim_seconds
-					if (CDP_nextClaimSeconds == 0)
-						CDP_nextClaimSeconds := Mod(response.daily_login_details.next_reset_seconds, 86400)
-					return [false, A_TickCount + (CDP_nextClaimSeconds * 1000) + this.SafetyDelay]
-				}
-				return [true, 0]
-			}
-		}
-		else if (CDP_key == "Trials")
-		{
-			this.TrialsCampaignID := 0
-			response := IC_ClaimDailyPlatinum_Functions.ServerCall("trialsrefreshdata", "")
-			if (IsObject(response) && response.success)
-			{
-				CDP_trialsData := response.trials_data
-				if (CDP_trialsData.pending_unclaimed_campaign != "")
-				{
-					this.TrialsCampaignID := CDP_trialsData.pending_unclaimed_campaign
-					this.TrialsStatus := [1,2]
-					return [true, 0]
-				}
-				CDP_trialsCampaigns := CDP_trialsData.campaigns
-				CDP_trialsCampaignsSize := this.ArrSize(CDP_trialsCampaigns)
-				if (CDP_trialsCampaigns != "" && CDP_trialsCampaignsSize > 0 && CDP_trialsCampaigns[1].started)
-				{
-					CDP_trialsCampaign := CDP_trialsCampaigns[1]
-					CDP_currDPS := 0
-					CDP_totalDamage := 0
-					for k,v in CDP_trialsCampaign.players
-					{
-						CDP_currDPS += v.dps
-						CDP_totalDamage += v.total_damage
-					}
-					CDP_tiamatHP := (this.TiamatHP[CDP_trialsCampaign.difficulty_id] * 10000000) - CDP_totalDamage
-					CDP_timeTilTiamatDies := ((CDP_tiamatHP == "" || CDP_currDPS == "" || CDP_currDPS <= 0) ? 99999999 : (CDP_tiamatHP / CDP_currDPS))
-					CDP_trialEndsIn := CDP_trialsCampaign.ends_in
-					CDP_timeToCheck := Min(CDP_timeTilTiamatDies,CDP_trialEndsIn) * 500
-					CDP_timeToCheck := Min(this.CalcNoTimerDelay(),CDP_timeToCheck)
-					CDP_timeToCheck := Max(this.MainLoopCD,CDP_timeToCheck)
-					this.TrialsStatus := [2,A_TickCount + CDP_timeTilTiamatDies * 1000]
-					return [false, A_TickCount + CDP_timeToCheck]
-				}
-				if (CDP_trialsCampaigns != "" && CDP_trialsCampaignsSize > 0 && !CDP_trialsCampaigns[1].started)
-				{
-					this.TrialsStatus := [1,4]
-					return [false, A_TickCount + this.CalcNoTimerDelay()]
-				}
-				if (CDP_trialsData.seconds_until_can_join_campaign != "")
-				{
-					CDP_timeTilNextTrial := A_TickCount + CDP_trialsData.seconds_until_can_join_campaign * 1000
-					this.TrialsStatus := [3,CDP_timeTilNextTrial]
-					return [false, A_TickCount + this.CalcNoTimerDelay()]
-				}
-			}
-			this.TrialsStatus := [1,3]
-			return [false, A_TickCount + this.CalcNoTimerDelay()]
-		}
-		else if (CDP_key == "FreeOffer")
-		{
-			this.FreeOfferIDs := []
-			this.FreeWeeklyRerolls := -1
-			IC_ClaimDailyPlatinum_Functions.ServerCall("revealalacarteoffers", "")
-			response := IC_ClaimDailyPlatinum_Functions.ServerCall("getalacarteoffers", "")
-			if (IsObject(response) && response.success)
-			{
-				for k,v in response.offers.offers
-				{
-					if (v.type != "free" || v.cost > 0)
-						continue
-					if (!v.purchased)
-						this.FreeOfferIDs.Push(v.offer_id)
-				}
-				this.FreeWeeklyRerolls := (response.offers.reroll_cost == 0 ? response.offers.rerolls_remaining : 0)
-				if (this.ArrSize(this.FreeOfferIDs) > 0)
-					return [true, 0]
-				return [false, A_TickCount + (response.offers.time_remaining * 1000) + this.SafetyDelay]
-			}
-		}
-		else if (CDP_key == "GuideQuests")
-		{
-			response := IC_ClaimDailyPlatinum_Functions.ServerCall("getcompletiondata", "")
-			if (IsObject(response) && response.success)
-			{
-				for k,v in response.data.guidequest
-				{
-					if (v.complete == 1 && v.rewards_claimed == 0)
-						return [true, 0]
-				}
-			}
-			return [false, A_TickCount + this.CalcNoTimerDelay()]
-		}
-		else if (CDP_key == "BonusChests")
-		{
-			this.BonusChestIDs := []
-			params := "&return_all_items_live=1&return_all_items_ever=0&show_hard_currency=1&prioritize_item_category=recommend"
-			response := IC_ClaimDailyPlatinum_Functions.ServerCall("getshop", params)
-			if (IsObject(response) && response.success)
-			{
-				for k,v in response.package_deals
-					if (v.bonus_status == "0" && this.ArrSize(v.bonus_item) > 0)
-						this.BonusChestIDs.Push(v.item_id)
-				if (this.ArrSize(this.BonusChestIDs) > 0)
-					return [true, 0]
-			}
-			return [false, A_TickCount + this.CalcNoTimerDelay()]
-		}
-		else if (CDP_key == "Celebrations")
-		{
-			this.CelebrationCodes := []
-			wrlLoc := g_SF.Memory.GetWebRequestLogLocation()
-			if (wrlLoc == "")
-				return [false, A_TickCount + this.CalcNoTimerDelay()]
-			webRequestLog := ""
-			FileRead, webRequestLog, %wrlLoc%
-			CDP_nextClaimSeconds := 9999999
-			if (InStr(webRequestLog, """dialog"":"))
-			{
-				currMatches := IC_ClaimDailyPlatinum_Functions.GetAllRegexMatches(webRequestLog, """dialog"": ?""([^""]+)""")
-				for k,v in currMatches
-				{
-					params := "&dialog=" . v . "&ui_type=standard"
-					response := IC_ClaimDailyPlatinum_Functions.ServerCall("getdynamicdialog", params)
-					if (IsObject(response) && response.success)
-					{
-						for l,b in response.dialog_data.elements
-						{
-							if (b.timer != "" && b.timer < CDP_nextClaimSeconds)
-								CDP_nextClaimSeconds := b.timer
-							if (b.type == "button" && InStr(b.text, "claim"))
-								for j,c in b.actions
-									if (c.action == "redeem_code")
-										this.CelebrationCodes.Push(c.params.code)
-						}
-					}
-				}
-			}
-			webRequestLog := ""
-			if (this.ArrSize(this.CelebrationCodes) > 0)
-				return [true, 0]
-			if (CDP_nextClaimSeconds < 9999999)
-				return [false, A_TickCount + (CDP_nextClaimSeconds * 1000) + this.SafetyDelay]
-			else
-				return [false, A_TickCount + this.CalcNoTimerDelay()]
-		}
-		return [false, A_TickCount + this.StartingCD]
-	}
-	
+
 	CallMemoryReadCheckClaimable(CDP_key)
 	{
 		CDP_CheckedClaimable := this.MemoryReadCheckClaimable(CDP_key) ; Check if it is claimable by memory reading.
@@ -406,7 +270,7 @@ Class IC_ClaimDailyPlatinum_Component
 			if (dayIndex != "" && todayFreeClaimed != "" && todayBoostClaimed != "")
 			{
 				claimNum := 1 << dayIndex
-				if ((todayFreeClaimed & CDP_num) == 0 || (this.DailyBoostExpires > 0 && (todayBoostClaimed & CDP_num) == 0))
+				if ((todayFreeClaimed & CDP_num) == 0 || (this.DailyBoostExpires > 0) && (todayBoostClaimed & CDP_num) == 0)
 					return [true, 0]
 			}
 		}
@@ -427,103 +291,6 @@ Class IC_ClaimDailyPlatinum_Component
 				return [true, 0]
 		}
 		return ""
-	}
-	
-	Claim(CDP_key)
-	{
-        g_SF.ResetServerCall()
-		if (CDP_key == "Platinum")
-		{
-			params := "&is_boost=0"
-			response := IC_ClaimDailyPlatinum_Functions.ServerCall("claimdailyloginreward", params)
-			if (IsObject(response) && response.success)
-			{
-				if (response.daily_login_details.premium_active)
-				{
-					params := "&is_boost=1"
-					response := IC_ClaimDailyPlatinum_Functions.ServerCall("claimdailyloginreward", params)
-				}
-				this.Claimed[CDP_key] += 1
-			}
-		}
-		else if (CDP_key == "Trials")
-		{
-			params := "&campaign_id=" . (this.TrialsCampaignID)
-			response := IC_ClaimDailyPlatinum_Functions.ServerCall("trialsclaimrewards", params)
-			this.TrialsCampaignID := 0
-			if (!IsObject(response) || !response.success)
-			{
-				; server call failed
-				this.TrialsStatus := [1,1]
-				return
-			}
-			this.Claimed[CDP_key] += 1
-			this.TrialsStatus := [1,3]
-		}
-		else if (CDP_key == "FreeOffer")
-		{
-			for k,v in this.FreeOfferIDs
-			{
-				params := "&offer_id=" . v
-				response := IC_ClaimDailyPlatinum_Functions.ServerCall("PurchaseALaCarteOffer", params)
-				if (!IsObject(response) || !response.success)
-				{
-					; server call failed
-					this.FreeOfferIDs := []
-					return
-				}
-			}
-			this.Claimed[CDP_key] += this.ArrSize(this.FreeOfferIDs)
-			this.FreeOfferIDs := []
-		}
-		else if (CDP_key == "GuideQuests")
-		{
-			params := "&collection_quest_id=-1"
-			response := IC_ClaimDailyPlatinum_Functions.ServerCall("claimcollectionquestrewards", params)
-			if (IsObject(response) && response.success && response.awarded_items.success)
-			{
-				CDP_numGuideQuestsClaimed := this.ArrSize(response.awarded_items.rewards_claimed_quest_ids)
-				if (CDP_numGuideQuestsClaimed > 0)
-				{
-					this.Claimed[CDP_key] += CDP_numGuideQuestsClaimed
-					this.UnclaimedGuideQuests := 0
-				}
-			}
-		}
-		else if (CDP_key == "BonusChests")
-		{
-			for k,v in this.BonusChestIDs
-			{
-				params := "&premium_item_id=" . v
-				response := IC_ClaimDailyPlatinum_Functions.ServerCall("claimsalebonus", params)
-				if (!IsObject(response) || !response.success)
-				{
-					; server call failed
-					this.BonusChestIDs := []
-					return
-				}
-			}
-			this.Claimed[CDP_key] += this.ArrSize(this.BonusChestIDs)
-			this.BonusChestIDs := []
-		}
-		else if (CDP_key == "Celebrations")
-		{
-			for k,v in this.CelebrationCodes
-			{
-				params := "&code=" . v
-				response := IC_ClaimDailyPlatinum_Functions.ServerCall("redeemcoupon", params)
-				if (!IsObject(response) || !response.success)
-				{
-					; server call failed
-					this.CelebrationCodes := []
-					return
-				}
-			}
-			this.Claimed[CDP_key] += this.ArrSize(this.CelebrationCodes)
-			this.CelebrationCodes := []
-		}
-		this.MemoryReadCheckInstanceIDs[CDP_key] := this.InstanceID
-		this.UpdateMainStatus("Claimed " . this.Names[CDP_key] . ".")
 	}
 	
 	; =======================
@@ -567,11 +334,6 @@ Class IC_ClaimDailyPlatinum_Component
 		this.UpdateGUI(true)
 	}
 	
-	CalcNoTimerDelay()
-	{
-		return this.NoTimerDelay + this.RandInt(-this.NoTimerDelayRNG, this.NoTimerDelayRNG)
-	}
-	
 	ConvertCNESimpleTimerToSeconds(simpleTimer)
 	{
 		secondsExpire = 1970
@@ -599,6 +361,12 @@ Class IC_ClaimDailyPlatinum_Component
 	
 	UpdateMainStatus(status := "")
 	{
+		if(this.UpdateGUIReady)
+		{
+			this.UpdateGUI()
+			this.CallsRunning := False
+			this.UpdateGUIReady := False
+		}
 		if (status == "")
 		{
 			CDP_TimerIsUp := A_TickCount - this.DisplayStatusTimeout >= this.MessageStickyTimer
@@ -643,12 +411,12 @@ Class IC_ClaimDailyPlatinum_Component
 		GuiControl, ICScriptHub:, CDP_BonusChestsCount, % this.ProduceGUIClaimedMessage("BonusChests")
 		GuiControl, ICScriptHub:, CDP_CelebrationRewardsCount, % this.ProduceGUIClaimedMessage("Celebrations")
 		
-		GuiControl, ICScriptHub:, CDP_DailyBoostHeader, % "Daily Boost" . (this.DailyBoostExpires > 0 ? " Expires" : "") . ":"
-		GuiControl, ICScriptHub:, CDP_DailyBoostExpires, % (this.DailyBoostExpires > 0 ? this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.DailyBoostExpires)) : (this.DailyBoostExpires == 0 ? "Inactive" : ""))
+		GuiControl, ICScriptHub:, CDP_DailyBoostHeader, % "Daily Boost" . ((this.DailyBoostExpires > 0) ? " Expires" : "") . ":"
+		GuiControl, ICScriptHub:, CDP_DailyBoostExpires, % (this.DailyBoostExpires > 0) ? this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.DailyBoostExpires)) : (this.DailyBoostExpires == 0 ? "Inactive" : "")
 		GuiControl, ICScriptHub:, CDP_TrialsStatusHeader, % (this.TrialsPresetStatuses[1][this.TrialsStatus[1]]) . ":"
 		GuiControl, ICScriptHub:, CDP_TrialsStatus, % (this.TrialsStatus[1] == 1 ? this.TrialsPresetStatuses[2][this.TrialsStatus[2]] : (this.FmtSecs(this.CeilMillisecondsToNearestMainLoopCDSeconds(this.TrialsStatus[2])) . (this.TrialsStatus[1] == 2 ? " (est)" : "")))
 		GuiControl, ICScriptHub:, CDP_FreeOfferRerollsHeader, % "Free Rerolls Remaining:"
-		GuiControl, ICScriptHub:, CDP_FreeOfferRerolls, % (this.FreeWeeklyRerolls >= 0 ? this.FreeWeeklyRerolls : "")
+		GuiControl, ICScriptHub:, CDP_FreeOfferRerolls, % (this.FreeWeeklyRerolls >= 0) ? this.FreeWeeklyRerolls : ""
 		GuiControl, ICScriptHub:, CDP_GuideQuestsUnclaimedHeader, % "Unclaimed Guide Quests:"
 		GuiControl, ICScriptHub:, CDP_GuideQuestsUnclaimed, % (this.UnclaimedGuideQuests >= 0 ? this.UnclaimedGuideQuests : "")
 		Gui, Submit, NoHide
@@ -669,10 +437,74 @@ Class IC_ClaimDailyPlatinum_Component
 	
 	ProduceGUIClaimedMessage(CDP_key)
 	{
+		Critical, On
+		value := ""
 		if (this.Running)
-			return this.Claimed[CDP_key]
-		return ""
+			value := this.Claimed[CDP_key]
+		Critical, Off
+		return value
 	}
+
+	Claim(CDP_key)
+	{
+	    jsonObj := this.GetSettingsJsonObj()
+		if (!IsObject(jsonObj["Calls"]))
+			jsonObj["Calls"] := []
+        jsonObj["Calls"].Push({"Claim" : [CDP_key]})
+        g_SF.WriteObjectToJSON(this.SettingsFileLoc, jsonObj)
+        this.MemoryReadCheckInstanceIDs[CDP_key] := this.InstanceID
+		this.ClaimStatusText .= "Claiming " . this.Names[CDP_key] . ".`n"
+	}
+
+	CallCheckClaimable(CDP_key)
+	{
+        jsonObj := this.GetSettingsJsonObj()
+		if (!IsObject(jsonObj["Calls"]))
+			jsonObj["Calls"] := []
+        jsonObj["Calls"].Push({"CallCheckClaimable" : [CDP_key]})
+        g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
+	}
+
+	GetSettingsJsonObj()
+	{
+        jsonObj := g_SF.LoadObjectFromJSON(this.SettingsFileLoc) ; pull local
+		if (jsonObj == "" OR jsonObj == """""")
+		{
+			jsonObj := g_SF.LoadObjectFromJSON(A_LineFile . "\..\..\IC_BrivGemFarm_Performance\ServerCall_Settings.json") ; pull base
+			jsonObj["Calls"] := "" ; clear calls from base if any
+		}
+		return jsonObj
+	}
+	
+	 RunServerCalls()
+	 {
+		try
+		{
+			serverSettingsLoc := { "loc" : A_LineFile . "\..\..\IC_ClaimDailyPlatinum_Extra\ServerCall_Settings.json"}
+			serverOverrideSettingsLoc := A_LineFile . "\..\..\IC_BrivGemFarm_Performance\ServerCallLocationOverride_Settings.json"
+        	g_SF.WriteObjectToJSON(serverOverrideSettingsLoc, serverSettingsLoc)
+			this.UpdateSettingsInstanceID()
+        	scriptLocation := A_LineFile . "\..\..\IC_BrivGemFarm_Performance\IC_BrivGemFarm_ServerCalls.ahk"
+			if(FileExist(serverOverrideSettingsLoc) AND FileExist(scriptLocation) AND FileExist(serverOverrideSettingsLoc))
+        		Run, %A_AhkPath% "%scriptLocation%"
+			this.CallsRunning := True
+			this.LastServerCallsTime := A_TickCount
+        	this.UpdateMainStatus(this.ClaimStatusText)
+		}
+		catch errVal
+		{
+			this.LastServerCallsTime := A_TickCount - MainLoopCD ; servercall run failed, allow retries
+		}
+	 }
+
+	 UpdateSettingsInstanceID()
+	 {
+        jsonObj := g_SF.LoadObjectFromJSON(this.SettingsFileLoc) ; pull local
+		instanceID := g_SF.Memory.ReadInstanceID()
+		if(jsonObj != "")
+			jsonObj.InstanceID := this.InstanceID := instanceID != "" ? instanceID : this.InstanceID
+        g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
+	 }
 	
 	; ======================
 	; ===== MISC STUFF =====
@@ -690,21 +522,11 @@ Class IC_ClaimDailyPlatinum_Component
 	
 	CeilMillisecondsToNearestMainLoopCDSeconds(CDP_timer)
 	{
+		if (CDP_timer <= A_TickCount)
+			return 0
 		return (Ceil((CDP_timer - A_TickCount) / this.MainLoopCD) * this.MainLoopCD) / 1000
 	}
-	
-	ArrSize(arr)
-	{
-		if (IsObject(arr))
-		{
-			CDP_currArrSize := arr.MaxIndex()
-			if (CDP_currArrSize == "")
-				return 0
-			return CDP_currArrSize
-		}
-		return 0
-	}
-	
+
 	ArrHasValue(arr,val)
 	{
 		for k,v in arr
@@ -712,12 +534,9 @@ Class IC_ClaimDailyPlatinum_Component
 				return true
 		return false
 	}
-
-	RandInt(min,max)
-	{
-		r := min
-		Random,r,min,max
-		return r
-	}
-	
 }
+
+
+g_globalTempSettingsFiles.Push(A_LineFile . "\..\LastGUID_ClaimDailyPremium.json") ; to be removed on script hub exit.
+SH_UpdateClass.AddClassFunctions(g_BrivFarmComsObj, IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class)
+IC_BrivGemFarm_Component.StartComs() ; restart coms with overridden startcoms function.

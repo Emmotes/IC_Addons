@@ -1,3 +1,5 @@
+19 October 2025 - v0.4.5
+    - Many Many Updates/Fixes/changes to work with BrivGemFarm 4.4.3
 23 September 2025 - v0.4.4
  - Adding a number of memory reads to make things a little more response.
    - Daily Platinum: Rewards Claimed / Boost Rewards Claimed.

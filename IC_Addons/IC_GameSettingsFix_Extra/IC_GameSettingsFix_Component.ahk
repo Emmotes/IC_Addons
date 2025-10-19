@@ -111,8 +111,6 @@ class IC_GameSettingsFix_Component
 		this.FindSettingsFile()
 		this.UpdateMainStatus(IC_GameSettingsFix_GUI.WaitingMessage)
 		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(g_GameSettingsFix, "CreateTimedFunctions"))
-		g_BrivFarmAddonStartFunctions.Push(ObjBindMethod(g_GameSettingsFix, "StartTimedFunctions"))
-		g_BrivFarmAddonStopFunctions.Push(ObjBindMethod(g_GameSettingsFix, "StopTimedFunctions"))
 	}
 	
 	LoadSettings(pathToGetGSFSettings := "")
@@ -359,25 +357,8 @@ class IC_GameSettingsFix_Component
 	
 	CreateTimedFunctions()
 	{
-		this.TimerFunctions := {}
 		fncToCallOnTimer := ObjBindMethod(this, "UpdateGameSettingsFix")
-		this.TimerFunctions[fncToCallOnTimer] := 500
+		g_BrivFarmComsObj.OneTimeRunAtResetFunctions["UpdateGameSettingsFix"] := fncToCallOnTimer
+		g_BrivFarmComsObj.OneTimeRunAtResetFunctionsTimes["UpdateGameSettingsFix"] := -500
 	}
-
-	StartTimedFunctions()
-	{
-		for k,v in this.TimerFunctions
-			SetTimer, %k%, %v%, 0
-	}
-
-	StopTimedFunctions()
-	{
-		for k,v in this.TimerFunctions
-		{
-			SetTimer, %k%, Off
-			SetTimer, %k%, Delete
-		}
-		this.UpdateMainStatus(this.WaitingMessage)
-	}
-
 }

@@ -1,6 +1,6 @@
 {
 	"Name":"Claim Daily Platinum",
-	"Version": "v0.4.4",
+	"Version": "v0.4.5",
 	"Includes" : "IC_ClaimDailyPlatinum_Includes.ahk",
 	"Author" : "Emmote",
 	"Url" : "https://github.com/emmotes/IC_Addons/tree/main/IC_Addons/IC_ClaimDailyPlatinum_Extra",
@@ -12,7 +12,7 @@
 		},
 		{
 			"Name":"Briv Gem Farm",
-			"Version":"v1.4.7"
+			"Version":"v1.5.5"
 		}
 	]
 }

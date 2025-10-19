@@ -8,8 +8,10 @@ class IC_ClaimDailyPlatinum_Functions
 		local addonDirLoc := splitStr[(splitStr.Count()-1)]
 		local addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_ClaimDailyPlatinum_Addon.ahk`n"
 		FileAppend, %addonLoc%, %g_BrivFarmModLoc%
+		local addonLoc := "#include *i %A_LineFile%\..\..\" . addonDirLoc . "\IC_ClaimDailyPlatinum_Servercalls.ahk`n"
+		FileAppend, %addonLoc%, %g_BrivFarmServerCallModLoc%
 	}
-	
+
 	; ======================
 	; ===== MAIN STUFF =====
 	; ======================
@@ -19,18 +21,6 @@ class IC_ClaimDailyPlatinum_Functions
 		if(g_SF.Memory.ReadCurrentZone() == "" && Not WinExist( "ahk_exe " . g_userSettings[ "ExeName"] ))
 			return true
 		return false
-	}
-
-	GetAllRegexMatches(haystack,needle)
-	{
-		matches := []
-		while n := RegExMatch(haystack,"O)" needle,match,n?n+1:1)
-		{
-			index := matches.length()+1
-			loop % match.count()
-				matches.push(match.value(a_index))
-		}
-		return matches
 	}
 	
 	ServerCall(callIdent,params)
