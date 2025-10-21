@@ -1,5 +1,8 @@
+20 October 2025 - v0.4.6
+ - Fixing an issue where CDP wouldn't update timers every minute.
+ - Changing the way timer values are calculated and displayed (using the same method the new stats addon does).
 19 October 2025 - v0.4.5
-    - Many Many Updates/Fixes/changes to work with BrivGemFarm 4.4.3
+ - Many Many Updates/Fixes/changes to work with BrivGemFarm 4.4.3
 23 September 2025 - v0.4.4
  - Adding a number of memory reads to make things a little more response.
    - Daily Platinum: Rewards Claimed / Boost Rewards Claimed.

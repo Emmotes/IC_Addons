@@ -238,6 +238,7 @@ Class IC_ClaimDailyPlatinum_Component
 			if(runCalls)
 				this.RunServerCalls()
 		}
+		this.UpdateGUI()
 	}
 	
 	MemoryReadSimpleStuff(CDP_key)
@@ -447,27 +448,27 @@ Class IC_ClaimDailyPlatinum_Component
 
 	Claim(CDP_key)
 	{
-	    jsonObj := this.GetSettingsJsonObj()
+		jsonObj := this.GetSettingsJsonObj()
 		if (!IsObject(jsonObj["Calls"]))
 			jsonObj["Calls"] := []
-        jsonObj["Calls"].Push({"Claim" : [CDP_key]})
-        g_SF.WriteObjectToJSON(this.SettingsFileLoc, jsonObj)
-        this.MemoryReadCheckInstanceIDs[CDP_key] := this.InstanceID
+		jsonObj["Calls"].Push({"Claim" : [CDP_key]})
+		g_SF.WriteObjectToJSON(this.SettingsFileLoc, jsonObj)
+		this.MemoryReadCheckInstanceIDs[CDP_key] := this.InstanceID
 		this.ClaimStatusText .= "Claiming " . this.Names[CDP_key] . ".`n"
 	}
 
 	CallCheckClaimable(CDP_key)
 	{
-        jsonObj := this.GetSettingsJsonObj()
+		jsonObj := this.GetSettingsJsonObj()
 		if (!IsObject(jsonObj["Calls"]))
 			jsonObj["Calls"] := []
-        jsonObj["Calls"].Push({"CallCheckClaimable" : [CDP_key]})
-        g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
+		jsonObj["Calls"].Push({"CallCheckClaimable" : [CDP_key]})
+		g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
 	}
 
 	GetSettingsJsonObj()
 	{
-        jsonObj := g_SF.LoadObjectFromJSON(this.SettingsFileLoc) ; pull local
+		jsonObj := g_SF.LoadObjectFromJSON(this.SettingsFileLoc) ; pull local
 		if (jsonObj == "" OR jsonObj == """""")
 		{
 			jsonObj := g_SF.LoadObjectFromJSON(A_LineFile . "\..\..\IC_BrivGemFarm_Performance\ServerCall_Settings.json") ; pull base
@@ -482,14 +483,14 @@ Class IC_ClaimDailyPlatinum_Component
 		{
 			serverSettingsLoc := { "loc" : A_LineFile . "\..\..\IC_ClaimDailyPlatinum_Extra\ServerCall_Settings.json"}
 			serverOverrideSettingsLoc := A_LineFile . "\..\..\IC_BrivGemFarm_Performance\ServerCallLocationOverride_Settings.json"
-        	g_SF.WriteObjectToJSON(serverOverrideSettingsLoc, serverSettingsLoc)
+			g_SF.WriteObjectToJSON(serverOverrideSettingsLoc, serverSettingsLoc)
 			this.UpdateSettingsInstanceID()
-        	scriptLocation := A_LineFile . "\..\..\IC_BrivGemFarm_Performance\IC_BrivGemFarm_ServerCalls.ahk"
+			scriptLocation := A_LineFile . "\..\..\IC_BrivGemFarm_Performance\IC_BrivGemFarm_ServerCalls.ahk"
 			if(FileExist(serverOverrideSettingsLoc) AND FileExist(scriptLocation) AND FileExist(serverOverrideSettingsLoc))
-        		Run, %A_AhkPath% "%scriptLocation%"
+				Run, %A_AhkPath% "%scriptLocation%"
 			this.CallsRunning := True
 			this.LastServerCallsTime := A_TickCount
-        	this.UpdateMainStatus(this.ClaimStatusText)
+			this.UpdateMainStatus(this.ClaimStatusText)
 		}
 		catch errVal
 		{
@@ -499,25 +500,27 @@ Class IC_ClaimDailyPlatinum_Component
 
 	 UpdateSettingsInstanceID()
 	 {
-        jsonObj := g_SF.LoadObjectFromJSON(this.SettingsFileLoc) ; pull local
+		jsonObj := g_SF.LoadObjectFromJSON(this.SettingsFileLoc) ; pull local
 		instanceID := g_SF.Memory.ReadInstanceID()
 		if(jsonObj != "")
 			jsonObj.InstanceID := this.InstanceID := instanceID != "" ? instanceID : this.InstanceID
-        g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
+		g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
 	 }
 	
 	; ======================
 	; ===== MISC STUFF =====
 	; ======================
 	
-	FmtSecs(T, Fmt:="{:}d {:01}h {:02}m") { ; v0.50 by SKAN on D36G/H @ tiny.cc/fmtsecs
-		local D, H, M, HH, Q:=60, R:=3600, S:=86400
-		T := Round(T)
-		fmtTime := Format(Fmt, D:=T//S, H:=(T:=T-D*S)//R, M:=(T:=T-H*R)//Q, T-M*Q, HH:=D*24+H, HH*Q+M)
-		fmtTime := RegExReplace(fmtTime, "m)^0d ", "")
-		fmtTime := RegExReplace(fmtTime, "m)^0h ", "")
-		fmtTime := Trim(fmtTime)
-		return fmtTime
+	FmtSecs(s) {
+		local form
+		if (s < 3600)
+			form := "mm'm"
+		else if (s < 86400)
+			form := "h'h 'mm'm"
+		else
+			form := "d'd 'hh'h 'mm'm"
+		VarSetCapacity(t,256),DllCall("GetDurationFormat","uint",2048,"uint",0,"ptr",0,"int64",s*10000000,"wstr",form,"wstr",t,"int",256)
+		return t
 	}
 	
 	CeilMillisecondsToNearestMainLoopCDSeconds(CDP_timer)
