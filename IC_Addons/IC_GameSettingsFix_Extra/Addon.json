@@ -1,6 +1,6 @@
 {
 	"Name":"Game Settings Fix",
-	"Version": "v0.2.6",
+	"Version": "v0.2.7",
 	"Includes" : "IC_GameSettingsFix_Includes.ahk",
 	"Author" : "Emmote",
 	"Url" : "https://github.com/emmotes/IC_Addons/tree/main/IC_Addons/IC_GameSettingsFix_Extra",

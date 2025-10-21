@@ -358,7 +358,7 @@ class IC_GameSettingsFix_Component
 	CreateTimedFunctions()
 	{
 		fncToCallOnTimer := ObjBindMethod(this, "UpdateGameSettingsFix")
-		g_BrivFarmComsObj.OneTimeRunAtResetFunctions["UpdateGameSettingsFix"] := fncToCallOnTimer
-		g_BrivFarmComsObj.OneTimeRunAtResetFunctionsTimes["UpdateGameSettingsFix"] := -500
+		g_BrivFarmComsObj.OneTimeRunAtResetStartFunctions["UpdateGameSettingsFix"] := fncToCallOnTimer
+		g_BrivFarmComsObj.OneTimeRunAtResetStartFunctionsTimes["UpdateGameSettingsFix"] := -500
 	}
 }
