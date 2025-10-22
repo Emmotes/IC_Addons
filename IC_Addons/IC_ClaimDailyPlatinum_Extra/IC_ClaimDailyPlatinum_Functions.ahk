@@ -22,11 +22,4 @@ class IC_ClaimDailyPlatinum_Functions
 			return true
 		return false
 	}
-	
-	ServerCall(callIdent,params)
-	{
-		params .= g_ServerCall.dummyData . "&user_id=" . g_ServerCall.userID . "&hash=" . g_ServerCall.userHash . "&instance_id=" . g_ServerCall.instanceID
-		return g_ServerCall.ServerCall(callIdent,params)
-	}
-	
 }

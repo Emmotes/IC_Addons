@@ -1,3 +1,5 @@
+21 October 2025 - v0.4.7
+ - Fixed an issue where userid / hash / instanceid were getting duplicated in the call.
 20 October 2025 - v0.4.6
  - Fixing an issue where CDP wouldn't update timers every minute.
  - Changing the way timer values are calculated and displayed (using the same method the new stats addon does).

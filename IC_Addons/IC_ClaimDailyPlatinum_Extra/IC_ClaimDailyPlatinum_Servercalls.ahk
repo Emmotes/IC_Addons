@@ -16,12 +16,6 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_Coms_Class ; Activated/shared by cdp 
 
 class IC_ClaimDailyPlatinum_Servercalls_Overrides
 {
-	ServerCall(callIdent,params)
-	{
-		params .= this.dummyData . "&user_id=" . this.userID . "&hash=" . this.userHash . "&instance_id=" . this.instanceID
-		return base.ServerCall(callIdent,params)
-	}
-
     LaunchCalls()
     {
         this.SettingsFileLoc := A_LineFile . "\..\ServerCall_Settings.json"
@@ -109,18 +103,24 @@ class IC_ClaimDailyPlatinum_Servercalls
         this.CurrentCD := {"Platinum":0,"Trials":0,"FreeOffer":0,"GuideQuests":0,"BonusChests":0,"Celebrations":0}
     }
 
+	ServerCallCDP(callIdent, params)
+	{
+		params .= this.dummyData . "&user_id=" . this.userID . "&hash=" . this.userHash . "&instance_id=" . this.instanceID
+		return this.ServerCall(callIdent,params)
+	}
+
     Claim(CDP_key)
     {
         if (CDP_key == "Platinum")
         {
             params := "&is_boost=0"
-            response := g_BrivServerCall.ServerCall("claimdailyloginreward", params)
+            response := g_BrivServerCall.ServerCallCDP("claimdailyloginreward", params)
             if (IsObject(response) && response.success)
             {
                 if (response.daily_login_details.premium_active)
                 {
                     params := "&is_boost=1"
-                    response := g_BrivServerCall.ServerCall("claimdailyloginreward", params)
+                    response := g_BrivServerCall.ServerCallCDP("claimdailyloginreward", params)
                 }
                 this.claimed[CDP_key] += 1
             }
@@ -128,7 +128,7 @@ class IC_ClaimDailyPlatinum_Servercalls
         else if (CDP_key == "Trials")
         {
             params := "&campaign_id=" . this.SHSharedData.TrialsCampaignID
-            response := g_BrivServerCall.ServerCall("trialsclaimrewards", params)
+            response := g_BrivServerCall.ServerCallCDP("trialsclaimrewards", params)
             this.TrialsCampaignID := 0
             if (!IsObject(response) || !response.success)
             {
@@ -144,7 +144,7 @@ class IC_ClaimDailyPlatinum_Servercalls
             for k,v in this.FreeOfferIDs
             {
                 params := "&offer_id=" . v
-                response := g_BrivServerCall.ServerCall("PurchaseALaCarteOffer", params)
+                response := g_BrivServerCall.ServerCallCDP("PurchaseALaCarteOffer", params)
                 if (!IsObject(response) || !response.success)
                 {
                     ; server call failed
@@ -158,7 +158,7 @@ class IC_ClaimDailyPlatinum_Servercalls
         else if (CDP_key == "GuideQuests")
         {
             params := "&collection_quest_id=-1"
-            response := g_BrivServerCall.ServerCall("claimcollectionquestrewards", params)
+            response := g_BrivServerCall.ServerCallCDP("claimcollectionquestrewards", params)
             if (IsObject(response) && response.success && response.awarded_items.success)
             {
                 CDP_numGuideQuestsClaimed := g_SF.ArrSize(response.awarded_items.rewards_claimed_quest_ids)
@@ -174,7 +174,7 @@ class IC_ClaimDailyPlatinum_Servercalls
             for k,v in this.BonusChestIDs
             {
                 params := "&premium_item_id=" . v
-                response := g_BrivServerCall.ServerCall("claimsalebonus", params)
+                response := g_BrivServerCall.ServerCallCDP("claimsalebonus", params)
                 if (!IsObject(response) || !response.success)
                 {
                     ; server call failed
@@ -190,7 +190,7 @@ class IC_ClaimDailyPlatinum_Servercalls
             for k,v in this.CelebrationCodes
             {
                 params := "&code=" . v
-                response := g_BrivServerCall.ServerCall("redeemcoupon", params)
+                response := g_BrivServerCall.ServerCallCDP("redeemcoupon", params)
                 if (!IsObject(response) || !response.success)
                 {
                     ; server call failed
@@ -214,7 +214,7 @@ class IC_ClaimDailyPlatinum_Servercalls
     {
         if (CDP_key == "Platinum")
         {
-            response := g_BrivServerCall.ServerCall("getdailyloginrewards", "")
+            response := g_BrivServerCall.ServerCallCDP("getdailyloginrewards", "")
             if (IsObject(response) && response.success)
             {
                 CDP_num := 1 << (response.daily_login_details.today_index)
@@ -235,7 +235,7 @@ class IC_ClaimDailyPlatinum_Servercalls
         else if (CDP_key == "Trials")
         {
             this.TrialsCampaignID := 0
-            response := g_BrivServerCall.ServerCall("trialsrefreshdata", "")
+            response := g_BrivServerCall.ServerCallCDP("trialsrefreshdata", "")
             if (IsObject(response) && response.success)
             {
                 CDP_trialsData := response.trials_data
@@ -285,8 +285,8 @@ class IC_ClaimDailyPlatinum_Servercalls
         {
             this.FreeOfferIDs := []
             this.FreeWeeklyRerolls := -1
-            g_BrivServerCall.ServerCall("revealalacarteoffers", "")
-            response := g_BrivServerCall.ServerCall("getalacarteoffers", "")
+            g_BrivServerCall.ServerCallCDP("revealalacarteoffers", "")
+            response := g_BrivServerCall.ServerCallCDP("getalacarteoffers", "")
             if (IsObject(response) && response.success)
             {
                 for k,v in response.offers.offers
@@ -304,7 +304,7 @@ class IC_ClaimDailyPlatinum_Servercalls
         }
         else if (CDP_key == "GuideQuests")
         {
-            response := g_BrivServerCall.ServerCall("getcompletiondata", "")
+            response := g_BrivServerCall.ServerCallCDP("getcompletiondata", "")
             if (IsObject(response) && response.success)
             {
                 for k,v in response.data.guidequest
@@ -319,7 +319,7 @@ class IC_ClaimDailyPlatinum_Servercalls
         {
             this.BonusChestIDs := []
             params := "&return_all_items_live=1&return_all_items_ever=0&show_hard_currency=1&prioritize_item_category=recommend"
-            response := g_BrivServerCall.ServerCall("getshop", params)
+            response := g_BrivServerCall.ServerCallCDP("getshop", params)
             if (IsObject(response) && response.success)
             {
                 for k,v in response.package_deals
@@ -347,7 +347,7 @@ class IC_ClaimDailyPlatinum_Servercalls
                 for k,v in currMatches
                 {
                     params := "&dialog=" . v . "&ui_type=standard"
-                    response := g_BrivServerCall.ServerCall("getdynamicdialog", params)
+                    response := g_BrivServerCall.ServerCallCDP("getdynamicdialog", params)
                     if (IsObject(response) && response.success)
                     {
                         for l,b in response.dialog_data.elements
