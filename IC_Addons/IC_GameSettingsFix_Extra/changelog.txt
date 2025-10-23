@@ -1,5 +1,9 @@
+23 October 2025 - v0.2.8
+ - Changing the recommendation for Narrow Bench Boxes to Checked because of an unfortunate issue with memory reading discovered by ninjaytsu.
+21 October 2025 - v0.2.7
+ - Updated to use new variable name.
 19 October 2025 - v0.2.6
-    - Fixes/changes to work with BrivGemFarm 4.4.3
+ - Fixes/changes to work with BrivGemFarm 4.4.3
 17 September 2025 - v0.2.5
  - Changed how the script overrides OpenIC. Shouldn't impact anybody except mod creators.
 23    August 2025 - v0.2.4

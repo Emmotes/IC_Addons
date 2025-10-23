@@ -128,7 +128,7 @@ class IC_GameSettingsFix_GUI
 		GSF_ypos += 25
 		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_NarrowHeroBoxesH, NarrowHeroBoxes:
 		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_NarrowHeroBoxes,
-		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Personal Preference
+		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, `Checked
 		GSF_ypos += 25
 		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_ShowAllHeroBoxesH, ShowAllHeroBoxes:
 		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_ShowAllHeroBoxes,
