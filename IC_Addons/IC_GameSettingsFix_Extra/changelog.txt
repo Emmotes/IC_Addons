@@ -1,3 +1,5 @@
+25 October 2025 - v0.2.9
+ - Set the `Swap x25 and x100 Mode Hotkeys` setting to default enabled. Also changed its recommended text to note that it is required for x25 levelling.
 23 October 2025 - v0.2.8
  - Changing the recommendation for Narrow Bench Boxes to Checked because of an unfortunate issue with memory reading discovered by ninjaytsu.
 21 October 2025 - v0.2.7

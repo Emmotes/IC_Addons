@@ -19,7 +19,7 @@ class IC_GameSettingsFix_Component
 {
 
 	TimerFunctions := {}
-	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":3,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"ShowAllHeroBoxes":true,"HKsRequired":true,"HKsSwap25100":false,"CurrentProfile":""}
+	DefaultSettings := {"TargetFramerate":600,"PercentOfParticlesSpawned":0,"resolution_x":1280,"resolution_y":720,"resolution_fullscreen":false,"ReduceFramerateWhenNotInFocus":false,"LevelupAmountIndex":3,"UseConsolePortraits":false,"FormationSaveIncludeFeatsCheck":false,"NarrowHeroBoxes":true,"ShowAllHeroBoxes":true,"HKsRequired":true,"HKsSwap25100":true,"CurrentProfile":""}
 	Settings := {}
 	CurrentProfile := this.DefaultSettings["CurrentProfile"]
 	ReadOnly := false
