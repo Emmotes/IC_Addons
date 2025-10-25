@@ -1,3 +1,5 @@
+25 October 2025 - v0.4.8
+ - Fixing an issue with the Free Bonus Chests not working for platforms other than Steam.
 21 October 2025 - v0.4.7
  - Fixed an issue where userid / hash / instanceid were getting duplicated in the call.
 20 October 2025 - v0.4.6

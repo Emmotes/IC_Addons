@@ -105,7 +105,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 
 	ServerCallCDP(callIdent, params)
 	{
-		params .= this.dummyData . "&user_id=" . this.userID . "&hash=" . this.userHash . "&instance_id=" . this.instanceID
+		params .= this.dummyData . "&user_id=" . this.userID . "&hash=" . this.userHash . "&instance_id=" . this.instanceID . "&network_id=" . this.networkID
 		return this.ServerCall(callIdent,params)
 	}
 
