@@ -1,5 +1,11 @@
 # IC Addons by Emmote
 
+### Advanced Settings Preset Routes
+
+An add on that adds a way to quickly set up the Preferred Briv Jump Zones in the BrivGF Advanced addon.
+
+Read the [AdvancedSettings Preset Routes README](IC_Advanced_PresetRoutes_Extra/README.md)
+
 ### Cazrin Books Farmer
 
 An addon that will aid in stacking Cazrin.
