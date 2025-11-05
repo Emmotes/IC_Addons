@@ -214,11 +214,11 @@ Class IC_ClaimDailyPlatinum_Component
 						this.UpdateMainStatus("Checking " . this.Names[k] . ".")
 						; servercall check claimable
 						this.CallCheckClaimable(k)
-						this.CallsMade.Claimable[k] := True ; Tested agains k existing, not if tested is True.
+						this.CallsMade.Claimable[k] := True ; Tested against k existing, not if tested is True.
 						runCalls := True
 					}
-					; If it now is claimable - claim it.
-					if (this.Claimable[k])
+					; If it is claimable - claim it.
+					else
 					{
 						this.UpdateMainStatus("Claiming " . this.Names[k] . ".")
 						this.Claim(k)
@@ -248,7 +248,7 @@ Class IC_ClaimDailyPlatinum_Component
 			; Update Free Reroll count.
 			rerollCost := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.ShopHandler.ALaCarteHandler_k__BackingField.RerollCost_k__BackingField.Read()
 			rerollsRemaining := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.ShopHandler.ALaCarteHandler_k__BackingField.RerollsRemaining_k__BackingField.Read()
-				this.FreeWeeklyRerolls := (rerollCost == 0 && rerollsRemaining > 0) ? rerollsRemaining : 0
+			this.FreeWeeklyRerolls := (rerollCost == 0 && rerollsRemaining > 0) ? rerollsRemaining : 0
 		}
 	}
 
@@ -271,19 +271,19 @@ Class IC_ClaimDailyPlatinum_Component
 			if (dayIndex != "" && todayFreeClaimed != "" && todayBoostClaimed != "")
 			{
 				claimNum := 1 << dayIndex
-				if ((todayFreeClaimed & CDP_num) == 0 || (this.DailyBoostExpires > 0) && (todayBoostClaimed & CDP_num) == 0)
+				if ((todayFreeClaimed & CDP_num) == 0 || (this.DailyBoostExpires > 0 && (todayBoostClaimed & CDP_num) == 0))
 					return [true, 0]
 			}
 		}
-		else if (CDP_key == "Trials")
-		{
-			unclaimedCampID := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.TrialsHandler.pendingUnclaimedCampaignID.Read()
-			if (unclaimedCampID > 0)
-			{
-				this.TrialsCampaignID := unclaimedCampID
-				return [true, 0]
-			}
-		}
+		;else if (CDP_key == "Trials")
+		;{
+		;	unclaimedCampID := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.TrialsHandler.pendingUnclaimedCampaignID.Read()
+		;	if (unclaimedCampID > 0)
+		;	{
+		;		this.TrialsCampaignID := unclaimedCampID
+		;		return [true, 0]
+		;	}
+		;}
 		else if (CDP_key == "GuideQuests")
 		{
 			numUnclaimedGuideQuests := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Screen.uiController.topBar.dpsMenuBox.menuBox.numberOfUnclaimedQuests.Read()
@@ -477,8 +477,8 @@ Class IC_ClaimDailyPlatinum_Component
 		return jsonObj
 	}
 	
-	 RunServerCalls()
-	 {
+	RunServerCalls()
+	{
 		try
 		{
 			serverSettingsLoc := { "loc" : A_LineFile . "\..\..\IC_ClaimDailyPlatinum_Extra\ServerCall_Settings.json"}
@@ -496,16 +496,16 @@ Class IC_ClaimDailyPlatinum_Component
 		{
 			this.LastServerCallsTime := A_TickCount - MainLoopCD ; servercall run failed, allow retries
 		}
-	 }
+	}
 
-	 UpdateSettingsInstanceID()
-	 {
+	UpdateSettingsInstanceID()
+	{
 		jsonObj := g_SF.LoadObjectFromJSON(this.SettingsFileLoc) ; pull local
 		instanceID := g_SF.Memory.ReadInstanceID()
 		if(jsonObj != "")
 			jsonObj.InstanceID := this.InstanceID := instanceID != "" ? instanceID : this.InstanceID
 		g_SF.WriteObjectToJSON(this.SettingsFileLoc , jsonObj)
-	 }
+	}
 	
 	; ======================
 	; ===== MISC STUFF =====
@@ -528,14 +528,6 @@ Class IC_ClaimDailyPlatinum_Component
 		if (CDP_timer <= A_TickCount)
 			return 0
 		return (Ceil((CDP_timer - A_TickCount) / this.MainLoopCD) * this.MainLoopCD) / 1000
-	}
-
-	ArrHasValue(arr,val)
-	{
-		for k,v in arr
-			if (v == val)
-				return true
-		return false
 	}
 }
 
