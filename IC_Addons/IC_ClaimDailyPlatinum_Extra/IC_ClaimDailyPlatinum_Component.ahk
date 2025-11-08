@@ -202,7 +202,7 @@ Class IC_ClaimDailyPlatinum_Component
 				; If it's not claimable - check if it can be claimed via memory reads.
 				; - Prevent re-checking memory reads if it's been claimed during the current instance.
 				; - Because claiming via calls doesn't update the memory read.
-				if (!this.Claimable[k] && this.MemoryReadCheckInstanceIDs[CDP_key] != this.InstanceID)
+				if (!this.Claimable[k] && this.MemoryReadCheckInstanceIDs[k] != this.InstanceID)
 					this.CallMemoryReadCheckClaimable(k)
 				if (this.CurrentCD[k] <= A_TickCount)
 				{

@@ -1,3 +1,5 @@
+08  November 2025 - v0.4.10
+ - Fixed a stupid mistake that caused memory read checks to keep repeating even when they shouldn't.
 05  November 2025 - v0.4.9
  - Adding some checks and balances to prevent runaway claim counters. This doesn't solve the underlying issue though.
 25   October 2025 - v0.4.8
