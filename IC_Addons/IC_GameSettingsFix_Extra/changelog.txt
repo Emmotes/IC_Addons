@@ -1,10 +1,13 @@
-25 October 2025 - v0.2.9
+ 9  November 2025 - v0.2.10
+ - Changing recommendation on LevelupAmountIndex to just be x100 - since Level Up is required now.
+ - Changing recommendation on Swap x25 and x100 Hotkey to be clearer.
+25   October 2025 - v0.2.9
  - Set the `Swap x25 and x100 Mode Hotkeys` setting to default enabled. Also changed its recommended text to note that it is required for x25 levelling.
-23 October 2025 - v0.2.8
+23   October 2025 - v0.2.8
  - Changing the recommendation for Narrow Bench Boxes to Checked because of an unfortunate issue with memory reading discovered by ninjaytsu.
-21 October 2025 - v0.2.7
+21   October 2025 - v0.2.7
  - Updated to use new variable name.
-19 October 2025 - v0.2.6
+19   October 2025 - v0.2.6
  - Fixes/changes to work with BrivGemFarm 4.4.3
 17 September 2025 - v0.2.5
  - Changed how the script overrides OpenIC. Shouldn't impact anybody except mod creators.

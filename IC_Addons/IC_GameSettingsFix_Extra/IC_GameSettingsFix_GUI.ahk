@@ -120,7 +120,7 @@ class IC_GameSettingsFix_GUI
 		GSF_ypos += 25
 		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_LevelupAmountIndexH, LevelupAmountIndex:
 		Gui, ICScriptHub:Add, DDL, xs%GSF_col2x% y+-17 w%GSF_col2w% vGSF_LevelupAmountIndex, x1|x10|x25|x100|Next Upg||
-		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-17 w%GSF_col3w%, Next Upg or x100 w/ Level Up Addon
+		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-17 w%GSF_col3w%, x100
 		GSF_ypos += 25
 		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_UseConsolePortraitsH, UseConsolePortraits:
 		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_UseConsolePortraits,
@@ -145,7 +145,7 @@ class IC_GameSettingsFix_GUI
 		GSF_ypos += 25
 		Gui, ICScriptHub:Add, Text, xs%GSF_col1x% ys%GSF_ypos% w%GSF_col1w% +Right vGSF_HKsSwap25100H, Swap x25 and x100 Mode Hotkeys:
 		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_HKsSwap25100,
-		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Required for x25 Levelling
+		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Required for x25 Hotkey Levelling
 
 		Gui, ICScriptHub:Font, w700
 		GUIFunctions.UseThemeTextColor("TableTextColor")
