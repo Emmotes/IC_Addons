@@ -179,7 +179,7 @@ Class IC_EGSOverlaySwatter_Component
 			this.UpdateMainStatus("Save Error. EGS Folder is default. Disabling Check Default.")
 			sanityChecked := true
 		}
-		folderExists := IC_EGSOverlaySwatter_Functions.IsFolder(g_EGSOS_EGSFolderLocation)
+		folderExists := IC_EGSOverlaySwatter_Functions.IsFolder(EGSOS_EGSFolderLocation)
 		if (!folderExists)
 		{
 			EGSOS_DisableOverlay := false

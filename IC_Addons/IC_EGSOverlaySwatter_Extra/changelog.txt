@@ -1,4 +1,6 @@
-19 October 2025 - v0.1.1
+ 9  November 2025 - v0.1.2
+ - Fixed a bug that would cause saving to fail.
+19   October 2025 - v0.1.1
     - Fixes/changes to work with BrivGemFarm 4.4.3
 28 September 2025 - v0.1.0
  - Refactoring the entire addon so it works better.
