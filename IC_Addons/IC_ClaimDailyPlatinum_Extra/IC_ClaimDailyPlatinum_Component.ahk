@@ -275,15 +275,15 @@ Class IC_ClaimDailyPlatinum_Component
 					return [true, 0]
 			}
 		}
-		;else if (CDP_key == "Trials")
-		;{
-		;	unclaimedCampID := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.TrialsHandler.pendingUnclaimedCampaignID.Read()
-		;	if (unclaimedCampID > 0)
-		;	{
-		;		this.TrialsCampaignID := unclaimedCampID
-		;		return [true, 0]
-		;	}
-		;}
+		else if (CDP_key == "Trials")
+		{
+			unclaimedCampID := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.TrialsHandler.pendingUnclaimedCampaignID.Read()
+			if (unclaimedCampID > 0)
+			{
+				this.TrialsCampaignID := unclaimedCampID
+				return [true, 0]
+			}
+		}
 		else if (CDP_key == "GuideQuests")
 		{
 			numUnclaimedGuideQuests := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Screen.uiController.topBar.dpsMenuBox.menuBox.numberOfUnclaimedQuests.Read()

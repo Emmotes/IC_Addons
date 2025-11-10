@@ -366,7 +366,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 			this.SHSharedData.Claimed := this.Claimed
 			this.SHSharedData.Claimable := this.Claimable
 			this.SHSharedData.CurrentCD := this.CurrentCD
-			this.SHSharedData.TrialsCampaignID := 0
+			this.SHSharedData.TrialsCampaignID := this.TrialsCampaignID
 			this.SHSharedData.UnclaimedGuideQuests := this.UnclaimedGuideQuests
 			this.SHSharedData.DailyBoostExpires := this.DailyBoostExpires
 			this.SHSharedData.FreeWeeklyRerolls := this.FreeWeeklyRerolls
