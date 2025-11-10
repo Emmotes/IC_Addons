@@ -1,3 +1,5 @@
+10  November 2025 - v0.4.11
+ - Fixed an issue where an error in the server call response would lead to bad data. For example - Trials saying it's inactive when it isn't.
 08  November 2025 - v0.4.10
  - Fixed a stupid mistake that caused memory read checks to keep repeating even when they shouldn't.
 05  November 2025 - v0.4.9

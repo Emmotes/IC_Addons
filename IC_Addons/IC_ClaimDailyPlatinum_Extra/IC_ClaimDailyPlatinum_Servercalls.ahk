@@ -64,8 +64,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 	{
 		if (A_Args[1] != "") ; all claim calls are done via file, not args.
 			return
-			
-		this.Logs := false
+		
 		this.lastGUIDFileLoc := A_LineFile . "\..\LastGUID_ClaimDailyPremium.json"
 		g_globalTempSettingsFiles.Push(this.lastGUIDFileLoc) ; removal not implemented yet
 		this.FreeOfferIDs := []
@@ -133,7 +132,6 @@ class IC_ClaimDailyPlatinum_Servercalls
 			params := "&campaign_id=" . this.SHSharedData.TrialsCampaignID
 			response := g_BrivServerCall.ServerCallCDP("trialsclaimrewards", params)
 			this.TrialsCampaignID := 0
-			this.LogResponses("trialsclaimrewards",params,response)
 			if (IsObject(response) && response.success && g_SF.ArrSize(response.rewards) > 0)
 			{
 				this.Claimed[CDP_key] += 1
@@ -184,7 +182,6 @@ class IC_ClaimDailyPlatinum_Servercalls
 			{
 				params := "&code=" . v
 				response := g_BrivServerCall.ServerCallCDP("redeemcoupon", params)
-				this.LogResponses("redeemcoupon",params,response)
 				; TODO VERIFY EXTRA CHECK
 				if (IsObject(response) && response.success)
 					this.Claimed[CDP_key] += 1
@@ -267,9 +264,9 @@ class IC_ClaimDailyPlatinum_Servercalls
 					this.TrialsStatus := [3,CDP_timeTilNextTrial]
 					return [false, A_TickCount + this.CalcNoTimerDelay()]
 				}
+				this.TrialsStatus := [1,3]
+				return [false, A_TickCount + this.CalcNoTimerDelay()]
 			}
-			this.TrialsStatus := [1,3]
-			return [false, A_TickCount + this.CalcNoTimerDelay()]
 		}
 		else if (CDP_key == "FreeOffer")
 		{
@@ -298,12 +295,10 @@ class IC_ClaimDailyPlatinum_Servercalls
 			if (IsObject(response) && response.success)
 			{
 				for k,v in response.data.guidequest
-				{
 					if (v.complete == 1 && v.rewards_claimed == 0)
 						return [true, 0]
-				}
+				return [false, A_TickCount + this.CalcNoTimerDelay()]
 			}
-			return [false, A_TickCount + this.CalcNoTimerDelay()]
 		}
 		else if (CDP_key == "BonusChests")
 		{
@@ -317,8 +312,8 @@ class IC_ClaimDailyPlatinum_Servercalls
 						this.BonusChestIDs.Push(v.item_id)
 				if (g_SF.ArrSize(this.BonusChestIDs) > 0)
 					return [true, 0]
+				return [false, A_TickCount + this.CalcNoTimerDelay()]
 			}
-			return [false, A_TickCount + this.CalcNoTimerDelay()]
 		}
 		else if (CDP_key == "Celebrations")
 		{
@@ -357,8 +352,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 				return [true, 0]
 			if (CDP_nextClaimSeconds < 9999999)
 				return [false, A_TickCount + (CDP_nextClaimSeconds * 1000) + this.SafetyDelay]
-			else
-				return [false, A_TickCount + this.CalcNoTimerDelay()]
+			return [false, A_TickCount + this.CalcNoTimerDelay()]
 		}
 		return [false, A_TickCount + this.StartingCD]
 	}
@@ -418,16 +412,6 @@ class IC_ClaimDailyPlatinum_Servercalls
 				matches.push(match.value(a_index))
 		}
 		return matches
-	}
-	
-	LogResponses(theCall,theParams,theResponse)
-	{
-		if (!this.Logs)
-			return
-		strResponse := JSON.uglify(theResponse)
-		msgfile := A_LineFile . "\..\ServerCall_Logs.txt"
-		msgmsg := "Call:`n" . theCall . "`nParams:`n" . theParams . "`nResponse:`n" . strResponse . "`n"
-		FileAppend, %msgmsg%`n, %msgfile%
 	}
 }
 SH_UpdateClass.UpdateClassFunctions(g_BrivServerCall, IC_ClaimDailyPlatinum_Servercalls_Overrides)
