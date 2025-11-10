@@ -64,13 +64,15 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class ; Updates IC_BrivGem
 	; Filters the response down to only call returns that were requested e.g. if e was requested {a:b, c:d, e:f} -> {e:f}
 	FilterToCalled(byref objToUpdate, updatedValues, byref callsMade, remove := True)
 	{
+		keysGoByeBye := []
 		for k,v in callsMade
 		{
 			objToUpdate[k] := updatedValues[k]
 			if(remove)
-				callsMade.delete(k)
-
+				keysGoByeBye.Push(k)
 		}
+		for k,v in keysGoByeBye
+			callsMade.delete(v)
 		return objToUpdate
 	}
 }

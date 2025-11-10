@@ -1,3 +1,5 @@
+10  November 2025 - v0.5.0
+ - Fixed a long-ish standing bug with CDP that caused Cooldown timers to not properly populate after a check.
 10  November 2025 - v0.4.12
  - Reinstating Trials memory read check.
  - Potentially fixing a bug where Trials would go unclaimed for ages. Also potentially breaking it. Time will tell.
