@@ -127,6 +127,12 @@ class IC_GameSettingsFix_Component
 		}
 		if (this.CheckMissingOrExtraSettings())
 			writeSettings := true
+		if (!this.Settings["NarrowHeroBoxes"] || !this.Settings["HKsRequired"])
+		{
+			this.Settings["NarrowHeroBoxes"] := true
+			this.Settings["HKsRequired"] := true
+			writeSettings := true
+		}
 		if(writeSettings)
 			g_SF.WriteObjectToJSON(pathToGetGSFSettings, this.Settings)
 		GuiControl, ICScriptHub:, GSF_TargetFramerate, % this.Settings["TargetFramerate"]

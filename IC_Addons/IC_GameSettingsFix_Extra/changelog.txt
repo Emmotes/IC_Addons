@@ -1,3 +1,5 @@
+13  November 2025 - v0.2.11
+ - Setting NarrowHeroBoxes to required and force-enabled since it is required for the script to function properly.
  9  November 2025 - v0.2.10
  - Changing recommendation on LevelupAmountIndex to just be x100 - since Level Up is required now.
  - Changing recommendation on Swap x25 and x100 Hotkey to be clearer.
