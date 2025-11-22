@@ -29,11 +29,7 @@ ___
 
 The second section of the addon determines whether the script will try to claim the rewards from Trials of Mount Tiamat.
 
-The timer for it is initialised to check 2 minutes after starting the Gem Farm script. After that it gets complicated.
-- If the Trial is not running or is in the lobby then it will check every 8 hours ± 30 minutes.
-- If the Trial is running it will calculate how long before Tiamat dies based on her current HP and total DPS and check again after half of that much time or 8 hours ± 30 minutes (whichever is shorter).
-
-This is all to try to make sure it will claim the reward at most a couple of minutes after the Trial ends - and that it can cope with DPS changes as players do more damage and complete their daily goals.
+The timer for it is initialised to check 2 minutes after starting the Gem Farm script - and it will check again every 8 hours ± 30 minutes. However there is also a memory read to see if there is an unclaimed Trial and it will immediately claim if this is found to be true - regardless of the check timer.
 
 This section contains the status of the current Trial.
 
@@ -58,10 +54,7 @@ ___
 
 The fourth section determines whether the script will try to claim the rewards for any completed guide quests.
 
-The timer for it is initialised to check 4 minutes after starting the Gem Farm script - and it will check again every 8 hours ± 30 minutes.
-
-> [!NOTE]
-> The amount of unclaimed guide quests can be memory read - and will be every minute. If it memory reads an unclaimed guide quest - it will claim it immediately - no matter how much time is left on the normal check.
+The timer for it is initialised to check 4 minutes after starting the Gem Farm script - and it will check again every 8 hours ± 30 minutes. However there is also a memory read to see if there are any unclaimed Guide Quests and it will immediately claim them if this is found to be true - regardless of the check timer.
 
 This setting is on by default.
 

@@ -1,3 +1,5 @@
+21  November 2025 - v0.5.1
+ - Now that Trials has a memory read for when it is ready to claim - I have decided to make Trials check every 8 hours ± 30 minutes to save on unnecessary server calls.
 10  November 2025 - v0.5.0
  - Fixed a long-ish standing bug with CDP that caused Cooldown timers to not properly populate after a check.
 10  November 2025 - v0.4.12

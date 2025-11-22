@@ -246,12 +246,8 @@ class IC_ClaimDailyPlatinum_Servercalls
 					}
 					CDP_tiamatHP := (this.TiamatHP[CDP_trialsCampaign.difficulty_id] * 10000000) - CDP_totalDamage
 					CDP_timeTilTiamatDies := ((CDP_tiamatHP == "" || CDP_currDPS == "" || CDP_currDPS <= 0) ? 99999999 : (CDP_tiamatHP / CDP_currDPS))
-					CDP_trialEndsIn := CDP_trialsCampaign.ends_in
-					CDP_timeToCheck := Min(CDP_timeTilTiamatDies,CDP_trialEndsIn) * 500
-					CDP_timeToCheck := Min(this.CalcNoTimerDelay(),CDP_timeToCheck)
-					CDP_timeToCheck := Max(this.MainLoopCD,CDP_timeToCheck)
 					this.TrialsStatus := [2,A_TickCount + CDP_timeTilTiamatDies * 1000]
-					return [false, A_TickCount + CDP_timeToCheck]
+					return [false, A_TickCount + this.CalcNoTimerDelay()]
 				}
 				if (CDP_trialsCampaigns != "" && CDP_trialsCampaignsSize > 0 && !CDP_trialsCampaigns[1].started)
 				{
