@@ -30,8 +30,10 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class ; Updates IC_BrivGem
 				g_ClaimDailyPlatinum.SharedData.TrialsCampaignID := g_ClaimDailyPlatinum.TrialsCampaignID
 				g_ClaimDailyPlatinum.SharedData.FreeOfferIDs := {}
 				g_ClaimDailyPlatinum.SharedData.BonusChestIDs := {}
+				g_ClaimDailyPlatinum.SharedData.CelebrationCodes := {}
 				g_SF.CopyToComObject(g_ClaimDailyPlatinum.SharedData.FreeOfferIDs, g_ClaimDailyPlatinum.FreeOfferIDs.Clone())
 				g_SF.CopyToComObject(g_ClaimDailyPlatinum.SharedData.BonusChestIDs, g_ClaimDailyPlatinum.BonusChestIDs.Clone())
+				g_SF.CopyToComObject(g_ClaimDailyPlatinum.SharedData.CelebrationCodes, g_ClaimDailyPlatinum.CelebrationCodes.Clone())
 			}
 		}
 		ResetComsLock := False

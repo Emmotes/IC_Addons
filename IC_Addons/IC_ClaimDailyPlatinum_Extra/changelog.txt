@@ -1,3 +1,5 @@
+ 3  December 2025 - v0.5.4
+ - 3rd time unlucky?
  3  December 2025 - v0.5.3
  - Attempt number 2.
  - Also cleaning up some doubled up variables.
