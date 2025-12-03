@@ -79,6 +79,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 		this.TrialsCampaignID := 5
 		this.BonusChestIDs := []
 		this.FreeOfferIDs := []
+		this.CelebrationCodes := []
 		this.NoTimerDelay := 28800000 ; in milliseconds = 8 hours.
 		this.NoTimerDelayRNG := 1800000 ; in milliseconds = 30 minutes.
 		SHSharedData := new IC_BrivGemFarmRun_ClaimDailyPlatinum_Coms_Class
@@ -94,6 +95,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 		this.TrialsCampaignID := this.SHSharedData.TrialsCampaignID == "" ? this.TrialsCampaignID : this.SHSharedData.TrialsCampaignID
 		this.FreeOfferIDs := this.SHSharedData.FreeOfferIDs == "" ? this.FreeOfferIDs : g_SF.ComObjectCopy(this.SHSharedData.FreeOfferIDs)
 		this.BonusChestIDs := this.SHSharedData.BonusChestIDs == "" ? this.BonusChestIDs : g_SF.ComObjectCopy(this.SHSharedData.BonusChestIDs)
+		this.CelebrationCodes := this.SHSharedData.CelebrationCodes == "" ? this.CelebrationCodes : g_SF.ComObjectCopy(this.SHSharedData.CelebrationCodes)
 		ScriptHubComs := ""
 		; The amount of times each type has been claimed:
 		this.Claimed := {"Platinum":0,"Trials":0,"FreeOffer":0,"GuideQuests":0,"BonusChests":0,"Celebrations":0}
@@ -369,6 +371,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 			this.SHSharedData.TrialsStatus := this.TrialsStatus
 			this.SHSharedData.FreeOfferIDs := this.FreeOfferIDs
 			this.SHSharedData.BonusChestIDs := this.BonusChestIDs
+			this.SHSharedData.CelebrationCodes := this.CelebrationCodes
 		}
 		try
 		{

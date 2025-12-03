@@ -1,3 +1,5 @@
+ 3  December 2025 - v0.5.2
+ - Hopefully fixing an issue with Celebration claiming.
 21  November 2025 - v0.5.1
  - Now that Trials has a memory read for when it is ready to claim - I have decided to make Trials check every 8 hours ± 30 minutes to save on unnecessary server calls.
 10  November 2025 - v0.5.0
