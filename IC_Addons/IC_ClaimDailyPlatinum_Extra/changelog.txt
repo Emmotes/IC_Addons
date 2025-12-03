@@ -1,3 +1,6 @@
+ 3  December 2025 - v0.5.3
+ - Attempt number 2.
+ - Also cleaning up some doubled up variables.
  3  December 2025 - v0.5.2
  - Hopefully fixing an issue with Celebration claiming.
 21  November 2025 - v0.5.1

@@ -53,6 +53,7 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class ; Updates IC_BrivGem
 			g_ClaimDailyPlatinum.TrialsStatus := !g_ClaimDailyPlatinum.CallsMade.TrialsStatus OR g_ClaimDailyPlatinum.SharedData.TrialsStatus == ""  ? g_ClaimDailyPlatinum.TrialsStatus : g_SF.ComObjectCopy(g_ClaimDailyPlatinum.SharedData.TrialsStatus)
 			g_ClaimDailyPlatinum.FreeOfferIDs := g_ClaimDailyPlatinum.SharedData.FreeOfferIDs == "" ? g_ClaimDailyPlatinum.FreeOfferIDs : g_SF.ComObjectCopy(g_ClaimDailyPlatinum.SharedData.FreeOfferIDs)
 			g_ClaimDailyPlatinum.BonusChestIDs := g_ClaimDailyPlatinum.SharedData.BonusChestIDs == ""  ? g_ClaimDailyPlatinum.BonusChestIDs : g_SF.ComObjectCopy(g_ClaimDailyPlatinum.SharedData.BonusChestIDs)
+			g_ClaimDailyPlatinum.CelebrationCodes := g_ClaimDailyPlatinum.SharedData.CelebrationCodes == ""  ? g_ClaimDailyPlatinum.CelebrationCodes : g_SF.ComObjectCopy(g_ClaimDailyPlatinum.SharedData.CelebrationCodes)
 			; updates made, reset flags
 			g_ClaimDailyPlatinum.CallsMade.TrialStatus := False
 		}
