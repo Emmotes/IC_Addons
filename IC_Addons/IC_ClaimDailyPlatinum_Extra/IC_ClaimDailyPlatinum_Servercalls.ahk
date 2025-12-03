@@ -67,8 +67,6 @@ class IC_ClaimDailyPlatinum_Servercalls
 		
 		this.lastGUIDFileLoc := A_LineFile . "\..\LastGUID_ClaimDailyPremium.json"
 		g_globalTempSettingsFiles.Push(this.lastGUIDFileLoc) ; removal not implemented yet
-		this.FreeOfferIDs := []
-		this.CelebrationCodes := []
 		this.TiamatHP := [40,75,130,200,290,430,610,860,1200,1600]
 		; The timer for MainLoop:
 		this.MainLoopCD := 60000 ; in milliseconds = 1 minute.
