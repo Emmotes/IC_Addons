@@ -1,3 +1,5 @@
+ 5  December 2025 - v0.5.5
+ - Added an extra check to claiming Celebration codes to prevent possible false-positive results.
  3  December 2025 - v0.5.4
  - 3rd time unlucky?
  3  December 2025 - v0.5.3

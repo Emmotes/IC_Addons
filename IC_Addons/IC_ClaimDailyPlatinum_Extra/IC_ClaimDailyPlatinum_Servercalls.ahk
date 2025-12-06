@@ -182,8 +182,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 			{
 				params := "&code=" . v
 				response := g_BrivServerCall.ServerCallCDP("redeemcoupon", params)
-				; TODO VERIFY EXTRA CHECK
-				if (IsObject(response) && response.success)
+				if (IsObject(response) && response.success && g_SF.ArrSize(response.loot_details) > 0)
 					this.Claimed[CDP_key] += 1
 			}
 			this.CelebrationCodes := []
