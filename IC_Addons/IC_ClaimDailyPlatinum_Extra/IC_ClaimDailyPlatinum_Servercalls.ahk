@@ -97,6 +97,8 @@ class IC_ClaimDailyPlatinum_Servercalls
 		ScriptHubComs := ""
 		; The amount of times each type has been claimed:
 		this.Claimed := {"Platinum":0,"Trials":0,"FreeOffer":0,"GuideQuests":0,"BonusChests":0,"Celebrations":0}
+		if (IsObject(this.SHSharedData.Claimed))
+			this.Claimed := g_SF.ComObjectCopy(this.SHSharedData.Claimed)
 		; The flags to tell the timers to pause if the script is waiting for the game to go offline.
 		this.Claimable := {"Platinum":false,"Trials":false,"FreeOffer":false,"GuideQuests":false,"BonusChests":false,"Celebrations":false}
 		; The current cooldown for each type:
@@ -117,14 +119,14 @@ class IC_ClaimDailyPlatinum_Servercalls
 			response := g_BrivServerCall.ServerCallCDP("claimdailyloginreward", params)
 			if (IsObject(response) && response.success)
 			{
+				CDP_num := 1 << (response.daily_login_details.today_index)
+				if ((response.daily_login_details.rewards_claimed & CDP_num) > 0)
+					this.Claimed[CDP_key] += 1
 				if (response.daily_login_details.premium_active)
 				{
 					params := "&is_boost=1"
 					response := g_BrivServerCall.ServerCallCDP("claimdailyloginreward", params)
 				}
-				CDP_num := 1 << (response.daily_login_details.today_index)
-				if ((response.daily_login_details.rewards_claimed & CDP_num) > 0)
-					this.Claimed[CDP_key] += 1
 			}
 		}
 		else if (CDP_key == "Trials")

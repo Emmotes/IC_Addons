@@ -27,6 +27,9 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class ; Updates IC_BrivGem
 			try
 			{
 				g_ClaimDailyPlatinum.SharedData := ComObjActive(ServerCallGuid)
+				g_ClaimDailyPlatinum.SharedData.Claimed := {}
+				for k, v in g_ClaimDailyPlatinum.Claimed
+					g_ClaimDailyPlatinum.SharedData.Claimed[k] := v
 				g_ClaimDailyPlatinum.SharedData.TrialsCampaignID := g_ClaimDailyPlatinum.TrialsCampaignID
 				g_ClaimDailyPlatinum.SharedData.FreeOfferIDs := {}
 				g_ClaimDailyPlatinum.SharedData.BonusChestIDs := {}
@@ -36,7 +39,8 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class ; Updates IC_BrivGem
 				g_SF.CopyToComObject(g_ClaimDailyPlatinum.SharedData.CelebrationCodes, g_ClaimDailyPlatinum.CelebrationCodes.Clone())
 			}
 		}
-		ResetComsLock := False
+		finally
+			ResetComsLock := False
 	}
 
 	UpdateCDPComponent()
@@ -57,7 +61,7 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class ; Updates IC_BrivGem
 			g_ClaimDailyPlatinum.BonusChestIDs := g_ClaimDailyPlatinum.SharedData.BonusChestIDs == ""  ? g_ClaimDailyPlatinum.BonusChestIDs : g_SF.ComObjectCopy(g_ClaimDailyPlatinum.SharedData.BonusChestIDs)
 			g_ClaimDailyPlatinum.CelebrationCodes := g_ClaimDailyPlatinum.SharedData.CelebrationCodes == ""  ? g_ClaimDailyPlatinum.CelebrationCodes : g_SF.ComObjectCopy(g_ClaimDailyPlatinum.SharedData.CelebrationCodes)
 			; updates made, reset flags
-			g_ClaimDailyPlatinum.CallsMade.TrialStatus := False
+			g_ClaimDailyPlatinum.CallsMade.TrialsStatus := False
 		}
 		g_ClaimDailyPlatinum.HasComsUpdated := A_TickCount - this.MainLoopCD
 		g_ClaimDailyPlatinum.UpdateGUIReady := True
