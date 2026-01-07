@@ -7,40 +7,42 @@ class IC_NMA_Functions
         start := A_TickCount
         defines := {}
         g_SF.Memory.OpenProcessReader()
-        ;iterate through every hero in memory
-        heroCount := g_SF.Memory.ReadChampListSize() ;heroCount := g_SF.Memory.GameManager.Game.gameInstances[0].Controller.UserData.HeroHandler.heroes.size.Read()
-        if (heroCount < 100)
-            msgbox, "There may have been an error loading data. Reloading the script may fix the error. Error: Unexpected heroCount"
+        g_SF.Memory.GetChampIDToIndexMap()
+        heroCount := g_SF.Memory.ReadChampListSize()
+        if (heroCount < 0 || heroCount > 500)
+            return {}
         champID := 0
-        upgStartTimer := champStartTimer := startTimer := A_TickCount
-        foundSpec := {}
-        loop %heroCount%
+        Loop, %heroCount%
         {
             ++champID
-            ;only include owned heroes
-            isOwned := g_SF.Memory.ReadHeroIsOwned() ;GameManager.Game.gameInstances[0].Controller.UserData.HeroHandler.heroes[champID -1].Owned.Read()
+            isOwned := g_SF.Memory.ReadHeroIsOwned(champID)
             if (!isOwned OR champID == 107)
-                Continue
+                continue
             name := g_SF.Memory.ReadChampNameByID(champID)
             seat := g_SF.Memory.ReadChampSeatByID(champID)
             defines[champID] := new IC_NMA_Functions.HeroDefine(champID, name, seat)
-            upgradeCount := g_SF.Memory.ReadHeroUpgradesSize(champID)
+            heroIndex := g_SF.Memory.GetHeroHandlerIndexByChampID(champID)
+            heroObj := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.HeroHandler.heroes[heroIndex]
+            upgradeCount := heroObj.upgradeHandler.upgradesByUpgradeId.size.Read()
+            if (upgradeCount < 0 || upgradeCount > 200)
+                continue
             upgIndex := 0
-            ;iterate through every upgrade for that hero
-            loop %upgradeCount%
+            Loop, %upgradeCount%
             {
-                requiredLvl := g_SF.Memory.ReadHeroUpgradeRequiredLevel(champID, upgIndex)
-                ;some upgrades with required level of 9999
-                if (requiredLvl < 9999)
-                    defines[champID].MaxLvl := Max(requiredLvl, defines[champID].MaxLvl)
-                isSpec := g_SF.Memory.ReadHeroUpgradeIsSpec(champID, upgIndex)
-                if isSpec
+                valObj := heroObj.upgradeHandler.upgradesByUpgradeId["value", upgIndex]
+                defObj := valObj.Def
+                reqLvl := valObj.RequiredLevel.Read()
+                if (reqLvl != "" && reqLvl < 9999)
+                    defines[champID].MaxLvl := Max(reqLvl, defines[champID].MaxLvl)
+                rawGraphic := defObj.defaultSpecGraphic.Read()
+                if (rawGraphic && rawGraphic != "")
                 {
-                    upgradeID := g_SF.Memory.ReadHeroUpgradeID(champID, upgIndex)
-                    requiredUpgradeID := g_SF.Memory.ReadHeroUpgradeRequiredUpgradeID(champID, upgIndex)
-                    specName := g_SF.Memory.ReadHeroUpgradeSpecializationName(champID, upgIndex)
-                    defines[champID].SpecDefines.AddSpec(upgradeID, requiredLvl, requiredUpgradeID, specName)
-                    foundSpec[champID] := True
+                    upgradeID := heroObj.upgradeHandler.upgradesByUpgradeId["key", upgIndex].Read()
+                    requiredUpgradeID := defObj.RequiredUpgradeID.Read()
+                    specName := defObj.SpecializationName.Read()
+                    if (specName == "")
+                        specName := "Spec " . upgradeID
+                    defines[champID].SpecDefines.AddSpec(upgradeID, reqLvl, requiredUpgradeID, specName)
                 }
                 ++upgIndex
                 ; OutputDebug, % "upgIndex " upgIndex . ": " . (A_TickCount - upgStartTimer) / 1000 . "s"
@@ -241,7 +243,7 @@ class IC_NMA_Functions
             if(currChampLevel == lastChampLevel) ; leveling failed, wait for next call
                 break
             lastChampLevel := currChampLevel
-            this.DirectedInput(,, inputKey)
+            g_SF.DirectedInput(,, inputKey)
             for k, v in specSettings[champID]
             {
                 if (v.RequiredLvl == g_SF.Memory.ReadChampLvlByID(champID) AND NMA_ChooseSpecs)
@@ -251,58 +253,41 @@ class IC_NMA_Functions
         return
     }
 
-    IsSpec(champID, champLvl, specSettings)
-    {
-        for k, v in specSettings[champID]
-        {
-            if (v.RequiredLvl == champLvl)
-                return true
-        }
+ IsSpec(champID, champLvl, specSettings)
+{
+    if (!specSettings.HasKey(champID))
         return false
-    }
-
-    PickSpec(champID, champLvl, specSettings)
+    
+    for k, v in specSettings[champID]
     {
-        static lastUpgrade := 0
-        static clickCount := 0
-        if (clickCount > 10)
-        {
-            msgbox, 4,, The script has failed specializing in %clickCount% consecutive attempts. Continue?
-            IfMsgBox No
-               global g_NMADoAdventuring := True
-        }
-        isPurchased := g_SF.Memory.ReadHeroUpgradeIsPurchased(champID, specSettings[champID][1]["UpgradeID"])
-        if (isPurchased)
-        {
-            clickCount := 0
-            return
-        }
-        for k, v in specSettings[champID]
-        {
-            if (v.RequiredLvl == champLvl)
-            {
-                choice := v.Choice
-                choices := v.Choices
-                upgradeID := v.UpgradeID
-            }
-        }
-        ScreenCenterX := (g_SF.Memory.ReadScreenWidth(1) / 2)
-        ScreenCenterY := (g_SF.Memory.ReadScreenHeight(1) / 2)
-        yClick := ScreenCenterY + 245
-        ButtonWidth := 70
-        ButtonSpacing := 180
-        TotalWidth := (ButtonWidth * Choices) + (ButtonSpacing * (Choices - 1))
-        xFirstButton := ScreenCenterX - (TotalWidth / 2)
-        xClick := xFirstButton + 35 + (250 * (Choice - 1))
-        StartTime := A_TickCount
-        ElapsedTime := 0
-        gameExe := g_UserSettings[ "ExeName" ]
-        WinActivate, ahk_exe %gameExe%
-        MouseClick, Left, xClick, yClick, 1
-        clickCount++
-        Sleep, 10
-        return
+        if (champLvl >= v.RequiredLvl && champLvl <= v.RequiredLvl + 10)
+            return true
     }
+    return false
+}
+
+ PickSpec(champID, choice, choices)
+{
+    if (!choice || !choices)
+        return   
+    ScreenCenterX := (g_SF.Memory.ReadScreenWidth() / 2)
+    ScreenCenterY := (g_SF.Memory.ReadScreenHeight() / 2)  
+    if (!ScreenCenterX || !ScreenCenterY)
+        return   
+    yOffset := 245
+    spacingX := 250    
+    rowCenterX := ScreenCenterX
+    rowCenterY := ScreenCenterY + yOffset
+    xClick := rowCenterX + spacingX * (choice - ((choices + 1) / 2.0))
+    yClick := rowCenterY   
+    gameExe := g_UserSettings["ExeName"]
+    WinActivate, ahk_exe %gameExe%
+    WinWaitActive, ahk_exe %gameExe%,, 1
+    Sleep, 200  
+    MouseMove, xClick, yClick
+    Click
+    return
+}
         
     NMA_CheckForReset()
     {
@@ -333,22 +318,25 @@ class IC_NMA_Functions
         return g_NMAChampsToLevel
     }
 
-    NMA_LevelAndSpec(formationID, champID)
+ NMA_LevelAndSpec(formationID, champID)
+{
+    champLvl := g_SF.Memory.ReadChampLvlByID(champID)
+    seat := g_SF.Memory.ReadChampSeatByID(champID)
+    inputKey := "{F" . seat . "}"
+    g_SF.DirectedInput(,, inputKey)
+    Sleep, 50
+    global g_NMAlvlObj
+    global NMA_ChooseSpecs    
+    ; Check and pick spec if needed
+    if (NMA_ChooseSpecs && g_NMAlvlObj.IsSpec(champID, champLvl, g_NMASpecSettings))
     {
-        if (g_NMAChampsToLevel[champID]) ; when set to true, champions is done leveling
-            return
-        champLvl := g_SF.Memory.ReadChampLvlByID(champID)
-        seat := g_SF.Memory.ReadChampSeatByID(champID)
-        inputKey := "{F" . seat . "}"
-        this.DirectedInput(,, inputKey)
-        sleep, 33
-        global g_NMAlvlObj
-		global NMA_ChooseSpecs
-        if (g_NMAlvlObj.IsSpec(champID, champLvl, g_NMASpecSettings) AND NMA_ChooseSpecs)
-            g_NMAlvlObj.PickSpec(champID, champLvl, g_NMASpecSettings)
-        if (!(g_NMAMaxLvl[champID] > champLvl))
-            g_NMAChampsToLevel[champID] := True
-    }
+        g_NMAlvlObj.PickSpec(champID, champLvl, g_NMASpecSettings)
+        return  ; Exit after picking spec, will check again next loop
+    }   
+    ; Only mark done if at max level AND no pending specs
+    if (champLvl >= g_NMAMaxLvl[champID])
+        g_NMAChampsToLevel[champID] := True
+}
 
     NMA_UseUltimates(formation)
     {
@@ -363,7 +351,7 @@ class IC_NMA_Functions
             if(k AND k != -1 AND NMA_FireUlts)
             {
                 ultButton := g_SF.GetUltimateButtonByChampID(k)
-                this.DirectedInput(,, ultButton)
+                g_SF.DirectedInput(,, ultButton)
             }   
         }
     }

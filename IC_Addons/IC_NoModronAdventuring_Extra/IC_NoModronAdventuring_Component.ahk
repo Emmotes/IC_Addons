@@ -4,6 +4,8 @@ GUIFunctions.AddTab("No Modron Adventuring")
 
 global g_NMAHeroDefines
 global g_NMAChampsToLevel := {}
+global g_NMAPickedSpecs := {}
+global g_NMALastChampLvl := {}
 global g_NMAResetZone := 500
 global g_NMAWallTime := 300000 ; 5 minutes
 global g_NMAAlertZone := 201
@@ -87,87 +89,126 @@ NMA_RunAdventuring()
 {
     global
     g_NMADoAdventuring := True
+    g_NMAPickedSpecs := {}   
     if !(g_NMAMaxLvl.TimeStamp)
     {
-        msgbox, Max level data not found, click Load Max. Level Data prior to running this script.
+        msgbox, Max level data not found, click Load Max. Level Data first.
         return
     }
     if !(g_NMASpecSettings.TimeStamp)
     {
-        msgbox, Specialization settings not found, click Select/Create Spec. Settings prior to running this script.
+        msgbox, Specialization settings not found, click Select/Create Spec. Settings first.
         return
-    }
-    g_SF.Hwnd := WinExist("ahk_exe " . g_UserSettings[ "ExeName" ])
+    }   
+    g_SF.Hwnd := WinExist("ahk_exe " . g_UserSettings["ExeName"])
     g_SF.Memory.OpenProcessReader()
-    g_NMAlvlObj := new IC_NMA_Functions
+    g_NMAlvlObj := new IC_NMA_Functions   
     Gui, ICScriptHub:Submit, NoHide
-    g_NMAResetZone := NMA_RestartZone
-    formationKey := {1:"q"} ; {1:"q", 2:"w", 3:"e"}
+    g_NMAResetZone := NMA_RestartZone  
+    formationKey := {1:"q"}
     favoriteFormation := 1
-    g_NMAchampsToLevel := g_NMAlvlObj.NMA_GetChampionsToLevel(formationKey)
+    g_NMAChampsToLevel := g_NMAlvlObj.NMA_GetChampionsToLevel(formationKey)
     g_SF.PatronID := 0
     g_ServerCall.activePatronID := 0
-	startTime := A_TickCount
-	g_NMATimeAtWall := 0
-	g_NMAHighestZone := 1
-	g_NMAWallTime := NMA_WallTimer
-	g_NMAAlertZone := NMA_AlertZone
+    startTime := A_TickCount
+    g_NMATimeAtWall := 0
+    g_NMAHighestZone := 1
+    g_NMAWallTime := NMA_WallTimer
+    g_NMAAlertZone := NMA_AlertZone
     while (g_NMADoAdventuring)
     {
-		if (NMA_WallRestart)
-			NMA_UpdateSettings()
-        g_NMAlvlObj.DirectedInput(,, formationKey[favoriteFormation])
-        for k, v in g_NMAChampsToLevel
-        { 
-            Sleep, 20
-            if (k == -1 OR !k)
-                continue
-            name := g_SF.Memory.ReadChampNameByID(k)
-            g_NMAlvlObj.NMA_LevelAndSpec(favoriteFormation, k)
-        }
-		if (g_SF.Memory.ReadHighestZone() >= g_NMAAlertZone)
-		{
-			if (NMA_CompleteAlertBeep) {
-				loop, 5
-				{
-					SoundBeep, 860, 400
-					SoundBeep, 1000, 400
-				}
-				SoundBeep, 860, 400
-				NMA_CompleteAlertBeep := false
-			}
-			if(NMA_CompleteAlert) {
-				msgbox, No Modron Adventuring:`n`nYou've reached zone %g_NMAAlertZone%.
-				NMA_CompleteAlert := false
-			}
-		}
-        if (NMA_LevelClick)
-            g_NMAlvlObj.DirectedInput(,, "{ClickDmg}")
-        if (!Mod( g_SF.Memory.ReadCurrentZone(), 5 ) AND Mod( g_SF.Memory.ReadHighestZone(), 5 ) AND !g_SF.Memory.ReadTransitioning())
-            g_SF.ToggleAutoProgress( 1, true ) ; Toggle autoprogress to skip boss bag
-        g_SF.ToggleAutoProgress(1,false)
-        if(NMA_FireUlts)
-            g_NMAlvlObj.NMA_UseUltimates(favoriteFormation)
-		g_NMATimeAtWall := A_TickCount - startTime
-		if (g_SF.Memory.ReadHighestZone() > g_NMAHighestZone)
-		{
-			startTime := A_TickCount
-			g_NMATimeAtWall := 0
-			g_NMAHighestZone := g_SF.Memory.ReadHighestZone()
-		}
-        isReset := g_NMAlvlObj.NMA_CheckForReset()
-        if(isReset)
+        if (NMA_WallRestart)
+            NMA_UpdateSettings()
+        g_SF.DirectedInput(,, formationKey[favoriteFormation])
+        Sleep, 50
+        specPickedThisLoop := false
+        for champID, isDone in g_NMAChampsToLevel
         {
-			startTime := A_TickCount
-			g_NMATimeAtWall := 0
-			g_NMAHighestZone := 1
-			g_NMAWallTime := NMA_WallTimer
+            if (!g_NMADoAdventuring)
+                break
+            if (specPickedThisLoop)
+                break
+            if (champID == -1 OR !champID)
+                continue
+            if (isDone == True)
+                continue
+            ; Read level BEFORE leveling
+            prevLvl := g_SF.Memory.ReadChampLvlByID(champID)
+            ; Level the champ
+            seat := g_SF.Memory.ReadChampSeatByID(champID)
+            inputKey := "{F" . seat . "}"
+            g_SF.DirectedInput(,, inputKey)
+            Sleep, 50
+            ; Read level AFTER leveling
+            champLvl := g_SF.Memory.ReadChampLvlByID(champID)
+            ; Only check for spec if THIS champion JUST passed a spec level
+            if (NMA_ChooseSpecs && g_NMASpecSettings.HasKey(champID))
+            {
+                for k, v in g_NMASpecSettings[champID]
+                {
+                    specKey := champID . "_" . v.RequiredLvl
+                    if (g_NMAPickedSpecs.HasKey(specKey))
+                        continue
+                    ; Only trigger if we JUST crossed the spec level
+                    if (prevLvl < v.RequiredLvl && champLvl >= v.RequiredLvl)
+                    {
+                        Sleep, 200
+                        g_NMAlvlObj.PickSpec(champID, v.Choice, v.Choices)
+                        g_NMAPickedSpecs[specKey] := true
+                        specPickedThisLoop := true
+                        Sleep, 200
+                        break
+                    }
+                }
+            }
+            if (champLvl >= g_NMAMaxLvl[champID])
+                g_NMAChampsToLevel[champID] := True
+        }
+        if (NMA_LevelClick)
+            g_SF.DirectedInput(,, "{ClickDmg}")
+        if (!Mod(g_SF.Memory.ReadCurrentZone(), 5) AND Mod(g_SF.Memory.ReadHighestZone(), 5) AND !g_SF.Memory.ReadTransitioning())
+            g_SF.ToggleAutoProgress(1, true)
+        g_SF.ToggleAutoProgress(1, false)
+        if (NMA_FireUlts)
+            g_NMAlvlObj.NMA_UseUltimates(favoriteFormation)
+        g_NMATimeAtWall := A_TickCount - startTime
+        if (g_SF.Memory.ReadHighestZone() > g_NMAHighestZone)
+        {
+            startTime := A_TickCount
+            g_NMATimeAtWall := 0
+            g_NMAHighestZone := g_SF.Memory.ReadHighestZone()
+        }
+        if (g_SF.Memory.ReadHighestZone() >= g_NMAAlertZone)
+        {
+            if (NMA_CompleteAlertBeep)
+            {
+                loop, 5
+                {
+                    SoundBeep, 860, 400
+                    SoundBeep, 1000, 400
+                }
+                SoundBeep, 860, 400
+                NMA_CompleteAlertBeep := false
+            }
+            if (NMA_CompleteAlert)
+            {
+                msgbox, No Modron Adventuring:`n`nYou've reached zone %g_NMAAlertZone%.
+                NMA_CompleteAlert := false
+            }
+        }
+        isReset := g_NMAlvlObj.NMA_CheckForReset()
+        if (isReset)
+        {
+            startTime := A_TickCount
+            g_NMATimeAtWall := 0
+            g_NMAHighestZone := 1
+            g_NMAWallTime := NMA_WallTimer
+            g_NMAPickedSpecs := {}
             g_SF.SafetyCheck()
             g_SF.Memory.OpenProcessReader()
-            g_NMAchampsToLevel := g_NMAlvlObj.NMA_GetChampionsToLevel(formationKey)
-            isReset := False
+            g_NMAChampsToLevel := g_NMAlvlObj.NMA_GetChampionsToLevel(formationKey)
         }
-        Sleep, 100
+        Sleep, 50
     }
     MsgBox, Adventuring Stopped.
     return
