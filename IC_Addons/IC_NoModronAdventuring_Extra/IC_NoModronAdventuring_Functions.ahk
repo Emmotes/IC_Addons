@@ -1,10 +1,11 @@
 class IC_NMA_Functions
 {
     endScript := false
+    TickFrequency := -1
 
     GetHeroDefines()
     {
-        start := A_TickCount
+        start := this.GetTickCount()
         defines := {}
         g_SF.Memory.OpenProcessReader()
         g_SF.Memory.GetChampIDToIndexMap()
@@ -45,18 +46,18 @@ class IC_NMA_Functions
                     defines[champID].SpecDefines.AddSpec(upgradeID, reqLvl, requiredUpgradeID, specName)
                 }
                 ++upgIndex
-                ; OutputDebug, % "upgIndex " upgIndex . ": " . (A_TickCount - upgStartTimer) / 1000 . "s"
-                ; upgStartTimer := A_TickCount
+                ; OutputDebug, % "upgIndex " upgIndex . ": " . (this.GetTickCount() - upgStartTimer) / 1000 . "s"
+                ; upgStartTimer := this.GetTickCount()
             }
-            OutputDebug, % "Champ " champID . ": " . (A_TickCount - champStartTimer) / 1000 . "s"
+            OutputDebug, % "Champ " champID . ": " . (this.GetTickCount() - champStartTimer) / 1000 . "s"
             if(!foundSpec[champID])
                 OutputDebug, % name . " (" . champID . ") failed to find a specialization."
-            champStartTimer := A_TickCount
+            champStartTimer := this.GetTickCount()
             defines[champID].SpecDefines.SortSpecList()
         }
-        OutputDebug, % "TotalTime: " . (A_TickCount - startTimer) / 1000 . "s"
+        OutputDebug, % "TotalTime: " . (this.GetTickCount() - startTimer) / 1000 . "s"
         defines.TimeStamp := A_MMMM . " " . A_DD . ", " . A_YYYY . " at " . A_Hour . ":" . A_Min . ":" . A_Sec
-        defines.LoadTime := A_TickCount - start
+        defines.LoadTime := this.GetTickCount() - start
         ;a bit easier to debug from json file
         g_SF.WriteObjectToJSON(A_LineFile . "\..\HeroDefines.JSON", defines)
         return defines
@@ -237,7 +238,7 @@ class IC_NMA_Functions
         inputKey := "{F" . seat . "}"
         if !targetLvl
             targetLvl := maxLvlData[champID]
-		global NMA_ChooseSpecs
+        global NMA_ChooseSpecs
         while (targetLvl > (currChampLevel := g_SF.Memory.ReadChampLvlByID(champID)) AND !(this.endScript))
         {
             if(currChampLevel == lastChampLevel) ; leveling failed, wait for next call
@@ -365,5 +366,16 @@ class IC_NMA_Functions
                 return False
         }
         return True
+    }
+    
+    GetTickCount()
+    {
+        if (this.TickFrequency < 0)
+        {
+            DllCall("QueryPerformanceFrequency", "Int64*", freq)
+            this.TickFrequency := freq / 1000
+        }
+        DllCall("QueryPerformanceCounter", "Int64*", tick)
+        return tick / this.TickFrequency
     }
 }
