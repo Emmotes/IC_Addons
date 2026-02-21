@@ -2,6 +2,8 @@ class IC_CazrinBooksFarmer_Functions
 {
 	static MaxRetries := 4
 	
+	TickFrequency := -1
+	
 	; ==================================
 	; ===== CAZRIN BOOKS FUNCTIONS =====
 	; ==================================
@@ -404,7 +406,7 @@ class IC_CazrinBooksFarmer_Functions
 	
 	WaitDialogNotTransitioning(dialogIndex, waitTimeout := 1000)
 	{
-		startTime := A_TickCount
+		startTime := this.GetTickCount()
 		elapsedTime := startTime
 		loop
 		{
@@ -412,7 +414,7 @@ class IC_CazrinBooksFarmer_Functions
 			if (!transitioning)
 				return True
 			Sleep, 50
-			elapsedTime := A_TickCount
+			elapsedTime := this.GetTickCount()
 		}
 		until elapsedTime > (startTime + waitTimeout)
 		return False
@@ -439,13 +441,24 @@ class IC_CazrinBooksFarmer_Functions
 	ToggleShift(shiftKeyDown := false)
 	{
 		g_SF.DirectedInput(shiftKeyDown ? 1 : 0, shiftKeyDown ? 0 : 1, "{Shift}")
-		startTime := A_TickCount
+		startTime := this.GetTickCount()
 		elapsedTime := 0
 		while (g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Screen.uiController.bottomBar.heroPanel.activeBoxes[0].levelUpInfoHandler.OverrideLevelUpAmount.Read() AND elapsedTime < 100) ;Allow 100ms for the keypress to apply at maximum to avoid getting stuck. On a fast PC it only took AHK tick (15ms) extra when needed
 		{
 			Sleep, 1
-			elapsedTime := A_TickCount - startTime
+			elapsedTime := this.GetTickCount() - startTime
 		}
+	}
+	
+	GetTickCount()
+	{
+		if (this.TickFrequency < 0)
+		{
+			DllCall("QueryPerformanceFrequency", "Int64*", freq)
+			this.TickFrequency := freq / 1000
+		}
+		DllCall("QueryPerformanceCounter", "Int64*", tick)
+		return tick / this.TickFrequency
 	}
 	
 }

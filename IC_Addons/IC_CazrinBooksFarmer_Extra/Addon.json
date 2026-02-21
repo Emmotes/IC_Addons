@@ -1,6 +1,6 @@
 {
 	"Name":"Cazrin Books Farmer",
-	"Version": "v0.0.1",
+	"Version": "v0.0.2",
 	"Includes" : "IC_CazrinBooksFarmer_Includes.ahk",
 	"Author" : "Emmote",
 	"Url" : "https://github.com/emmotes/IC_Addons/tree/main/IC_Addons/IC_CazrinBooksFarmer_Extra",

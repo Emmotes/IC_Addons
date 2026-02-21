@@ -95,11 +95,11 @@ class IC_CazrinBooksFarmer_Component
 	UpdateMainStatus(status)
 	{
 		GuiControlGet,CBF_StatusText, ICScriptHub:, CBF_StatusText
-		CBF_TimerIsUp := A_TickCount - this.DisplayStatusTimeout >= this.MessageStickyTimer
+		CBF_TimerIsUp := this.GetTickCount() - this.DisplayStatusTimeout >= this.MessageStickyTimer
 		if (status == "" && !CBF_TimerIsUp && !InStr(CBF_StatusText, "specialisation potion"))
 			status := CBF_StatusText
 		if (status != "" && CBF_TimerIsUp)
-			this.DisplayStatusTimeout := A_TickCount
+			this.DisplayStatusTimeout := this.GetTickCount()
 		if (status == "")
 			status := this.SpecPotsUsed . " specialisation potion" . (this.SpecPotsUsed == 1 ? " has" : "s have") . " been used so far."
 		GuiControl, ICScriptHub:Text, CBF_StatusText, % status
@@ -129,6 +129,11 @@ class IC_CazrinBooksFarmer_Component
 	StopFarming()
 	{
 		this.Running := False
+	}
+	
+	GetTickCount()
+	{
+		return IC_CazrinBooksFarmer_Functions.GetTickCount()
 	}
 
 }
