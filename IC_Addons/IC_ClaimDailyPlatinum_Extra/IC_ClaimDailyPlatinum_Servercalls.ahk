@@ -65,6 +65,8 @@ class IC_ClaimDailyPlatinum_Servercalls
 		if (A_Args[1] != "") ; all claim calls are done via file, not args.
 			return
 		
+		this.TickFrequency := -1
+		
 		this.lastGUIDFileLoc := A_LineFile . "\..\LastGUID_ClaimDailyPremium.json"
 		g_globalTempSettingsFiles.Push(this.lastGUIDFileLoc) ; removal not implemented yet
 		this.TiamatHP := [40,75,130,200,290,430,610,860,1200,1600]
@@ -207,7 +209,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 			{
 				CDP_num := 1 << (response.daily_login_details.today_index)
 				if (response.daily_login_details.premium_active && response.daily_login_details.premium_expire_seconds > 0)
-					this.DailyBoostExpires := A_TickCount + (response.daily_login_details.premium_expire_seconds * 1000)
+					this.DailyBoostExpires := this.GetTickCount() + (response.daily_login_details.premium_expire_seconds * 1000)
 				else
 					this.DailyBoostExpires := 0
 				if ((response.daily_login_details.rewards_claimed & CDP_num) > 0)
@@ -215,7 +217,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 					CDP_nextClaimSeconds := response.daily_login_details.next_claim_seconds
 					if (CDP_nextClaimSeconds == 0)
 						CDP_nextClaimSeconds := Mod(response.daily_login_details.next_reset_seconds, 86400)
-					return [false, A_TickCount + (CDP_nextClaimSeconds * 1000) + this.SafetyDelay]
+					return [false, this.GetTickCount() + (CDP_nextClaimSeconds * 1000) + this.SafetyDelay]
 				}
 				return [true, 0]
 			}
@@ -247,22 +249,22 @@ class IC_ClaimDailyPlatinum_Servercalls
 					}
 					CDP_tiamatHP := (this.TiamatHP[CDP_trialsCampaign.difficulty_id] * 10000000) - CDP_totalDamage
 					CDP_timeTilTiamatDies := ((CDP_tiamatHP == "" || CDP_currDPS == "" || CDP_currDPS <= 0) ? 99999999 : (CDP_tiamatHP / CDP_currDPS))
-					this.TrialsStatus := [2,A_TickCount + CDP_timeTilTiamatDies * 1000]
-					return [false, A_TickCount + this.CalcNoTimerDelay()]
+					this.TrialsStatus := [2,this.GetTickCount() + CDP_timeTilTiamatDies * 1000]
+					return [false, this.GetTickCount() + this.CalcNoTimerDelay()]
 				}
 				if (CDP_trialsCampaigns != "" && CDP_trialsCampaignsSize > 0 && !CDP_trialsCampaigns[1].started)
 				{
 					this.TrialsStatus := [1,4]
-					return [false, A_TickCount + this.CalcNoTimerDelay()]
+					return [false, this.GetTickCount() + this.CalcNoTimerDelay()]
 				}
 				if (CDP_trialsData.seconds_until_can_join_campaign != "")
 				{
-					CDP_timeTilNextTrial := A_TickCount + CDP_trialsData.seconds_until_can_join_campaign * 1000
+					CDP_timeTilNextTrial := this.GetTickCount() + CDP_trialsData.seconds_until_can_join_campaign * 1000
 					this.TrialsStatus := [3,CDP_timeTilNextTrial]
-					return [false, A_TickCount + this.CalcNoTimerDelay()]
+					return [false, this.GetTickCount() + this.CalcNoTimerDelay()]
 				}
 				this.TrialsStatus := [1,3]
-				return [false, A_TickCount + this.CalcNoTimerDelay()]
+				return [false, this.GetTickCount() + this.CalcNoTimerDelay()]
 			}
 		}
 		else if (CDP_key == "FreeOffer")
@@ -283,7 +285,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 				this.FreeWeeklyRerolls := (response.offers.reroll_cost == 0 ? response.offers.rerolls_remaining : 0)
 				if (g_SF.ArrSize(this.FreeOfferIDs) > 0)
 					return [true, 0]
-				return [false, A_TickCount + (response.offers.time_remaining * 1000) + this.SafetyDelay]
+				return [false, this.GetTickCount() + (response.offers.time_remaining * 1000) + this.SafetyDelay]
 			}
 		}
 		else if (CDP_key == "GuideQuests")
@@ -294,7 +296,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 				for k,v in response.data.guidequest
 					if (v.complete == 1 && v.rewards_claimed == 0)
 						return [true, 0]
-				return [false, A_TickCount + this.CalcNoTimerDelay()]
+				return [false, this.GetTickCount() + this.CalcNoTimerDelay()]
 			}
 		}
 		else if (CDP_key == "BonusChests")
@@ -309,7 +311,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 						this.BonusChestIDs.Push(v.item_id)
 				if (g_SF.ArrSize(this.BonusChestIDs) > 0)
 					return [true, 0]
-				return [false, A_TickCount + this.CalcNoTimerDelay()]
+				return [false, this.GetTickCount() + this.CalcNoTimerDelay()]
 			}
 		}
 		else if (CDP_key == "Celebrations")
@@ -319,7 +321,7 @@ class IC_ClaimDailyPlatinum_Servercalls
 			g_SF.Memory.OpenProcessReader()
 			wrlLoc := g_SF.Memory.GetWebRequestLogLocation()
 			if (wrlLoc == "")
-				return [false, A_TickCount + this.CalcNoTimerDelay()]
+				return [false, this.GetTickCount() + this.CalcNoTimerDelay()]
 			webRequestLog := ""
 			FileRead, webRequestLog, %wrlLoc%
 			CDP_nextClaimSeconds := 9999999
@@ -348,10 +350,10 @@ class IC_ClaimDailyPlatinum_Servercalls
 			if (g_SF.ArrSize(this.CelebrationCodes) > 0)
 				return [true, 0]
 			if (CDP_nextClaimSeconds < 9999999)
-				return [false, A_TickCount + (CDP_nextClaimSeconds * 1000) + this.SafetyDelay]
-			return [false, A_TickCount + this.CalcNoTimerDelay()]
+				return [false, this.GetTickCount() + (CDP_nextClaimSeconds * 1000) + this.SafetyDelay]
+			return [false, this.GetTickCount() + this.CalcNoTimerDelay()]
 		}
-		return [false, A_TickCount + this.StartingCD]
+		return [false, this.GetTickCount() + this.StartingCD]
 	}
 
 	ReportClaims()
@@ -410,6 +412,17 @@ class IC_ClaimDailyPlatinum_Servercalls
 				matches.push(match.value(a_index))
 		}
 		return matches
+	}
+	
+	GetTickCount()
+	{
+		if (this.TickFrequency < 0)
+		{
+			DllCall("QueryPerformanceFrequency", "Int64*", freq)
+			this.TickFrequency := freq / 1000
+		}
+		DllCall("QueryPerformanceCounter", "Int64*", tick)
+		return tick / this.TickFrequency
 	}
 }
 SH_UpdateClass.UpdateClassFunctions(g_BrivServerCall, IC_ClaimDailyPlatinum_Servercalls_Overrides)

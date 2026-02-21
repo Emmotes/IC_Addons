@@ -133,9 +133,9 @@ Class IC_ClaimDailyPlatinum_Component
 		CDP_LoopCounter := 1
 		for k,v in this.Settings
 		{
-			if (v && this.CurrentCD[k] <= A_TickCount)
+			if (v && this.CurrentCD[k] <= this.GetTickCount())
 			{
-				this.CurrentCD[k] := A_TickCount + (this.MainLoopCD*CDP_LoopCounter)
+				this.CurrentCD[k] := this.GetTickCount() + (this.MainLoopCD*CDP_LoopCounter)
 				CDP_LoopCounter += 1
 			}
 			if (!v)
@@ -188,7 +188,7 @@ Class IC_ClaimDailyPlatinum_Component
 			this.InstanceID := instanceID != "" ? instanceID : this.InstanceID ; Do not accidentally wipe instance id
 			if(this.InstanceID == "") ; Don't make any calls if there is no InstanceID
 				return
-			if(this.ComsLock OR (A_TickCount - this.LastServerCallsTime) <= this.MainLoopCD)
+			if(this.ComsLock OR (this.GetTickCount() - this.LastServerCallsTime) <= this.MainLoopCD)
 				return
 			if(!IsObject(g_BrivFarmComsObj)) ; check for failed com activation only, not creation
 				IC_BrivGemFarm_Component.StartComs()
@@ -204,7 +204,7 @@ Class IC_ClaimDailyPlatinum_Component
 				; - Because claiming via calls doesn't update the memory read.
 				if (!this.Claimable[k] && this.MemoryReadCheckInstanceIDs[k] != this.InstanceID)
 					this.CallMemoryReadCheckClaimable(k)
-				if (this.CurrentCD[k] <= A_TickCount)
+				if (this.CurrentCD[k] <= this.GetTickCount())
 				{
 					if(k == "Trials")
 						this.CallsMade.TrialsStatus := True
@@ -224,7 +224,7 @@ Class IC_ClaimDailyPlatinum_Component
 						this.Claim(k)
 						this.CallsMade.Claimed[k] := True
 						this.CallsMade.Claimable.delete(k)
-						this.CurrentCD[k] := A_TickCount + this.SafetyDelay
+						this.CurrentCD[k] := this.GetTickCount() + this.SafetyDelay
 						this.Claimable[k] := false
 					}
 
@@ -314,7 +314,7 @@ Class IC_ClaimDailyPlatinum_Component
 		for k,v in this.TimerFunctions
 			SetTimer, %k%, %v%, 0
 		for k,v in this.CurrentCD
-			this.CurrentCD[k] := A_TickCount + (this.StartingCD * this.StaggeredChecks[k])
+			this.CurrentCD[k] := this.GetTickCount() + (this.StartingCD * this.StaggeredChecks[k])
 		this.UpdateGUI()
 	}
 
@@ -348,7 +348,7 @@ Class IC_ClaimDailyPlatinum_Component
 		simpleTime := this.ConvertCNESimpleTimerToSeconds(simpleTimer)
 		if (simpleTimer > 0)
 		{
-			simpleTimer := A_TickCount + (simpleTimer * 1000)
+			simpleTimer := this.GetTickCount() + (simpleTimer * 1000)
 			if (addSafetyDelay)
 				simpleTimer += this.SafetyDelay
 			if (simpleTimer < this.CurrentCD[CDP_key])
@@ -370,7 +370,7 @@ Class IC_ClaimDailyPlatinum_Component
 		}
 		if (status == "")
 		{
-			CDP_TimerIsUp := A_TickCount - this.DisplayStatusTimeout >= this.MessageStickyTimer
+			CDP_TimerIsUp := this.GetTickCount() - this.DisplayStatusTimeout >= this.MessageStickyTimer
 			if (CDP_TimerIsUp)
 				status := ""
 			else
@@ -380,7 +380,7 @@ Class IC_ClaimDailyPlatinum_Component
 			}
 		}
 		else
-			this.DisplayStatusTimeout := A_TickCount
+			this.DisplayStatusTimeout := this.GetTickCount()
 		if (status == "")
 			status := "Idle."
 		GuiControl, ICScriptHub:Text, CDP_StatusText, % status
@@ -396,7 +396,7 @@ Class IC_ClaimDailyPlatinum_Component
 		if (CDP_clearStatuses || !this.Settings["FreeOffer"])
 			this.FreeWeeklyRerolls := -1
 			
-		if (this.TrialsStatus[1] == 3 && this.TrialsStatus[2] < A_TickCount)
+		if (this.TrialsStatus[1] == 3 && this.TrialsStatus[2] < this.GetTickCount())
 			this.TrialsStatus := [1,3]
 	
 		GuiControl, ICScriptHub:, CDP_PlatinumTimer, % this.ProduceGUITimerMessage("Platinum")
@@ -489,12 +489,12 @@ Class IC_ClaimDailyPlatinum_Component
 			if(FileExist(serverOverrideSettingsLoc) AND FileExist(scriptLocation) AND FileExist(serverOverrideSettingsLoc))
 				Run, %A_AhkPath% "%scriptLocation%"
 			this.CallsRunning := True
-			this.LastServerCallsTime := A_TickCount
+			this.LastServerCallsTime := this.GetTickCount()
 			this.UpdateMainStatus(this.ClaimStatusText)
 		}
 		catch errVal
 		{
-			this.LastServerCallsTime := A_TickCount - MainLoopCD ; servercall run failed, allow retries
+			this.LastServerCallsTime := this.GetTickCount() - MainLoopCD ; servercall run failed, allow retries
 		}
 	}
 
@@ -525,10 +525,16 @@ Class IC_ClaimDailyPlatinum_Component
 	
 	CeilMillisecondsToNearestMainLoopCDSeconds(CDP_timer)
 	{
-		if (CDP_timer <= A_TickCount)
+		if (CDP_timer <= this.GetTickCount())
 			return 0
-		return (Ceil((CDP_timer - A_TickCount) / this.MainLoopCD) * this.MainLoopCD) / 1000
+		return (Ceil((CDP_timer - this.GetTickCount()) / this.MainLoopCD) * this.MainLoopCD) / 1000
 	}
+	
+	GetTickCount()
+	{
+		return IC_ClaimDailyPlatinum_Functions.GetTickCount()
+	}
+	
 }
 
 

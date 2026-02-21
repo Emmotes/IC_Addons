@@ -2,6 +2,8 @@ class IC_ClaimDailyPlatinum_Functions
 {
 	static SettingsPath := A_LineFile . "\..\ClaimDailyPlatinum_Settings.json"
 
+	this.TickFrequency := -1
+
 	InjectAddon()
 	{
 		local splitStr := StrSplit(A_LineFile, "\")
@@ -21,5 +23,16 @@ class IC_ClaimDailyPlatinum_Functions
 		if(g_SF.Memory.ReadCurrentZone() == "" && Not WinExist( "ahk_exe " . g_userSettings[ "ExeName"] ))
 			return true
 		return false
+	}
+	
+	GetTickCount()
+	{
+		if (this.TickFrequency < 0)
+		{
+			DllCall("QueryPerformanceFrequency", "Int64*", freq)
+			this.TickFrequency := freq / 1000
+		}
+		DllCall("QueryPerformanceCounter", "Int64*", tick)
+		return tick / this.TickFrequency
 	}
 }

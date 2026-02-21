@@ -1,3 +1,5 @@
+21  February 2026 - v0.5.7
+ - Swapping to using DLL timing calls rather than A_Tick count to avoid 49day+ windows uptime issue.
 24  December 2025 - v0.5.6
  - Fixing a bug where claimed count wouldn't increment beyond 1.
  5  December 2025 - v0.5.5

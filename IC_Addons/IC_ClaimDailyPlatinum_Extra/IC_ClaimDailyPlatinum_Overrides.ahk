@@ -63,7 +63,7 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class ; Updates IC_BrivGem
 			; updates made, reset flags
 			g_ClaimDailyPlatinum.CallsMade.TrialsStatus := False
 		}
-		g_ClaimDailyPlatinum.HasComsUpdated := A_TickCount - this.MainLoopCD
+		g_ClaimDailyPlatinum.HasComsUpdated := this.GetTickCount() - this.MainLoopCD
 		g_ClaimDailyPlatinum.UpdateGUIReady := True
 		Critical, Off
 	}
@@ -81,5 +81,10 @@ class IC_BrivGemFarmRun_ClaimDailyPlatinum_SharedData_Class ; Updates IC_BrivGem
 		for k,v in keysGoByeBye
 			callsMade.delete(v)
 		return objToUpdate
+	}
+	
+	GetTickCount()
+	{
+		return IC_ClaimDailyPlatinum_Functions.GetTickCount()
 	}
 }
