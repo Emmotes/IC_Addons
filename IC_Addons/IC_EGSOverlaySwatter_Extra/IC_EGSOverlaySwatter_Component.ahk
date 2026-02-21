@@ -21,6 +21,7 @@ Class IC_EGSOverlaySwatter_Component
 	static EnableMessage := "Overlay is enabled."
 	
 	TimerFunctions := {}
+	TickFrequency := -1
 	DefaultSettings := {"DisableOverlay":true,"EGSFolder":"C:\Program Files (x86)\Epic Games","DefaultEGSFolder":"C:\Program Files (x86)\Epic Games","CheckDefaultFolder":false}
 	Settings := {}
 	
@@ -224,11 +225,11 @@ Class IC_EGSOverlaySwatter_Component
 	UpdateMainStatus(status)
 	{
 		GuiControlGet,EGSOS_StatusText, ICScriptHub:, EGSOS_StatusText
-		EGSOS_TimerIsUp := A_TickCount - this.DisplayStatusTimeout >= this.MessageStickyTimer
+		EGSOS_TimerIsUp := this.GetTickCount() - this.DisplayStatusTimeout >= this.MessageStickyTimer
 		if (status == "" && !EGSOS_TimerIsUp && !InStr(EGSOS_StatusText, this.DisableMessage) && !InStr(EGSOS_StatusText, this.EnableMessage))
 			status := EGSOS_StatusText
 		if (status != "" && EGSOS_TimerIsUp)
-			this.DisplayStatusTimeout := A_TickCount
+			this.DisplayStatusTimeout := this.GetTickCount()
 		if (status == "")
 			status := this.OverlayCurrentlyDisabled ? this.DisableMessage : this.EnableMessage
 		GuiControl, ICScriptHub:Text, EGSOS_StatusText, % status
@@ -313,6 +314,17 @@ Class IC_EGSOverlaySwatter_Component
 			SetTimer, %k%, Delete
 		}
 		this.UpdateMainStatus("Waiting for Gem Farm to start.")
+	}
+	
+	GetTickCount()
+	{
+		if (this.TickFrequency < 0)
+		{
+			DllCall("QueryPerformanceFrequency", "Int64*", freq)
+			this.TickFrequency := freq / 1000
+		}
+		DllCall("QueryPerformanceCounter", "Int64*", tick)
+		return tick / this.TickFrequency
 	}
 	
 }

@@ -2,7 +2,7 @@ class IC_ClaimDailyPlatinum_Functions
 {
 	static SettingsPath := A_LineFile . "\..\ClaimDailyPlatinum_Settings.json"
 
-	this.TickFrequency := -1
+	TickFrequency := -1
 
 	InjectAddon()
 	{
