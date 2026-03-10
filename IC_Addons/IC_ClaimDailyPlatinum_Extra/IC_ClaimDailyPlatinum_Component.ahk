@@ -270,8 +270,8 @@ Class IC_ClaimDailyPlatinum_Component
 			todayBoostClaimed := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Controller.userData.DailyLoginHandler.PremiumRewardsClaimed.Read()
 			if (dayIndex != "" && todayFreeClaimed != "" && todayBoostClaimed != "")
 			{
-				claimNum := 1 << dayIndex
-				if ((todayFreeClaimed & claimNum) == 0 || (this.DailyBoostExpires > 0 && (todayBoostClaimed & claimNum) == 0))
+				CDP_num := 1 << dayIndex
+				if ((todayFreeClaimed & CDP_num) == 0 || (this.DailyBoostExpires > 0 && (todayBoostClaimed & CDP_num) == 0))
 					return [true, 0]
 			}
 		}
