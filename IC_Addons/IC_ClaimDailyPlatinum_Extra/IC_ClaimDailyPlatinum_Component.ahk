@@ -271,7 +271,7 @@ Class IC_ClaimDailyPlatinum_Component
 			if (dayIndex != "" && todayFreeClaimed != "" && todayBoostClaimed != "")
 			{
 				claimNum := 1 << dayIndex
-				if ((todayFreeClaimed & CDP_num) == 0 || (this.DailyBoostExpires > 0 && (todayBoostClaimed & CDP_num) == 0))
+				if ((todayFreeClaimed & claimNum) == 0 || (this.DailyBoostExpires > 0 && (todayBoostClaimed & claimNum) == 0))
 					return [true, 0]
 			}
 		}

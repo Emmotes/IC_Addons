@@ -1,3 +1,5 @@
+10     March 2026 - v0.5.8
+ - Erm... yeah. Fixed a bug with memory reading Platinum that has likely been in a long time.
 21  February 2026 - v0.5.7
  - Swapping to using DLL timing calls rather than A_Tick count to avoid 49day+ windows uptime issue.
 24  December 2025 - v0.5.6
