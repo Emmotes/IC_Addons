@@ -1,3 +1,5 @@
+17     March 2026 - v0.0.5
+ - Removing z33 from every selectable option to avoid stacking on the pure-Gazer zone.
 12   October 2025 - v0.0.4
  - Adding a checkbox to allow avoiding issues with routes that land on z5 bosses.
 12    August 2025 - v0.0.3

@@ -65,13 +65,13 @@ HTSPE_SetAndSave()
 	bitfield := 0
 	switch htspe_prefChoice
 	{
-		case 1: bitfield := htspe_bossIssues ? 544790277488655 : 544790277504495
-		case 2: bitfield := 4396679168
+		case 1: bitfield := htspe_bossIssues ? 544785982521359 : 544785982537199
+		case 2: bitfield := 101711872
 		case 3: bitfield := htspe_bossIssues ? 387142985482252 : 387142985497612
 		case 4: bitfield := htspe_bossIssues ? 157642895327235 : 157642895327715
-		case 5: bitfield := htspe_bossIssues ? 387147382161420 : 387147382176780
+		case 5: bitfield := htspe_bossIssues ? 387143087194124 : 387143087209484
 		case 6: bitfield := htspe_bossIssues ? 544785880809487 : 544785880825327
-		case 7: bitfield := 387147382128640
+		case 7: bitfield := 387143087161344
 	}
 	if (bitfield > 0)
 	{
