@@ -322,14 +322,28 @@ class IC_ClaimDailyPlatinum_Servercalls
 			wrlLoc := g_SF.Memory.GetWebRequestLogLocation()
 			if (wrlLoc == "")
 				return [false, this.GetTickCount() + this.CalcNoTimerDelay()]
-			webRequestLog := ""
-			FileRead, webRequestLog, %wrlLoc%
 			CDP_nextClaimSeconds := 9999999
-			if (InStr(webRequestLog, """dialog"":"))
+			buffer := ""
+			seenDialogues := {}
+			Loop, Read, %wrlLoc%
 			{
-				currMatches := this.GetAllRegexMatches(webRequestLog, """dialog"": ?""([^""]+)""")
-				for k,v in currMatches
+				line := buffer . A_LoopReadLine
+				len := StrLen(line)
+				if !InStr(line, """dialog"":")
 				{
+					buffer := (len > 500) ? SubStr(line, -500) : line
+					continue
+				}
+				pos := 1
+				while pos := RegExMatch(line, """dialog"": ?""([^""]+)""", match, pos)
+				{
+					v := match1
+					pos += StrLen(match)
+					; avoid potential dupes from buffer
+					if (seenDialogues.HasKey(v))
+						continue
+					seenDialogues[v] := true
+					; server call
 					params := "&dialog=" . v . "&ui_type=standard"
 					response := g_BrivServerCall.ServerCallCDP("getdynamicdialog", params)
 					if (IsObject(response) && response.success)
@@ -345,8 +359,10 @@ class IC_ClaimDailyPlatinum_Servercalls
 						}
 					}
 				}
+				; since `loop,read` will split lines in to ~65535 max length - it can split potential matches
+				; so need to keep the tail end of the previous line
+				buffer := (len > 500) ? SubStr(line, -500) : line
 			}
-			webRequestLog := ""
 			if (g_SF.ArrSize(this.CelebrationCodes) > 0)
 				return [true, 0]
 			if (CDP_nextClaimSeconds < 9999999)
@@ -400,18 +416,6 @@ class IC_ClaimDailyPlatinum_Servercalls
 		r := min
 		Random,r,min,max
 		return r
-	}
-
-	GetAllRegexMatches(haystack,needle)
-	{
-		matches := []
-		while n := RegExMatch(haystack,"O)" needle,match,n?n+1:1)
-		{
-			index := matches.length()+1
-			loop % match.count()
-				matches.push(match.value(a_index))
-		}
-		return matches
 	}
 	
 	GetTickCount()
