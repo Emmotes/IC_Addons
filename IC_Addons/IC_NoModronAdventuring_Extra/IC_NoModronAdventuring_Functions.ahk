@@ -345,9 +345,10 @@ class IC_NMA_Functions
         global NMA_UltsIgnoreSelise
         global NMA_UltsIgnoreHavilar
         global NMA_UltsIgnoreNERDs
+        global NMA_UltsIgnoreEllywick
         for k,v in g_NMAChampsToLevel
         {
-            if ((NMA_UltsIgnoreSelise AND k == 81) OR (NMA_UltsIgnoreHavilar AND k == 56) OR (NMA_UltsIgnoreNERDs AND k == 87))
+            if ((NMA_UltsIgnoreSelise AND k == 81) OR (NMA_UltsIgnoreHavilar AND k == 56) OR (NMA_UltsIgnoreNERDs AND k == 87) OR (NMA_UltsIgnoreEllywick AND k == 83))
                 continue
             if(k AND k != -1 AND NMA_FireUlts)
             {
