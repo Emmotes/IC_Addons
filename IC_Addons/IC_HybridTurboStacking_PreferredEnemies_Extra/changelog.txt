@@ -1,3 +1,5 @@
+20     April 2026 - v0.0.6
+ - Modified to work with the latest Hybrid Turbo Stacking version.
 17     March 2026 - v0.0.5
  - Removing z33 from every selectable option to avoid stacking on the pure-Gazer zone.
 12   October 2025 - v0.0.4

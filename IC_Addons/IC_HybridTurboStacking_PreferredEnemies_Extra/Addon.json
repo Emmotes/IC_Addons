@@ -1,6 +1,6 @@
 {
 	"Name":"HybridTurboStacking PreferredEnemies",
-	"Version": "v0.0.5",
+	"Version": "v0.0.6",
 	"Includes" : "IC_HybridTurboStacking_PreferredEnemies_Component.ahk",
 	"Author" : "Emmote",
 	"Url" : "https://github.com/emmotes/IC_Addons/tree/main/IC_Addons/IC_HybridTurboStacking_PreferredEnemies_Extra",
@@ -12,7 +12,7 @@
 		},
 		{
 			"Name":"BrivGemFarm HybridTurboStacking",
-			"Version":"v1.1.5"
+			"Version":"v1.2.6"
 		}
 	]
 }

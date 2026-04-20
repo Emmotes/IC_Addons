@@ -31,15 +31,19 @@ Class IC_HybridTurboStacking_PreferredEnemies_Component
 		Global
 		Gui, ICScriptHub:Tab, BrivGF HybridTurboStacking
 		
-		GuiControlGet, pos, ICScriptHub:Pos, BGFHTS_MelfGroup
-		posH += 80
-		GuiControl, ICScriptHub:Move, BGFHTS_MelfGroup, h%posH%
+		GuiControlGet, pos, ICScriptHub:Pos, BGFHTS_BrivLevelingGroup
+		if (!posH)
+			GuiControlGet, pos, ICScriptHub:Pos, BGFHTS_MelfGroup
 		
-		GuiControlGet, pos, ICScriptHub:Pos, BGFHTS_BrivStack_Mod_50_41
+		yPos := posY + posH + 10
+		Gui, ICScriptHub:Add, Groupbox, Section xs y%yPos% w440 h105 vHTSPE_Group, Preferred Enemies
 		
-		posY += 25
+		GuiControlGet, pos, ICScriptHub:Pos, HTSPE_Group
+		posX += 10
+		posY += 20
+		
 		Gui, ICScriptHub:Font, w700
-		Gui, ICScriptHub:Add, Text, x%posX% y%posY% w400, Quick Select Preferred Enemy Types:
+		Gui, ICScriptHub:Add, Text, x%posX% y%posY% w420 vHTSPE_Title, Quick Select Preferred Enemy Types:
 		Gui, ICScriptHub:Font, w400
 		
 		posY += 20
@@ -48,14 +52,30 @@ Class IC_HybridTurboStacking_PreferredEnemies_Component
 		Gui, ICScriptHub:Add, DropDownList, x%posX% y%posY% AltSubmit w175 vHTSPE_PreferredEnemies
 		choices := "All||TT: Ranged-only|TT: Mixed-only|TT: Melee-only|TT: Ranged+Mixed|TT: Mixed+Melee|TT: 14/9j z21+ Ranged+Mixed"
 		GuiControl, ICScriptHub:, HTSPE_PreferredEnemies, % "|" . choices
-		newWidth := this.DropDownSize(choices,,, 8)
+		newWidth := GUIFunctions.DropDownSize(choices,,, 8)
 		GuiControlGet, hnwd, ICScriptHub:Hwnd, HTSPE_PreferredEnemies
 		SendMessage, 0x0160, newWidth, 0,, ahk_id %hnwd% ; CB_SETDROPPEDWIDTH
 		
 		posY -= 2
 		Gui, ICScriptHub:Add, Button, x+10 y%posY% vHTSPE_Set gHTSPE_SetAndSave, Set Preferred Enemies and Save
 	}
-	
+
+	Move(y)
+	{
+		GuiControlGet, pos, ICScriptHub:Pos, HTSPE_Group
+		if (!posW) ; Control not found yet
+			return
+		offset := y - posY
+		if (offset == 0)
+			return
+		controls := ["HTSPE_Group", "HTSPE_Title", "HTSPE_AvoidBossIssues", "HTSPE_PreferredEnemies", "HTSPE_Set"]
+		for _, ctrl in controls
+		{
+			GuiControlGet, c, ICScriptHub:Pos, %ctrl%
+			newY := cY + offset
+			GuiControl, ICScriptHub:MoveDraw, %ctrl%, y%newY%
+		}
+	}
 }
 
 HTSPE_SetAndSave()
