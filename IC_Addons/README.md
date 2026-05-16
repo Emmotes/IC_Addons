@@ -36,12 +36,6 @@ An addon that will hide the default gem farm profile as long as another profile 
 
 Read the [BrivGemFarm Hide Default Profile README](IC_BrivGemFarm_HideDefaultProfile_Extra/README.md)
 
-### Hybrid Turbo Stacking Preferred Enemies
-
-An add on that adds a way to quickly set up the Preferred Briv Stack Zones in the TurboHybrid addon.
-
-Read the [HybridTurboStacking Preferred Enemies README](IC_HybridTurboStacking_PreferredEnemies_Extra/README.md)
-
 ### No Modron Aventuring
 
 This is a fork of Antilectual's [IC_NoModronAdventuring_Extra](https://github.com/antilectual/IC_Addons/tree/main/IC_Addons/IC_NoModronAdventuring_Extra) addon that adds a few extra features.  
