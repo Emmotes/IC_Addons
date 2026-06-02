@@ -1,2 +1,4 @@
+ 2      June 2026 - v0.0.2
+ - An edit by Antilectual to support the latest changes to the Advanced Settings.
 25   October 2025 - v0.0.1
  - An add on that adds a way to let you quick select the Preferred Briv Jump Zones from a dropdown box based on the Briv Scripting Routes site.

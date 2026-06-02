@@ -33,10 +33,12 @@ Class IC_Advanced_PresetRoutes_Component
 		Global
 		Gui, ICScriptHub:Tab, BrivGF Advanced
 		
-		GuiControlGet, pos, ICScriptHub:Pos, BrivGemFarmAdvancedSaveButton
-		posY -= 20
+		; GuiControlGet, pos, ICScriptHub:Pos, BrivGemFarmAdvancedSaveButton
+		
+		GuiControlGet, pos, ICScriptHub:Pos, BrivLevelingGroup
+		posY += (posH + 15)
 		Gui, ICScriptHub:Font, w700
-		Gui, ICScriptHub:Add, Text, x%posX% y%posY% w200, Route Presets
+		Gui, ICScriptHub:Add, Text, x%posX% y%posY% w200 vAPR_Header, Route Presets
 		Gui, ICScriptHub:Font, w400
 		
 		posY += 20
@@ -51,9 +53,7 @@ Class IC_Advanced_PresetRoutes_Component
 		
 		posY -= 1
 		Gui, ICScriptHub:Add, Button, x+2 y%posY% vAPR_Set gAPR_SetAndSave, Set Route and Save
-		
-		Gui, ICScriptHub:Add, Text, x%posX% y+2 w400, Note: Does not include Feat Swap routes. Use Feat Swap addon for those.
-		
+		Gui, ICScriptHub:Add, Text, x%posX% y+2 w400 vAPR_FeatSwapNote, Note: Does not include Feat Swap routes. Use Feat Swap addon for those.
 		GuiControlGet, pos, ICScriptHub:Pos, BrivGemFarmAdvancedStatusText
 		GuiControl, ICScriptHub:Move, BrivGemFarmAdvancedStatusText, y%posY%
 		GuiControlGet, pos, ICScriptHub:Pos, BrivGemFarmAdvancedSaveButton
@@ -66,8 +66,7 @@ Class IC_Advanced_PresetRoutes_Component
 		Loop, 50
 			GuiControl, ICScriptHub:, PreferredBrivJumpSettingMod_50_%A_Index%, % (value & (2 ** (A_Index - 1))) != 0
 		Gui, ICScriptHub:Submit, NoHide
-	}
-	
+	}	
 }
 
 APR_SetAndSave()
