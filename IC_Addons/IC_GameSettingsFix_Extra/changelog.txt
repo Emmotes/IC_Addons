@@ -1,3 +1,5 @@
+02 September 2026 - v0.3.1
+ - Adding some extra message boxes in-case of bad data.
 02 September 2026 - v0.3.0
  - Adding the `Fix Settings Now` button back again.
 13  November 2025 - v0.2.11

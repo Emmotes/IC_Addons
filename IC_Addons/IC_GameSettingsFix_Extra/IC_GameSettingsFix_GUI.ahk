@@ -35,6 +35,16 @@ GSF_DeleteProfile()
 GSF_FixNow()
 {
 	global
+	if (g_GameSettingsFix.GameSettingsFileLocation == "")
+	{
+		MsgBox, % "Settings file location can't be found. Load the game and then reload the script so that it can be memory-read."
+		return
+	}
+	if (!FileExist(g_GameSettingsFix.GameSettingsFileLocation))
+	{
+		MsgBox, % "Settings file doesn't seem to exist. Make sure your imports and pointers are what they should be for your game version. Then reload the script so that it can be memory-read."
+		return
+	}
 	if (!IC_GameSettingsFix_Functions.IsGameClosed())
 	{
 		MsgBox, % "The settings cannot be fixed while the game is open. Close it first."
