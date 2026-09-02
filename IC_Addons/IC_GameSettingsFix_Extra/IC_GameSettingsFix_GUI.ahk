@@ -32,6 +32,22 @@ GSF_DeleteProfile()
 	g_GameSettingsFix.DeleteProfile()
 }
 
+GSF_FixNow()
+{
+	global
+	if (!IC_GameSettingsFix_Functions.IsGameClosed())
+	{
+		MsgBox, % "The settings cannot be fixed while the game is open. Close it first."
+		return
+	}
+	result := IC_GameSettingsFix_Functions.GSF_FixGameSettings(g_GameSettingsFix.GameSettingsFileLocation)
+	if (result == "The game settings file has been fixed.")
+		g_GameSettingsFix.FixedCounter++
+	g_GameSettingsFix.UpdateMainStatus(result)
+	if (result != "")
+		MsgBox, % result
+}
+
 class IC_GameSettingsFix_GUI
 {
 	static WaitingMessage := "Waiting for Gem Farm to start."
@@ -147,7 +163,6 @@ class IC_GameSettingsFix_GUI
 		Gui, ICScriptHub:Add, Checkbox, xs%GSF_col2x% y+-13 vGSF_HKsSwap25100,
 		Gui, ICScriptHub:Add, Text, xs%GSF_col3x% y+-13 w%GSF_col3w%, Required for x25 Hotkey Levelling
 
-		Gui, ICScriptHub:Font, w700
 		GUIFunctions.UseThemeTextColor("TableTextColor")
 		GSF_gboxhHotkeys += 6
 		Gui, ICScriptHub:Add, ListView, Section x15 ys+%GSF_gboxhHotkeys% w499 r2 vGSF_SettingsFileLocation, Settings File Location
@@ -155,6 +170,8 @@ class IC_GameSettingsFix_GUI
 		GuiControlGet, pos, ICScriptHub:Pos, GSF_SettingsFileLocation
 		GSF_gboxhSettingsLoc := posH
 		GUIFunctions.UseThemeTextColor("DefaultTextColor")
+		
+		Gui, ICScriptHub:Add, Button, x154 y+20 w201 h33 vGSF_FixNow gGSF_FixNow, `-- Fix Settings Now --
 	}
 	
 	CreateTooltips()
