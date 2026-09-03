@@ -18,6 +18,12 @@ An addon that will claim your daily platinum automagically so you don't have to.
 
 Read the [Claim Daily Platinum README](IC_ClaimDailyPlatinum_Extra/README.md)
 
+# DM Fishing Minigame
+
+An addon that will retry an adventure until DM picks the Guest Star seat that you want.
+
+Read the [DM Fishing Minigamer README](IC_DMFishingMinigame_Extra/README.md)
+
 ### EGS Overlay Swatter
 
 An addon that will disable or enable the EGS overlay during offline stacking.

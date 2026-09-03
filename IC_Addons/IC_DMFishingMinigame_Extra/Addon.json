@@ -1,0 +1,14 @@
+{
+	"Name":"DM Fishing Minigame",
+	"Version": "v0.0.1",
+	"Includes" : "IC_DMFishingMinigame_Includes.ahk",
+	"Author" : "Emmote",
+	"Url" : "https://github.com/emmotes/IC_Addons/tree/main/IC_Addons/IC_DMFishingMinigame_Extra",
+	"Info" : "An addon that will retry an adventure until DM picks the Guest Star seat that you want.",
+	"Dependencies" : [
+		{
+			"Name":"IC Core",
+			"Version":"v0.2.7"
+		}
+	]
+}
