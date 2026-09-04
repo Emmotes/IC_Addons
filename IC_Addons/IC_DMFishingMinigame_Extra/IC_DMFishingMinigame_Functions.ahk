@@ -1,6 +1,7 @@
 class IC_DMFishingMinigame_Functions
 {
 	static SettingsPath := A_LineFile . "\..\DMFishingMinigame_Settings.json"
+	static DefaultCoords := {"c_compX":-90,"c_compY":180,"c_skipX":-127,"c_skipY":-77,"c_restX":122,"c_restY":-141}
 
 	TickFrequency := -1
 
@@ -58,17 +59,14 @@ class IC_DMFishingMinigame_Functions
 	
 	ClickCompleteAdventure(DMFM_status, DMFM_timeout := 10000)
 	{
-		local width := g_DMFishingMinigame.GameWidthHalf
-		local height := g_DMFishingMinigame.GameHeightHalf
-		local actualX := width + g_DMFishingMinigame.Settings["compX"]
-		local actualY := height + g_DMFishingMinigame.Settings["compY"]
+		local compCoords := this.GetCoordinates("c_comp")
 		local startTime := this.GetTickCount()
 		local elapsed := 0
 		loop
 		{
 			if (!g_DMFishingMinigame.Running)
 				return true
-			this.ClickTheMouse(actualX, actualY)
+			this.ClickTheMouse(compCoords[1], compCoords[2])
 			Sleep, 500
 			if (g_SF.Memory.ReadCurrentZone() == -1)
 				return true
@@ -82,22 +80,17 @@ class IC_DMFishingMinigame_Functions
 
 	AlternateSkipAndRestart(DMFM_status, DMFM_timeout := 30000)
 	{
-		local width := g_DMFishingMinigame.GameWidth
-		local widthHalf := g_DMFishingMinigame.GameWidthHalf
-		local height := g_DMFishingMinigame.GameHeight
-		local skipX := width + g_DMFishingMinigame.Settings["skipX"]
-		local skipY := height + g_DMFishingMinigame.Settings["skipY"]
-		local restX := widthHalf + g_DMFishingMinigame.Settings["restX"]
-		local restY := height + g_DMFishingMinigame.Settings["restY"]
+		local skipCoords := this.GetCoordinates("c_skip")
+		local restCoords := this.GetCoordinates("c_rest")
 		local startTime := this.GetTickCount()
 		local elapsed := 0
 		loop
 		{
 			if (!g_DMFishingMinigame.Running)
 				return true
-			this.ClickTheMouse(skipX, skipY)
+			this.ClickTheMouse(skipCoords[1], skipCoords[2])
 			Sleep, 50
-			this.ClickTheMouse(restX, restY)
+			this.ClickTheMouse(restCoords[1], restCoords[2])
 			Sleep, 500
 			if (g_SF.Memory.ReadCurrentZone() >= 1)
 				return true
@@ -128,6 +121,37 @@ class IC_DMFishingMinigame_Functions
 	; =================================
 	; ===== MISC HELPER FUNCTIONS =====
 	; =================================
+
+	GetCoordinates(coordType)
+	{
+		local width := 0
+		local height := 0
+		local offsetX := 0
+		local offsetY := 0
+		local actualX := 0
+		local actualY := 0
+		if (g_DMFishingMinigame.Settings["customCoords"])
+		{
+			offsetX := g_DMFishingMinigame.Settings[coordType "X"]
+			offsetY := g_DMFishingMinigame.Settings[coordType "Y"]
+		}
+		else
+		{
+			if (InStr(coordType, "comp") || InStr(coordType, "rest"))
+				width := g_DMFishingMinigame.GameWidthHalf
+			else
+				width := g_DMFishingMinigame.GameWidth
+			if (InStr(coordType, "comp"))
+				height := g_DMFishingMinigame.GameHeightHalf
+			else
+				height := g_DMFishingMinigame.GameHeight
+			offsetX := this.DefaultCoords[coordType "X"]
+			offsetY := this.DefaultCoords[coordType "Y"]
+		}
+		actualX := width + offsetX
+		actualY := height + offsetY
+		return [actualX, actualY]
+	}
 	
 	GetTickCount()
 	{

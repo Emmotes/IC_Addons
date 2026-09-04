@@ -1,2 +1,4 @@
- 2 September 2025 - v0.0.1
+ 4 September 2026 - v0.0.2
+ - Adding a dropdown that lets you choose between Default mouse coordinates and Custum mouse coordinates. For when the Default ones don't work.
+ 3 September 2026 - v0.0.1
  - Initial Release. An addon that will retry an adventure until DM picks the Guest Star seat that you want.

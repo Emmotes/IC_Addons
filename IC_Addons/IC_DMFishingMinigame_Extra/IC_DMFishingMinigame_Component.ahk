@@ -15,7 +15,7 @@ class IC_DMFishingMinigame_Component
 	DisplayStatusTimeout := -1
 	MessageStickyTimer := 6000
 
-	DefaultSettings := {"compX":-90,"compY":180,"skipX":-127,"skipY":-77,"restX":122,"restY":-141,"S1":false,"S2":false,"S3":false,"S4":false,"S5":true,"S7":false,"S8":false,"S9":false,"S10":false,"S11":false,"S12":false}
+	DefaultSettings := {"customCoords":false,"c_compX":0,"c_compY":0,"c_skipX":0,"c_skipY":0,"c_restX":0,"c_restY":0,"S1":false,"S2":false,"S3":false,"S4":false,"S5":true,"S7":false,"S8":false,"S9":false,"S10":false,"S11":false,"S12":false}
 	Settings := {}
 	
 	CurrSeat := 0
@@ -87,7 +87,7 @@ class IC_DMFishingMinigame_Component
 			Sleep, 100
 		}
 		this.UpdateMainStatus("Stopped.")
-		this.ToggleAllSeatCheckboxes("Enable")
+		this.ToggleAllSettingsUI("Enable")
 	}
 	
 	IsNumber(inputText)
@@ -119,25 +119,28 @@ class IC_DMFishingMinigame_Component
 			this.SetDefaultSettings()
 			writeSettings := true
 		}
-		if (this.SanityCheckSettings())
-			writeSettings := true
 		if (this.CheckMissingOrExtraSettings())
+			writeSettings := true
+		if (this.SanityCheckSettings())
 			writeSettings := true
 		if(writeSettings)
 			g_SF.WriteObjectToJSON(pathToGetDMFMSettings, this.Settings)
 
-		GuiControl, ICScriptHub:, DMFM_CompleteCoordsX, % this.Settings["compX"]
-		GuiControl, ICScriptHub:, DMFM_CompleteCoordsY, % this.Settings["compY"]
-		GuiControl, ICScriptHub:, DMFM_SkipCoordsX, % this.Settings["skipX"]
-		GuiControl, ICScriptHub:, DMFM_SkipCoordsY, % this.Settings["skipY"]
-		GuiControl, ICScriptHub:, DMFM_RestartCoordsX, % this.Settings["restX"]
-		GuiControl, ICScriptHub:, DMFM_RestartCoordsY, % this.Settings["restY"]
+		GuiControl, ICScriptHub:, DMFM_CompleteCoordsX, % this.Settings["c_compX"]
+		GuiControl, ICScriptHub:, DMFM_CompleteCoordsY, % this.Settings["c_compY"]
+		GuiControl, ICScriptHub:, DMFM_SkipCoordsX, % this.Settings["c_skipX"]
+		GuiControl, ICScriptHub:, DMFM_SkipCoordsY, % this.Settings["c_skipY"]
+		GuiControl, ICScriptHub:, DMFM_RestartCoordsX, % this.Settings["c_restX"]
+		GuiControl, ICScriptHub:, DMFM_RestartCoordsY, % this.Settings["c_restY"]
 		loop, 12
 		{
 			if (A_Index == 6)
 				continue
 			GuiControl, ICScriptHub:, DMFM_Seat%A_Index%, % this.Settings["S"+A_Index]
 		}
+
+		GuiControl, ICScriptHub:Choose, DMFM_CoordMode, % this.Settings["customCoords"] ? "Custom" : "Default"
+		this.SetCoordModeUI()
 	}
 	
 	SaveSettings()
@@ -146,17 +149,20 @@ class IC_DMFishingMinigame_Component
 		Gui, Submit, NoHide
 
 		GuiControlGet,DMFM_CompleteCoordsX, ICScriptHub:, DMFM_CompleteCoordsX
-		this.Settings["compX"] := DMFM_CompleteCoordsX
+		this.Settings["c_compX"] := DMFM_CompleteCoordsX
 		GuiControlGet,DMFM_CompleteCoordsY, ICScriptHub:, DMFM_CompleteCoordsY
-		this.Settings["compY"] := DMFM_CompleteCoordsY
+		this.Settings["c_compY"] := DMFM_CompleteCoordsY
 		GuiControlGet,DMFM_SkipCoordsX, ICScriptHub:, DMFM_SkipCoordsX
-		this.Settings["skipX"] := DMFM_SkipCoordsX
+		this.Settings["c_skipX"] := DMFM_SkipCoordsX
 		GuiControlGet,DMFM_SkipCoordsY, ICScriptHub:, DMFM_SkipCoordsY
-		this.Settings["skipY"] := DMFM_SkipCoordsY
+		this.Settings["c_skipY"] := DMFM_SkipCoordsY
 		GuiControlGet,DMFM_RestartCoordsX, ICScriptHub:, DMFM_RestartCoordsX
-		this.Settings["restX"] := DMFM_RestartCoordsX
+		this.Settings["c_restX"] := DMFM_RestartCoordsX
 		GuiControlGet,DMFM_RestartCoordsY, ICScriptHub:, DMFM_RestartCoordsY
-		this.Settings["restY"] := DMFM_RestartCoordsY
+		this.Settings["c_restY"] := DMFM_RestartCoordsY
+		
+		GuiControlGet,DMFM_CoordMode, ICScriptHub:, DMFM_CoordMode
+		this.Settings["customCoords"] := DMFM_CoordMode == "Custom"
 
 		loop, 12
 		{
@@ -165,6 +171,7 @@ class IC_DMFishingMinigame_Component
 			GuiControlGet,DMFM_Seat%A_Index%, ICScriptHub:, DMFM_Seat%A_Index%
 			this.Settings["S"+A_Index] := DMFM_Seat%A_Index%
 		}
+
 		this.SanityCheckSettings()
 		this.CheckMissingOrExtraSettings()
 		g_SF.WriteObjectToJSON(IC_DMFishingMinigame_Functions.SettingsPath, this.Settings)
@@ -180,65 +187,61 @@ class IC_DMFishingMinigame_Component
 	
 	CheckMissingOrExtraSettings()
 	{
+		local modified := false
 		for k,v in this.DefaultSettings
 			if (this.Settings[k] == "")
+			{
 				this.Settings[k] := v
-		for k,v in this.Settings
+				modified := true
+			}
+		for k,v in this.Settings.Clone()
 			if (!this.DefaultSettings.HasKey(k))
+			{
 				this.Settings.Delete(k)
+				modified := true
+			}
+		return modified
 	}
 	
 	SanityCheckSettings()
 	{
 		local sanityChecked := false
-		local compX
-		local compY
-		local skipX
-		local skipY
-		local restX
-		local restY
 
-		GuiControlGet,compX, ICScriptHub:, DMFM_CompleteCoordsX
-		GuiControlGet,compY, ICScriptHub:, DMFM_CompleteCoordsY
-		GuiControlGet,skipX, ICScriptHub:, DMFM_SkipCoordsX
-		GuiControlGet,skipY, ICScriptHub:, DMFM_SkipCoordsY
-		GuiControlGet,restX, ICScriptHub:, DMFM_RestartCoordsX
-		GuiControlGet,restY, ICScriptHub:, DMFM_RestartCoordsY
-
-		if compX is not number
+		if (this.Settings["c_compX"] == "" || !this.IsNumber(this.Settings["c_compX"]))
 		{
-			GuiControl, ICScriptHub:, DMFM_CompleteCoordsX, % this.DefaultSettings["compX"]
-			this.Settings["compX"] := this.DefaultSettings["compX"]
+			MsgBox, % "c_compX is not a number " . this.Settings["c_compX"]
+			GuiControl, ICScriptHub:, DMFM_CompleteCoordsX, % this.DefaultSettings["c_compX"]
+			this.Settings["c_compX"] := this.DefaultSettings["c_compX"]
 			sanityChecked := true
 		}
-		if compY is not number
+		if (this.Settings["c_compY"] == "" || !this.IsNumber(this.Settings["c_compY"]))
 		{
-			GuiControl, ICScriptHub:, DMFM_CompleteCoordsY, % this.DefaultSettings["compY"]
-			this.Settings["compY"] := this.DefaultSettings["compY"]
+			GuiControl, ICScriptHub:, DMFM_CompleteCoordsY, % this.DefaultSettings["c_compY"]
+			this.Settings["c_compY"] := this.DefaultSettings["c_compY"]
 			sanityChecked := true
 		}
-		if skipX is not number
+		if (this.Settings["c_skipX"] == "" || !this.IsNumber(this.Settings["c_skipX"]))
 		{
-			GuiControl, ICScriptHub:, DMFM_SkipCoordsX, % this.DefaultSettings["skipX"]
-			this.Settings["skipX"] := this.DefaultSettings["skipX"]
+			GuiControl, ICScriptHub:, DMFM_SkipCoordsX, % this.DefaultSettings["c_skipX"]
+			this.Settings["c_skipX"] := this.DefaultSettings["c_skipX"]
 			sanityChecked := true
 		}
-		if skipY is not number
+		if (this.Settings["c_skipY"] == "" || !this.IsNumber(this.Settings["c_skipY"]))
 		{
-			GuiControl, ICScriptHub:, DMFM_SkipCoordsY, % this.DefaultSettings["skipY"]
-			this.Settings["skipY"] := this.DefaultSettings["skipY"]
+			GuiControl, ICScriptHub:, DMFM_SkipCoordsY, % this.DefaultSettings["c_skipY"]
+			this.Settings["c_skipY"] := this.DefaultSettings["c_skipY"]
 			sanityChecked := true
 		}
-		if restX is not number
+		if (this.Settings["c_restX"] == "" || !this.IsNumber(this.Settings["c_restX"]))
 		{
-			GuiControl, ICScriptHub:, DMFM_RestartCoordsX, % this.DefaultSettings["restX"]
-			this.Settings["restX"] := this.DefaultSettings["restX"]
+			GuiControl, ICScriptHub:, DMFM_RestartCoordsX, % this.DefaultSettings["c_restX"]
+			this.Settings["c_restX"] := this.DefaultSettings["c_restX"]
 			sanityChecked := true
 		}
-		if restY is not number
+		if (this.Settings["c_restY"] == "" || !this.IsNumber(this.Settings["c_restY"]))
 		{
-			GuiControl, ICScriptHub:, DMFM_RestartCoordsY, % this.DefaultSettings["restY"]
-			this.Settings["restY"] := this.DefaultSettings["restY"]
+			GuiControl, ICScriptHub:, DMFM_RestartCoordsY, % this.DefaultSettings["c_restY"]
+			this.Settings["c_restY"] := this.DefaultSettings["c_restY"]
 			sanityChecked := true
 		}
 
@@ -269,14 +272,69 @@ class IC_DMFishingMinigame_Component
 		GuiControl, ICScriptHub:, DMFM_NumResets, % this.TotalResets
 	}
 
-	ToggleAllSeatCheckboxes(dmfm_enableType)
+	ToggleAllSettingsUI(dmfm_enableType)
 	{
+		GuiControl, ICScriptHub:%dmfm_enableType%, DMFM_CoordMode
+		for k,v in ["Complete", "Skip", "Restart"]
+		{
+			GuiControl, ICScriptHub:%dmfm_enableType%, DMFM_%v%CoordsX
+			GuiControl, ICScriptHub:%dmfm_enableType%, DMFM_%v%CoordsY
+		}
 		loop, 12
 		{
 			if (A_Index == 6)
 				Continue
 			GuiControl, ICScriptHub:%dmfm_enableType%, DMFM_Seat%A_Index%
 		}
+	}
+
+	SetCoordModeUI()
+	{
+		local cMode
+		local visType
+		local ctrlName
+		local ctrlType
+		GuiControlGet,cMode, ICScriptHub:, DMFM_CoordMode
+		if (cMode == g_DMFishingMinigameGUI.currentCoordMode)
+			return
+
+		hideControls := cMode == "Default"
+
+		settingsGroupBox := g_DMFishingMinigameGUI.settingsGroupBox.controlId
+		settingsGroupBoxH := g_DMFishingMinigameGUI.gboxhSettings[hideControls ? 1 : 2]
+		GuiControl, ICScriptHub:MoveDraw, %settingsGroupBox%, h%settingsGroupBoxH%
+
+		for k,v in g_DMFishingMinigameGUI.settingsHideableControls
+			if (hideControls)
+				v.Hide()
+			else
+				v.Show()
+
+		heightDiff := g_DMFishingMinigameGUI.gboxhSettings[2] - g_DMFishingMinigameGUI.gboxhSettings[1]
+		for k,v in g_DMFishingMinigameGUI.restMoveableControls
+		{
+			controlId := v.controlId
+			GuiControlGet, oldPos, ICScriptHub:Pos, %controlId%
+			y := oldPosY + heightDiff * (hideControls ? -1 : 1)
+			GuiControl, ICScriptHub:Move, %controlId%, y%y%
+			; Fix bug with moving when there's a tab.
+			GuiControlGet, bugPos, ICScriptHub:Pos, %controlId%
+			y -= Abs(heightDiff - Abs(bugPosY - oldPosY))
+			GuiControl, ICScriptHub:MoveDraw, %controlId%, y%y%
+		}
+
+		if (hideControls)
+		{
+			g_DMFishingMinigameGUI.settingsCoordModeDDLB1.Show()
+			g_DMFishingMinigameGUI.settingsCoordModeDDLB2.Hide()
+		}
+		else
+		{
+			g_DMFishingMinigameGUI.settingsCoordModeDDLB1.Hide()
+			g_DMFishingMinigameGUI.settingsCoordModeDDLB2.Show()
+		}
+
+		g_DMFishingMinigameGUI.currentCoordMode := cMode
 	}
 
 	ToggleStartStopButtons(dmfm_start, dmfm_stop)
@@ -293,7 +351,7 @@ class IC_DMFishingMinigame_Component
 	{
 		CoordMode, Mouse, Client
 		this.SaveSettings()
-		this.ToggleAllSeatCheckboxes("Disable")
+		this.ToggleAllSettingsUI("Disable")
 		this.ToggleStartStopButtons("Disable", "Enable")
 		this.Running := true
 		this.DMFishingMinigame()
@@ -302,7 +360,7 @@ class IC_DMFishingMinigame_Component
 	StopFishing()
 	{
 		this.Running := false
-		this.ToggleAllSeatCheckboxes("Enable")
+		this.ToggleAllSettingsUI("Enable")
 		this.ToggleStartStopButtons("Enable", "Disable")
 	}
 	
