@@ -2,7 +2,7 @@
 
 This is an addon that will retry an adventure until DM picks the Guest Star seat that you want. Simply pick a selection of acceptable seats and then click `Start Fishing`.
 
-> [!CAUTION]
+> [!IMPORTANT]
 > *Make sure when you start that there are no UI elements open in-game. This script has no idea what state the user interface is in - so if you have extra stuff open - or you aren't in an adventure - it may end up clicking them by mistake.*
 
 > [!NOTE]
@@ -46,12 +46,12 @@ Use Autohotkey's `Window Spy` tool to find the coordinates for each of the requi
 
 1. Make sure Idle Champions is the currently selected window.
 2. Hover your mouse over the required buttons in-game one-by-one.
-  - `Complete Adventure Coordinates`: This is the `Complete` button that shows on the `Complete Adventure` dialog while in an adventure.
-  - `Skip Completion Stats Coordinates`: This is the `Skip` button that shows once an adventure has just ended while the completion stats are animating.
-  - `Restart Adventure Coordinates`: This is the `Restart` button that shows once an adventure has ended and the completion stats have finished animating.
-3. Copy the `Mouse Position` -> `Client` numbers. It will be in the form of `XXX, YYY (recommended)`. Input the `XXX` values into the `X` box in the script and the `YYY` values into the `Y` box in the script.
+   - `Complete Adventure Coordinates`: This is the `Complete` button that shows on the `Complete Adventure` dialogue while in an adventure.
+   - `Skip Completion Stats Coordinates`: This is the `Skip` button that shows once an adventure has just ended while the completion stats are animating.
+   - `Restart Adventure Coordinates`: This is the `Restart` button that shows once an adventure has ended and the completion stats have finished animating.
+3. Copy the `Mouse Position` -> `Client` numbers. It will be in the form of `XXX, YYY (recommended)`. Input the `XXX` value into the `X` box in the script and the `YYY` value into the `Y` box in the script.
 
-> [!NOTE]
+> [!TIP]
 > *All Coordinates names have tooltips in the script's UI.*
 
 > [!CAUTION]
@@ -77,7 +77,7 @@ ___
 
 These will start or stop the script. Hopefully not surprises there.
 
-> [!INFO]
+> [!TIP]
 > *Remember the hotkey combination `Ctrl + Shift + F3`. It will prematurely stop the script and give you control of your mouse back. Make sure nothing else on your computer is bound to that or it could intercept it and then you're in trouble.*
 
 > [!WARNING]
