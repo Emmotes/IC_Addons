@@ -22,7 +22,7 @@ Read the [Claim Daily Platinum README](IC_ClaimDailyPlatinum_Extra/README.md)
 
 An addon that will retry an adventure until DM picks the Guest Star seat that you want.
 
-Read the [DM Fishing Minigamer README](IC_DMFishingMinigame_Extra/README.md)
+Read the [DM Fishing Minigame README](IC_DMFishingMinigame_Extra/README.md)
 
 ### EGS Overlay Swatter
 
