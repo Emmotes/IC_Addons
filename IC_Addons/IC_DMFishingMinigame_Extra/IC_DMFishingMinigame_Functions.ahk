@@ -30,8 +30,13 @@ class IC_DMFishingMinigame_Functions
 	; ===== RESTART ADVENTURE FUNCTIONS =====
 	; =======================================
 
-	RestartAdventure()
+	RestartAdventure(SanityChecked := false)
 	{
+		if (!SanityChecked && !this.SanityCheckCoordinates())
+		{
+			MsgBox, % "Custom Coordinates aren't viable. Fix them."
+			return "Custom Coordinates aren't viable. Fix them."
+		}
 		; Step 1: Press R to open the complete adventure dialog.
 		IC_DMFishingMinigame_Component.UpdateMainStatus("Opening Complete Adventure dialog.")
 		openedCompAdv := this.OpenCompleteAdventure()
@@ -58,6 +63,28 @@ class IC_DMFishingMinigame_Functions
 		return "success"
 	}
 
+	SanityCheckCoordinates()
+	{
+		if (!g_DMFishingMinigame.Settings["customCoords"])
+			return true
+
+		gameWidth := g_DMFishingMinigame.GameWidth
+		gameHeight := g_DMFishingMinigame.GameHeight
+		for k,v in ["comp", "skip", "rest"]
+		{
+			currCoords := this.GetCoordinates("c_" v)
+			if (currCoords == "")
+				return false
+			x := currCoords[1]
+			y := currCoords[2]
+			if (!IC_DMFishingMinigame_Component.IsNumber(x) || x <= 0 || x > gameWidth)
+				return false
+			if (!IC_DMFishingMinigame_Component.IsNumber(y) || y <= 0 || y > gameHeight)
+				return false
+		}
+		return true
+	}
+
 	OpenCompleteAdventure()
 	{
 		g_SF.DirectedInput(,, "{r}" )
@@ -81,7 +108,7 @@ class IC_DMFishingMinigame_Functions
 			elapsed := this.GetTickCount() - startTime
 			if (elapsed >= DMFM_timeout)
 				break
-			IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status . " " . Round((DMFM_timeout - elapsed)/1000, 3) . "s")
+			IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
 		}
 		return false
 	}
@@ -105,7 +132,7 @@ class IC_DMFishingMinigame_Functions
 			elapsed := this.GetTickCount() - startTime
 			if (elapsed >= DMFM_timeout)
 				break
-			IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status . " " . Round((DMFM_timeout - elapsed)/1000, 3) . "s")
+			IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
 		}
 		return false
 	}

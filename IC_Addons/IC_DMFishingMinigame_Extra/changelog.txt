@@ -1,3 +1,6 @@
+ 4 September 2026 - v0.0.4
+ - Adding sanity checking for Custom mouse coordinates.
+ - Improving timeout details in the Status.
  4 September 2026 - v0.0.3
  - Filled out the README.md.
  - Fixed a bug where the script wouldn't re-open the process reader - causing failed memory reads for a new game instance.

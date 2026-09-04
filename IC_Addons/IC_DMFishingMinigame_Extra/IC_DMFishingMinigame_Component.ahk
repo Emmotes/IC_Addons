@@ -18,6 +18,7 @@ class IC_DMFishingMinigame_Component
 	DefaultSettings := {"customCoords":false,"c_compX":0,"c_compY":0,"c_skipX":0,"c_skipY":0,"c_restX":0,"c_restY":0,"S1":false,"S2":false,"S3":false,"S4":false,"S5":true,"S7":false,"S8":false,"S9":false,"S10":false,"S11":false,"S12":false}
 	Settings := {}
 	
+	SanityCheckedCustom := false
 	CurrSeat := 0
 	TotalResets := 0
 
@@ -75,7 +76,8 @@ class IC_DMFishingMinigame_Component
 				this.StopFishing()
 				return
 			}
-			dmfm_result := IC_DMFishingMinigame_Functions.RestartAdventure()
+			dmfm_result := IC_DMFishingMinigame_Functions.RestartAdventure(this.SanityCheckedCustom)
+			this.SanityCheckedCustom := true
 			if (dmfm_result != "success")
 			{
 				this.UpdateMainStatus(dmfm_result . " Stopping.")
@@ -363,6 +365,7 @@ class IC_DMFishingMinigame_Component
 		CoordMode, Mouse, Client
 		this.SaveSettings()
 		this.Running := true
+		this.SanityCheckedCustom := false
 		this.ToggleAllSettingsUI("Disable")
 		this.ToggleUIBetweenRunningStates("Disable", "Enable")
 		this.DMFishingMinigame()
