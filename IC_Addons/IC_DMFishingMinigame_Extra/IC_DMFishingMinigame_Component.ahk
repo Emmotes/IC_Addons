@@ -22,6 +22,7 @@ class IC_DMFishingMinigame_Component
 	CurrSeat := 0
 	TotalResets := 0
 
+	PreviousInstanceId := ""
 	GameWidth := 0
 	GameHeight := 0
 	
@@ -31,6 +32,14 @@ class IC_DMFishingMinigame_Component
 	
 	DMFishingMinigame()
 	{
+        g_SF.Hwnd := WinExist("ahk_exe " . g_userSettings[ "ExeName"])
+		currInstanceId := g_SF.Memory.ReadInstanceID()
+		if (this.PreviousInstanceId == "" || currInstanceId == "" || this.PreviousInstanceId != currInstanceId)
+		{
+        	g_SF.Memory.OpenProcessReader()
+			this.PreviousInstanceId := g_SF.Memory.ReadInstanceID()
+		}
+
 		this.TotalResets := 0
 		this.UpdateMainStatus("Start.")
 		if (IC_DMFishingMinigame_Functions.IsGameClosed())
