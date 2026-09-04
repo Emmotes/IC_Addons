@@ -3,7 +3,7 @@
 This is an addon that will retry an adventure until DM picks the Guest Star seat that you want. Simply pick a selection of acceptable seats and then click `Start Fishing`.
 
 > [!CAUTION]
-> *Make sure when you start that there are no UI elements open in-game. This script has no idea what state the user interface is in - so if you have extra stuff open - it may end up clicking them by mistake.*
+> *Make sure when you start that there are no UI elements open in-game. This script has no idea what state the user interface is in - so if you have extra stuff open - or you aren't in an adventure - it may end up clicking them by mistake.*
 
 > [!NOTE]
 > *This is in the early stages of development and may need babysitting.*
