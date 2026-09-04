@@ -18,7 +18,7 @@ An addon that will claim your daily platinum automagically so you don't have to.
 
 Read the [Claim Daily Platinum README](IC_ClaimDailyPlatinum_Extra/README.md)
 
-# DM Fishing Minigame
+### DM Fishing Minigame
 
 An addon that will retry an adventure until DM picks the Guest Star seat that you want.
 
