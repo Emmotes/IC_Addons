@@ -1,3 +1,10 @@
+ 4 September 2026 - v0.0.3
+ - Filled out the README.md.
+ - Fixed a bug where the script wouldn't re-open the process reader - causing failed memory reads for a new game instance.
+ - Fixed a bug where `Num Resets` field wasn't displaying.
+ - Fixed a bug where not all elements were being disabled during running when they should have been.
+ - Removed the `Test` button and put a `Check Seat Now` button.
+ - Changed the wording of a few elements.
  4 September 2026 - v0.0.2
  - Adding a dropdown that lets you choose between Default mouse coordinates and Custum mouse coordinates. For when the Default ones don't work.
  3 September 2026 - v0.0.1

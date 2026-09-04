@@ -4,11 +4,19 @@ class IC_DMFishingMinigame_Functions
 	static DefaultCoords := {"c_compX":-90,"c_compY":180,"c_skipX":-127,"c_skipY":-77,"c_restX":122,"c_restY":-141}
 
 	TickFrequency := -1
+	PreviousInstanceId := ""
 
     ReadDMSpecialGuest()
     {
         if (this.IsGameClosed())
 			return
+		
+		currInstanceId := g_SF.Memory.ReadInstanceID()
+		if (this.PreviousInstanceId == "" || currInstanceId == "" || this.PreviousInstanceId != currInstanceId)
+		{
+        	g_SF.Memory.OpenProcessReader()
+			this.PreviousInstanceId := g_SF.Memory.ReadInstanceID()
+		}
 
         if (!IsObject(g_SF.Memory.GameManager.game.gameInstances.StatHandler.DSpec1SlotId)) {
             g_SF.Memory.GameManager.game.gameInstances.StatHandler.DSpec1SlotId := New GameObjectStructure(g_SF.Memory.GameManager.game.gameInstances.StatHandler,"Int", [0x280])
@@ -108,6 +116,8 @@ class IC_DMFishingMinigame_Functions
 	
 	ClickTheMouse(xClick,yClick)
 	{
+		if (!g_DMFishingMinigame.Running)
+			return
 		hWnd := g_SF.hWnd
 		WinActivate, ahk_id %hWnd%
 		Sleep, 40

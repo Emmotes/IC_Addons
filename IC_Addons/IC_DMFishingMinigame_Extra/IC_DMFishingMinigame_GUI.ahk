@@ -34,26 +34,10 @@ DMFM_StopFishing()
 	g_DMFishingMinigame.StopFishing()
 }
 
-DMFM_TestButton()
+DMFM_ReadNow()
 {
-	global
-    msglog := A_LineFile . "\..\logTheStuff.txt"
-	msgmsg := ""
-
-/*
-	currPos := IC_DMFishingMinigame_Functions.ClickCompleteAdventure()
-	hWnd := g_SF.hWnd
-	WinActivate, ahk_id %hWnd%
-	MouseMove, currPos[1], currPos[2]
-*/
-
-	g_DMFishingMinigame.ToggleAllSettingsUI("Disable")
-	Sleep, 2000
-	g_DMFishingMinigame.ToggleAllSettingsUI("Enable")
-
-	file := FileOpen(msglog, "w")
-	file.write(msgmsg)
-	file.close()
+	g_DMFishingMinigame.CurrSeat := IC_DMFishingMinigame_Functions.ReadDMSpecialGuest()
+	g_DMFishingMinigame.UpdateGUI()
 }
 
 class IC_DMFishingMinigame_GUI
@@ -152,7 +136,7 @@ class IC_DMFishingMinigame_GUI
 		infoCurrSeatH := this.AddControl("DMFM_CurrSeatH", "Text", "xs15 ys+" DMFM_initLineDiff " w" DMFM_col1w " +Right", "Current Seat:")
 		infoCurrSeat := this.AddControl("DMFM_CurrSeat", "Text", "xs" DMFM_col2x " y+-" DMFM_lineHeight " w" DMFM_col2w)
 		infoNumResetsH := this.AddControl("DMFM_NumResetsH", "Text", "xs15 y+" DMFM_lineDiff " w" DMFM_col1w " +Right", "Num Resets:")
-		infoNumResets := this.ADdControl("DMFM_NumResets", "xs" DMFM_col2x " y+-" DMFM_lineHeight " w" DMFM_col2w)
+		infoNumResets := this.AddControl("DMFM_NumResets", "Text", "xs" DMFM_col2x " y+-" DMFM_lineHeight " w" DMFM_col2w)
 		this.restMoveableControls.Push(infoGroupBox)
 		this.restMoveableControls.Push(infoCurrSeatH)
 		this.restMoveableControls.Push(infoCurrSeat)
@@ -164,18 +148,19 @@ class IC_DMFishingMinigame_GUI
 		fishingGroupBox := this.AddControl("DMFM_FishingBox", "GroupBox", "Section x15 ys+" infoGroupBoxH " w500 h" fishingGroupBoxH)
 		fishingStart := this.AddControl("DMFM_StartFishing", "Button", "xs15 ys17 w150 gDMFM_StartFishing", "Start Fishing")
 		fishingStop := this.AddControl("DMFM_StopFishing", "Button", "x+10 ys17 w150 gDMFM_StopFishing Disabled", "Stop Fishing")
-		fishingTest := this.AddControl("DMFM_TestButton", "Button", "x+10 ys17 w150 gDMFM_TestButton", "Test")
+		fishingReadNow := this.AddControl("DMFM_ReadNow", "Button", "x+10 ys17 w150 gDMFM_ReadNow", "Check Current Seat")
 		this.disableWhileRunningControls.Push(fishingStart)
+		this.disableWhileRunningControls.Push(fishingReadNow)
 		this.disableWhileNotRunningControls.Push(fishingStop)
 		this.restMoveableControls.Push(fishingGroupBox)
 		this.restMoveableControls.Push(fishingStart)
 		this.restMoveableControls.Push(fishingStop)
-		this.restMoveableControls.Push(fishingTest)
+		this.restMoveableControls.Push(fishingReadNow)
 		
 		; ===== Hotkey Note =====
 		hotkeyGroupBoxH := 40
 		hotkeyGroupBox := this.AddControl("DMFM_HotkeyGroupBox", "GroupBox", "Section x15 ys+" fishingGroupBoxH " w500 h" hotkeyGroupBoxH)
-		hotkeyNote := this.AddControl("DMFM_HotkeyNote", "Text", "xs15 ys+" DMFM_initLineDiff " w450", "Ctrl+Shift+F3 will stop fishing for if you run into issues with it stealing the mouse.")
+		hotkeyNote := this.AddControl("DMFM_HotkeyNote", "Text", "xs15 ys+" DMFM_initLineDiff " w450", "Ctrl+Shift+F3 will stop fishing in-case you need control of your mouse back.")
 		this.restMoveableControls.Push(hotkeyGroupBox)
 		this.restMoveableControls.Push(hotkeyNote)
 	}

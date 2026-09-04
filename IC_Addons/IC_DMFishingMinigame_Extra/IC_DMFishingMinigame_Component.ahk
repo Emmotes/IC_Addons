@@ -70,8 +70,8 @@ class IC_DMFishingMinigame_Component
 			this.UpdateGUI()
 			if (this.Settings["S"+this.CurrSeat] == true)
 			{
-				MsgBox, % "Complete after " . this.TotalResets . " resets."
-				this.UpdateMainStatus("Complete after " . this.TotalResets . " resets.")
+				MsgBox, % "DM got seat " . this.CurrSeat . " after " . this.TotalResets . " resets."
+				this.UpdateMainStatus("DM got seat " . this.CurrSeat . " after " . this.TotalResets . " resets.")
 				this.StopFishing()
 				return
 			}
@@ -104,6 +104,9 @@ class IC_DMFishingMinigame_Component
 	Init()
 	{
 		this.LoadSettings()
+		this.CurrSeat := IC_DMFishingMinigame_Functions.ReadDMSpecialGuest()
+		this.TotalResets := 0
+		this.UpdateGUI()
 		this.UpdateMainStatus(IC_DMFishingMinigame_GUI.ReadyMessage)
 	}
 	
@@ -268,7 +271,7 @@ class IC_DMFishingMinigame_Component
 	
 	UpdateGUI()
 	{
-		GuiControl, ICScriptHub:, DMFM_CurrSeat, % this.CurrSeat
+		GuiControl, ICScriptHub:, DMFM_CurrSeat, % this.CurrSeat == "" ? "Can't read memory." : this.CurrSeat == "0" ? "Special Guest Star not available." : this.CurrSeat
 		GuiControl, ICScriptHub:, DMFM_NumResets, % this.TotalResets
 	}
 
@@ -337,10 +340,18 @@ class IC_DMFishingMinigame_Component
 		g_DMFishingMinigameGUI.currentCoordMode := cMode
 	}
 
-	ToggleStartStopButtons(dmfm_start, dmfm_stop)
+	ToggleUIBetweenRunningStates()
 	{
-		GuiControl, ICScriptHub:%dmfm_start%, DMFM_StartFishing
-		GuiControl, ICScriptHub:%dmfm_stop%, DMFM_StopFishing
+		for k,v in g_DMFishingMinigameGUI.disableWhileRunningControls
+			if (this.Running)
+				v.Disable()
+			else
+				v.Enable()
+		for k,v in g_DMFishingMinigameGUI.disableWhileNotRunningControls
+			if (this.Running)
+				v.Enable()
+			else
+				v.Disable()
 	}
 	
 	; =========================
@@ -351,9 +362,9 @@ class IC_DMFishingMinigame_Component
 	{
 		CoordMode, Mouse, Client
 		this.SaveSettings()
-		this.ToggleAllSettingsUI("Disable")
-		this.ToggleStartStopButtons("Disable", "Enable")
 		this.Running := true
+		this.ToggleAllSettingsUI("Disable")
+		this.ToggleUIBetweenRunningStates("Disable", "Enable")
 		this.DMFishingMinigame()
 	}
 	
@@ -361,7 +372,7 @@ class IC_DMFishingMinigame_Component
 	{
 		this.Running := false
 		this.ToggleAllSettingsUI("Enable")
-		this.ToggleStartStopButtons("Enable", "Disable")
+		this.ToggleUIBetweenRunningStates("Enable", "Disable")
 	}
 	
 	GetTickCount()
