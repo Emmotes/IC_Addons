@@ -290,7 +290,7 @@ class IC_DMFishingMinigame_Functions
 		WinWaitActive, ahk_id %hwnd%,,3
 		if (ErrorLevel)
 			return ""
-		return FindText(rX, rY, pX+Round(pw*0.5,0), pY, pX+pW, pY+pH, 0.05, 0.05, textToFind, scrnShot, 0)
+		return FindText(rX, rY, pX, pY+Round(pH*0.5,0), pX+pW, pY+pH, 0.05, 0.05, textToFind, scrnShot, 0)
 	}
 
 	ConvertScreenToClientAndCentre(found)
