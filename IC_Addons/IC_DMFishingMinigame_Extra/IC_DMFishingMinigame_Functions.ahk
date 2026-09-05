@@ -1,7 +1,6 @@
 class IC_DMFishingMinigame_Functions
 {
 	static SettingsPath := A_LineFile . "\..\DMFishingMinigame_Settings.json"
-	static DefaultCoords := {"c_compX":-90,"c_compY":180,"c_skipX":-127,"c_skipY":-77,"c_restX":122,"c_restY":-141}
 
 	TickFrequency := -1
 	PreviousInstanceId := ""
@@ -95,6 +94,8 @@ class IC_DMFishingMinigame_Functions
 	ClickCompleteAdventure(DMFM_status, DMFM_timeout := 10000)
 	{
 		local compCoords := this.GetCoordinates("c_comp")
+		if (compCoords == "")
+			return false
 		local startTime := this.GetTickCount()
 		local elapsed := 0
 		loop
@@ -117,6 +118,8 @@ class IC_DMFishingMinigame_Functions
 	{
 		local skipCoords := this.GetCoordinates("c_skip")
 		local restCoords := this.GetCoordinates("c_rest")
+		if (skipCoords == "" || restCoords == "")
+			return false
 		local startTime := this.GetTickCount()
 		local elapsed := 0
 		loop
@@ -161,33 +164,25 @@ class IC_DMFishingMinigame_Functions
 
 	GetCoordinates(coordType)
 	{
-		local width := 0
-		local height := 0
 		local offsetX := 0
 		local offsetY := 0
 		local actualX := 0
 		local actualY := 0
 		if (g_DMFishingMinigame.Settings["customCoords"])
+			return [g_DMFishingMinigame.Settings[coordType "X"], g_DMFishingMinigame.Settings[coordType "Y"]]
+
+		local width := g_DMFishingMinigame.GameWidth
+		local height := g_DMFishingMinigame.GameHeight
+		switch (coordType)
 		{
-			offsetX := g_DMFishingMinigame.Settings[coordType "X"]
-			offsetY := g_DMFishingMinigame.Settings[coordType "Y"]
+			case "c_comp":
+				return [Round(width * 0.5, 0) - 88, Round(height * 0.5, 0) + 180]
+			case "c_skip":
+				return [Round(width * 0.95, 0) - 50, Round(height * 0.95, 0) - 32]
+			case "c_rest":
+				return [Round(width * 0.5, 0) + 122, Round(height * 0.75, 0) + 57]
 		}
-		else
-		{
-			if (InStr(coordType, "comp") || InStr(coordType, "rest"))
-				width := g_DMFishingMinigame.GameWidthHalf
-			else
-				width := g_DMFishingMinigame.GameWidth
-			if (InStr(coordType, "comp"))
-				height := g_DMFishingMinigame.GameHeightHalf
-			else
-				height := g_DMFishingMinigame.GameHeight
-			offsetX := this.DefaultCoords[coordType "X"]
-			offsetY := this.DefaultCoords[coordType "Y"]
-		}
-		actualX := width + offsetX
-		actualY := height + offsetY
-		return [actualX, actualY]
+		return
 	}
 	
 	GetTickCount()

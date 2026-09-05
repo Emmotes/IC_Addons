@@ -1,3 +1,5 @@
+ 5 September 2026 - v0.0.6
+ - Improving the Default coordinate calculations so hopefully they work on more resolutions.
  4 September 2026 - v0.0.5
  - Fixing a bug where the game window hwnd would not update if the game was reloaded after Script Hub had been loaded.
  4 September 2026 - v0.0.4
