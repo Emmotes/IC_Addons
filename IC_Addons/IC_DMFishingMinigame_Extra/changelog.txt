@@ -1,3 +1,6 @@
+ 5 September 2026 - v0.1.0
+ - Hotfixing two bugs with FindText mode.
+ - And I am now satisfied with the state of the addon to call it v0.1.0.
  5 September 2026 - v0.0.7
  - Adding a `FindText` mouse coordinates mode. This uses image search so it could be more reliable than `Default`. It is definitely faster when it works.
  - Made is so that the `Opening Complete Adventure` stage will retry to open that dialogue half way through the timeout.
