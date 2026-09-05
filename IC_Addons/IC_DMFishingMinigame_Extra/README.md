@@ -12,7 +12,7 @@ ___
 
 | Default Layout | Custom Layout |
 |---|---|
-| ![DM Fishing Minigame Addon Preview Image: Default Layout](images/DMFishingMinigameAddonPreviewDefault.png) | ![DM Fishing Minigame Addon Preview Image: Default Layout](images/DMFishingMinigameAddonPreviewCustom.png) |
+| ![DM Fishing Minigame Addon Preview Image: Default Layout](images/DMFishingMinigameAddonPreviewDefault.png) | ![DM Fishing Minigame Addon Preview Image: Custom Layout](images/DMFishingMinigameAddonPreviewCustom.png) |
 
 ___
 
@@ -40,7 +40,28 @@ These are the seats that you consider acceptable for DM to pick. If - during fis
 
 This lets you change the coordinates for the buttons the script has to click. `Default` mode should work for most people - but it could fail on certain resolutions. If `Default` mode can't click certain buttons - swap to `Custom` mode.
 
-#### Custom Mode Instructions
+#### Default
+
+This uses a formulaic method for finding the required buttons. It should be accurate but I simply can't guarantee that.
+
+For reference:
+```
+Type       Coord   Formula
+Complete   x       (width  * 0.50) -  88
+           y       (height * 0.50) + 180
+
+Skip       x       (width  * 0.95) -  50
+           y       (height * 0.95) -  32
+
+Restart    x       (width  * 0.50) + 122
+           y       (height * 0.75) +  57
+```
+
+#### Custom
+
+This literally uses numbers you define. It will always be accurate as long as you are accurate. The downside is that if you change resolutions a lot - you will need to modify these numbers every time.
+
+##### Custom Mode Instructions
 
 Use Autohotkey's `Window Spy` tool to find the coordinates for each of the required buttons. `Window Spy` can be found by right-clicking on the AHK icon in the taskbar. Once `Window Spy` is open:
 
@@ -56,6 +77,13 @@ Use Autohotkey's `Window Spy` tool to find the coordinates for each of the requi
 
 > [!CAUTION]
 > *Idle Champions **must** be selected when using `Window Spy` and you **must** use `Client` mouse position. If you do not do this - the resulting coordinates will be wrong.*
+
+#### FindText
+
+This is an image search method added in v0.0.7. It should be more reliable than Default - but there is always the potential that your game looks just slightly wrong and the images simply can't be found.
+
+> [!TIP]
+> *FindText mode is likely the fastest method - so at least give it a try.*
 
 ___
 

@@ -1,6 +1,11 @@
+#include %A_LineFile%\..\FindText.ahk
+
 class IC_DMFishingMinigame_Functions
 {
 	static SettingsPath := A_LineFile . "\..\DMFishingMinigame_Settings.json"
+	static TextComp := "|<comp>*176$82.zzzzzzzzzzzzzzzzzzzzzzzzzzzzkTzzzzzwDzzzzw1zzzzzzszzzzzVrzzzzzzbzwzzyTzzzzzzyTznzzlzyTgwzHtwTDtz7zUQU0k3bUMC1wzwMk0336QNnlblzXn77ASNXbDCD7yDAQwlta0QwVwTcwlnn7aMDnkzswnX7DAQNnzDDzk30QQwk3b0Q41zkT3VVl0QD3kQ7zzzzzzyTzzzzzzzzzzzzlzzzzzzzzzzzzz7zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzs"
+	static TextSkip := "|<skip>*172$44.zzzzzzzzzzzzzzzwDXzjzzw0kzlzzy0CDwTzzXvXzzzzszszzzzy3y88MVzUDX760Dy0sVlUVzsC0wMQTzVUD67XzwM3lVswy68QMQTU3X7627s0sklU3z0w6081zzzzzy7zzzzzzVzzzzzzsTzzzzzzzzzzzzzzzs"
+	static TextRest := "|<rest>*183$90.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzk0zzzzzzzzzzzzzs07zzzzzzzzzzzzs03zzzzzDzzzzyTsS3zzzzyDzzzzsTsTVzzzzwDzzzzsTsTVzzzzwDzzzzsTsTVw7y0w7s3sMMTsT3s1w0M1s1s0E3sS3k0s0M1k0w0E3s07VksTQDnkw7sTs0DXssDwDzkwDsTs0TX0s1wDw0wDsTsQDU1w0QDk0wDsTsQDUDzUQDUswDsTsQDVzzwQDVswDsTsS7UttsQDVkwDsTsS7k0s0S1U0wDs3sT3s0k0y0k087w3kD1zjzDz1yzzzy3zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzU"
 
 	TickFrequency := -1
 	PreviousInstanceId := ""
@@ -31,6 +36,10 @@ class IC_DMFishingMinigame_Functions
 
 	RestartAdventure(SanityChecked := false)
 	{
+		useOCR := g_DMFishingMinigame.Settings["coordsType"] == "FindText"
+		if (useOCR)
+			WinGetPos, pX, pY, pW, pH, % "ahk_id " g_SF.hwnd
+
 		if (!SanityChecked && !this.SanityCheckCoordinates())
 		{
 			MsgBox, % "Custom Coordinates aren't viable. Fix them."
@@ -42,16 +51,22 @@ class IC_DMFishingMinigame_Functions
 		; Step 2: Click the Complete button.
 		completeStatusMsg := "Completing the adventure."
 		IC_DMFishingMinigame_Component.UpdateMainStatus(completeStatusMsg)
-		clickedComplete := this.ClickCompleteAdventure(completeStatusMsg)
+		if (useOCR)
+			clickedComplete := this.ClickCompleteAdventureOCR(completeStatusMsg, pX, pY, pW, pH)
+		else
+			clickedComplete := this.ClickCompleteAdventure(completeStatusMsg)
 		if (!clickedComplete)
 		{
 			MsgBox, % "Failed to click the Complete button in time."
 			return "Failed to click the Complete button in time."
 		}
 		; Step 3: Alternate clicking the Skip button and the Restart button.
-		skipRestartStatusMsg := "Alternating Skip and Restart buttons."
+		skipRestartStatusMsg := usingOCR ? "Clicking Skip and Restart buttons." : "Alternating Skip and Restart buttons."
 		IC_DMFishingMinigame_Component.UpdateMainStatus(skipRestartStatusMsg)
-		clickedRestart := this.AlternateSkipAndRestart(skipRestartStatusMsg)
+		if (useOCR)
+			clickedRestart := this.AlternateSkipAndRestartOCR(skipRestartStatusMsg, pX, pY, pW, pH)
+		else
+			clickedRestart := this.AlternateSkipAndRestart(skipRestartStatusMsg)
 		if (!clickedRestart)
 		{
 			MsgBox, % "Failed to click Restart in time."
@@ -64,7 +79,7 @@ class IC_DMFishingMinigame_Functions
 
 	SanityCheckCoordinates()
 	{
-		if (!g_DMFishingMinigame.Settings["customCoords"])
+		if (g_DMFishingMinigame.Settings["coordsType"] != "Custom")
 			return true
 
 		gameWidth := g_DMFishingMinigame.GameWidth
@@ -86,16 +101,17 @@ class IC_DMFishingMinigame_Functions
 
 	OpenCompleteAdventure()
 	{
-		g_SF.DirectedInput(,, "{r}" )
-		Sleep, 1000
+		g_SF.DirectedInput(,, "{r}")
+		Sleep, 200
 		return true
 	}
 	
-	ClickCompleteAdventure(DMFM_status, DMFM_timeout := 10000)
+	ClickCompleteAdventure(DMFM_status, DMFM_timeout := 15000)
 	{
 		local compCoords := this.GetCoordinates("c_comp")
 		if (compCoords == "")
 			return false
+		local triedReopenComplete := false
 		local startTime := this.GetTickCount()
 		local elapsed := 0
 		loop
@@ -103,10 +119,15 @@ class IC_DMFishingMinigame_Functions
 			if (!g_DMFishingMinigame.Running)
 				return true
 			this.ClickTheMouse(compCoords[1], compCoords[2])
-			Sleep, 500
+			Sleep, 200
 			if (g_SF.Memory.ReadCurrentZone() == -1)
 				return true
 			elapsed := this.GetTickCount() - startTime
+			if (!triedReopenComplete && elapsed*2 >= DMFM_timeout)
+			{
+				this.OpenCompleteAdventure()
+				triedReopenComplete := true
+			}
 			if (elapsed >= DMFM_timeout)
 				break
 			IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
@@ -129,7 +150,64 @@ class IC_DMFishingMinigame_Functions
 			this.ClickTheMouse(skipCoords[1], skipCoords[2])
 			Sleep, 50
 			this.ClickTheMouse(restCoords[1], restCoords[2])
-			Sleep, 500
+			Sleep, 200
+			if (g_SF.Memory.ReadCurrentZone() >= 1)
+				return true
+			elapsed := this.GetTickCount() - startTime
+			if (elapsed >= DMFM_timeout)
+				break
+			IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
+		}
+		return false
+	}
+
+	ClickCompleteAdventureOCR(DMFM_status, pX, pY, pW, pH, DMFM_timeout := 20000)
+	{
+		local startTime := this.GetTickCount()
+		local elapsed := 0
+		loop
+		{
+			if (!g_DMFishingMinigame.Running)
+				return true
+			ocrResult := this.FindTextOCR(pX, pY, pW, pH, g_SF.hwnd, this.TextComp, 1)
+			if (ocrResult)
+			{
+				compCoords := this.ConvertScreenToClientAndCentre(ocrResult[1])
+				this.ClickTheMouse(compCoords[1], compCoords[2])
+			}
+			Sleep, 200
+			if (g_SF.Memory.ReadCurrentZone() == -1)
+				return true
+			elapsed := this.GetTickCount() - startTime
+			if (elapsed >= DMFM_timeout)
+				break
+			IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
+		}
+		return false
+	}
+
+	AlternateSkipAndRestartOCR(DMFM_status, pX, pY, pW, pH, DMFM_timeout := 30000)
+	{
+		local startTime := this.GetTickCount()
+		local elapsed := 0
+		loop
+		{
+			if (!g_DMFishingMinigame.Running)
+				return true
+			ocrResult := this.FindTextOCR(pX, pY, pW, pH, g_SF.hwnd, this.TextRest, 1)
+			if (ocrResult)
+			{
+				compCoords := this.ConvertScreenToClientAndCentre(ocrResult[1])
+				this.ClickTheMouse(compCoords[1], compCoords[2])
+				Sleep, 50
+			}
+			ocrResult := this.FindTextOCR(pX, pY, pW, pH, g_SF.hwnd, this.TextSkip, 0)
+			if (ocrResult)
+			{
+				compCoords := this.ConvertScreenToClientAndCentre(ocrResult[1])
+				this.ClickTheMouse(compCoords[1], compCoords[2])
+			}
+			Sleep, 200
 			if (g_SF.Memory.ReadCurrentZone() >= 1)
 				return true
 			elapsed := this.GetTickCount() - startTime
@@ -168,7 +246,7 @@ class IC_DMFishingMinigame_Functions
 		local offsetY := 0
 		local actualX := 0
 		local actualY := 0
-		if (g_DMFishingMinigame.Settings["customCoords"])
+		if (g_DMFishingMinigame.Settings["coordsType"] == "Custom")
 			return [g_DMFishingMinigame.Settings[coordType "X"], g_DMFishingMinigame.Settings[coordType "Y"]]
 
 		local width := g_DMFishingMinigame.GameWidth
@@ -198,9 +276,27 @@ class IC_DMFishingMinigame_Functions
 	
 	IsGameClosed()
 	{
-		if(g_SF.Memory.ReadCurrentZone() == "" AND Not WinExist( "ahk_exe " . g_userSettings[ "ExeName"] ))
+		if(g_SF.Memory.ReadCurrentZone() == "" AND Not WinExist("ahk_exe " . g_userSettings["ExeName"]))
 			return true
 		return false
+	}
+
+	FindTextOCR(pX, pY, pW, pH, hwnd, textToFind, scrnShot := 1)
+	{
+		; FindText tutorial: https://www.autohotkey.com/boards/viewtopic.php?t=102806
+		if (this.IsGameClosed())
+			return ""
+		WinActivate, ahk_id %hwnd%
+		WinWaitActive, ahk_id %hwnd%,,3
+		if (ErrorLevel)
+			return ""
+		return FindText(rX, rY, pX+Round(pw*0.5,0), pY, pX+pW, pY+pH, 0.05, 0.05, textToFind, scrnShot, 0)
+	}
+
+	ConvertScreenToClientAndCentre(found)
+	{
+		FindText().ScreenToClient(rX, rY, found[1], found[2], g_SF.hwnd)
+		return [rX + Round(found[3]*0.5,0), rY + Round(found[4]*0.5,0)]
 	}
 	
 }

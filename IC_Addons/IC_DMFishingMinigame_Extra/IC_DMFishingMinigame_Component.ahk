@@ -15,7 +15,7 @@ class IC_DMFishingMinigame_Component
 	DisplayStatusTimeout := -1
 	MessageStickyTimer := 6000
 
-	DefaultSettings := {"customCoords":false,"c_compX":0,"c_compY":0,"c_skipX":0,"c_skipY":0,"c_restX":0,"c_restY":0,"S1":false,"S2":false,"S3":false,"S4":false,"S5":true,"S7":false,"S8":false,"S9":false,"S10":false,"S11":false,"S12":false}
+	DefaultSettings := {"coordsType":"Default","c_compX":0,"c_compY":0,"c_skipX":0,"c_skipY":0,"c_restX":0,"c_restY":0,"S1":false,"S2":false,"S3":false,"S4":false,"S5":true,"S7":false,"S8":false,"S9":false,"S10":false,"S11":false,"S12":false}
 	Settings := {}
 	
 	SanityCheckedCustom := false
@@ -153,7 +153,7 @@ class IC_DMFishingMinigame_Component
 			GuiControl, ICScriptHub:, DMFM_Seat%A_Index%, % this.Settings["S"+A_Index]
 		}
 
-		GuiControl, ICScriptHub:Choose, DMFM_CoordMode, % this.Settings["customCoords"] ? "Custom" : "Default"
+		GuiControl, ICScriptHub:Choose, DMFM_CoordMode, % this.Settings["coordsType"]
 		this.SetCoordModeUI()
 	}
 	
@@ -176,7 +176,7 @@ class IC_DMFishingMinigame_Component
 		this.Settings["c_restY"] := DMFM_RestartCoordsY
 		
 		GuiControlGet,DMFM_CoordMode, ICScriptHub:, DMFM_CoordMode
-		this.Settings["customCoords"] := DMFM_CoordMode == "Custom"
+		this.Settings["coordsType"] := DMFM_CoordMode
 
 		loop, 12
 		{
@@ -312,11 +312,7 @@ class IC_DMFishingMinigame_Component
 		if (cMode == g_DMFishingMinigameGUI.currentCoordMode)
 			return
 
-		hideControls := cMode == "Default"
-
-		settingsGroupBox := g_DMFishingMinigameGUI.settingsGroupBox.controlId
-		settingsGroupBoxH := g_DMFishingMinigameGUI.gboxhSettings[hideControls ? 1 : 2]
-		GuiControl, ICScriptHub:MoveDraw, %settingsGroupBox%, h%settingsGroupBoxH%
+		hideControls := cMode != "Custom"
 
 		for k,v in g_DMFishingMinigameGUI.settingsHideableControls
 			if (hideControls)
@@ -324,29 +320,40 @@ class IC_DMFishingMinigame_Component
 			else
 				v.Show()
 
-		heightDiff := g_DMFishingMinigameGUI.gboxhSettings[2] - g_DMFishingMinigameGUI.gboxhSettings[1]
-		for k,v in g_DMFishingMinigameGUI.restMoveableControls
-		{
-			controlId := v.controlId
-			GuiControlGet, oldPos, ICScriptHub:Pos, %controlId%
-			y := oldPosY + heightDiff * (hideControls ? -1 : 1)
-			GuiControl, ICScriptHub:Move, %controlId%, y%y%
-			; Fix bug with moving when there's a tab.
-			GuiControlGet, bugPos, ICScriptHub:Pos, %controlId%
-			y -= Abs(heightDiff - Abs(bugPosY - oldPosY))
-			GuiControl, ICScriptHub:MoveDraw, %controlId%, y%y%
+		settingsGroupBox := g_DMFishingMinigameGUI.settingsGroupBox.controlId
+		settingsGroupBoxH := g_DMFishingMinigameGUI.gboxhSettings[hideControls ? 1 : 2]
+		GuiControlGet, pos, ICScriptHub:Pos, DMFM_SettingsGBox
+		if (posH != settingsGroupBoxH) {
+			GuiControl, ICScriptHub:MoveDraw, %settingsGroupBox%, h%settingsGroupBoxH%
+
+			heightDiff := g_DMFishingMinigameGUI.gboxhSettings[2] - g_DMFishingMinigameGUI.gboxhSettings[1]
+			for k,v in g_DMFishingMinigameGUI.restMoveableControls
+			{
+				controlId := v.controlId
+				GuiControlGet, oldPos, ICScriptHub:Pos, %controlId%
+				y := oldPosY + heightDiff * (hideControls ? -1 : 1)
+				GuiControl, ICScriptHub:Move, %controlId%, y%y%
+				; Fix bug with moving when there's a tab.
+				GuiControlGet, bugPos, ICScriptHub:Pos, %controlId%
+				y -= Abs(heightDiff - Abs(bugPosY - oldPosY))
+				GuiControl, ICScriptHub:MoveDraw, %controlId%, y%y%
+			}
 		}
 
-		if (hideControls)
-		{
+		if (cMode == "Default")
 			g_DMFishingMinigameGUI.settingsCoordModeDDLB1.Show()
-			g_DMFishingMinigameGUI.settingsCoordModeDDLB2.Hide()
-		}
 		else
-		{
 			g_DMFishingMinigameGUI.settingsCoordModeDDLB1.Hide()
+
+		if (cMode == "Custom")
 			g_DMFishingMinigameGUI.settingsCoordModeDDLB2.Show()
-		}
+		else
+			g_DMFishingMinigameGUI.settingsCoordModeDDLB2.Hide()
+
+		if (cMode == "FindText")
+			g_DMFishingMinigameGUI.settingsCoordModeDDLB3.Show()
+		else
+			g_DMFishingMinigameGUI.settingsCoordModeDDLB3.Hide()
 
 		g_DMFishingMinigameGUI.currentCoordMode := cMode
 	}

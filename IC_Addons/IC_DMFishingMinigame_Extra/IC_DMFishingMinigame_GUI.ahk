@@ -40,6 +40,11 @@ DMFM_ReadNow()
 	g_DMFishingMinigame.UpdateGUI()
 }
 
+DMFM_TestButton()
+{
+	; Do nothing.
+}
+
 class IC_DMFishingMinigame_GUI
 {
 	static InitMessage := "Initialising..."
@@ -53,6 +58,7 @@ class IC_DMFishingMinigame_GUI
 	settingsGroupBox := ""
 	settingsCoordModeDDLB1 := ""
 	settingsCoordModeDDLB2 := ""
+	settingsCoordModeDDLB3 := ""
 
 	currentCoordMode := "Default"
 
@@ -101,11 +107,13 @@ class IC_DMFishingMinigame_GUI
 
 		this.AddControl("DMFM_CoordModeH", "Text", "xs10 y+" DMFM_initLineDiff " w95 +Right", "Mouse Coordinates:")
 		ddlOffset := DMFM_lineHeight + 3
-		settingsCoordModeDDL := this.AddControl("DMFM_CoordMode", "DDL", "gDMFM_CoordMode x+5 y+-" ddlOffset " w100", "Default||Custom|")
+		settingsCoordModeDDL := this.AddControl("DMFM_CoordMode", "DDL", "gDMFM_CoordMode x+5 y+-" ddlOffset " w100", "Default||Custom|FindText|")
 		this.disableWhileRunningControls.Push(settingsCoordModeDDL)
-		this.settingsCoordModeDDLB1 := this.AddControl("DMFM_CoordModeB1", "Text", "x+5 y+-" ddlOffset " w270", "These should work for most. Use Custom if they don't.")
+		this.settingsCoordModeDDLB1 := this.AddControl("DMFM_CoordModeB1", "Text", "x+5 y+-" ddlOffset " w270", "These should work for most. Change mode if they don't.")
+		GuiControlGet, pos, ICScriptHub:Pos, DMFM_CoordModeB1
+		this.settingsCoordModeDDLB3 := this.AddControl("DMFM_CoordModeB3", "Text", "x" posX " y" posY " w270 Hidden", "Text search. Should be more reliable and slightly faster.")
 
-		for k,name in ["Complete","Skip","Restart"]
+		for k,name in ["Complete", "Skip", "Restart"]
 		{
 			typeBlurb := name == "Complete" ? "Complete Adventure" : name == "Skip" ? "Skip Completion Stats" : "Restart Adventure"
 			typeCoordsH := this.AddControl("DMFM_" name "CoordsH", "Text", "xs" DMFM_coordX " y+" DMFM_initLineDiff " w" DMFM_coordCol1 " +Right Hidden", typeBlurb " Coordinates:")
@@ -163,6 +171,9 @@ class IC_DMFishingMinigame_GUI
 		hotkeyNote := this.AddControl("DMFM_HotkeyNote", "Text", "xs15 ys+" DMFM_initLineDiff " w450", "Ctrl+Shift+F3 will stop fishing in-case you need control of your mouse back.")
 		this.restMoveableControls.Push(hotkeyGroupBox)
 		this.restMoveableControls.Push(hotkeyNote)
+
+		;testButton := this.AddControl("DMFM_TestButton", "Button", "xs15 y+50 w150 gDMFM_TestButton", "Test")
+		;this.restMoveableControls.Push(testButton)
 	}
 
 	AddControl(controlId, controlType, options, text := "")
