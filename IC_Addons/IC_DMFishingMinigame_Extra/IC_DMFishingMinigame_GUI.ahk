@@ -49,7 +49,7 @@ class IC_DMFishingMinigame_GUI
 {
 	static InitMessage := "Initialising..."
 	static ReadyMessage := "Ready to start fishing."
-	static gboxhSettings := [95, 190]
+	static gboxhSettings := [95, 188]
 
 	disableWhileRunningControls := []
 	disableWhileNotRunningControls := []
@@ -60,7 +60,7 @@ class IC_DMFishingMinigame_GUI
 	settingsCoordModeDDLB2 := ""
 	settingsCoordModeDDLB3 := ""
 
-	currentCoordMode := "Default"
+	currentCoordMode := "TextSearch"
 
 	Init()
 	{
@@ -106,12 +106,13 @@ class IC_DMFishingMinigame_GUI
 		}
 
 		this.AddControl("DMFM_CoordModeH", "Text", "xs10 y+" DMFM_initLineDiff " w95 +Right", "Mouse Coordinates:")
-		ddlOffset := DMFM_lineHeight + 3
-		settingsCoordModeDDL := this.AddControl("DMFM_CoordMode", "DDL", "gDMFM_CoordMode x+5 y+-" ddlOffset " w100", "Default||Custom|FindText|")
+		GuiControlGet, pos, ICScriptHub:Pos, DMFM_CoordModeH
+		ddlOffset := DMFM_lineHeight + 4
+		settingsCoordModeDDL := this.AddControl("DMFM_CoordMode", "DDL", "gDMFM_CoordMode x+5 y+-" ddlOffset " w100", "TextSearch||Formulaic|Custom|")
 		this.disableWhileRunningControls.Push(settingsCoordModeDDL)
-		this.settingsCoordModeDDLB1 := this.AddControl("DMFM_CoordModeB1", "Text", "x+5 y+-" ddlOffset " w270", "These should work for most. Change mode if they don't.")
+		this.settingsCoordModeDDLB1 := this.AddControl("DMFM_CoordModeB1", "Text", "x+5 y" posY " w270", "Text recognition. Should be reliable and slightly faster.")
 		GuiControlGet, pos, ICScriptHub:Pos, DMFM_CoordModeB1
-		this.settingsCoordModeDDLB3 := this.AddControl("DMFM_CoordModeB3", "Text", "x" posX " y" posY " w270 Hidden", "Text search. Should be more reliable and slightly faster.")
+		this.settingsCoordModeDDLB2 := this.AddControl("DMFM_CoordModeB2", "Text", "x" posX " y" posY " w270 Hidden", "Less hassle than Custom but might not be reliable.")
 
 		for k,name in ["Complete", "Skip", "Restart"]
 		{
@@ -135,8 +136,8 @@ class IC_DMFishingMinigame_GUI
 		GuiControlGet, pos, ICScriptHub:Pos, DMFM_CompleteCoordsY
 		posX += 45
 		posY -= 32
-		this.settingsCoordModeDDLB2 := this.AddControl("DMFM_CoordModeB2", "Text", "x" posX " y" posY " w200 Hidden", "Use AHK's Window Spy tool to find`n these coordinates by right-clicking`nAHK in the task-bar.`n1. Make sure the game is the active`n     window.`n2. Hover your move over the required`n     buttons in-game.`n3. Copy Mouse Position: Client. It will`n     be in the form X,Y.")
-		this.settingsHideableControls.Push(this.settingsCoordModeDDLB2)
+		this.settingsCoordModeDDLB3 := this.AddControl("DMFM_CoordModeB3", "Text", "x" posX " y" posY " w200 Hidden", "Use AHK's Window Spy tool to find`n these coordinates by right-clicking`nAHK in the task-bar.`n1. Make sure the game is the active`n     window.`n2. Hover your move over the required`n     buttons in-game.`n3. Copy Mouse Position: Client. It will`n     be in the form X,Y.")
+		this.settingsHideableControls.Push(this.settingsCoordModeDDLB3)
 
 		; ===== Info Box =====
 		infoGroupBoxH := 60

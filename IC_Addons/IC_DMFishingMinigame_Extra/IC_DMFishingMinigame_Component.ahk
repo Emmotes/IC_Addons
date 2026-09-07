@@ -15,7 +15,7 @@ class IC_DMFishingMinigame_Component
 	DisplayStatusTimeout := -1
 	MessageStickyTimer := 6000
 
-	DefaultSettings := {"coordsType":"Default","c_compX":0,"c_compY":0,"c_skipX":0,"c_skipY":0,"c_restX":0,"c_restY":0,"S1":false,"S2":false,"S3":false,"S4":false,"S5":true,"S7":false,"S8":false,"S9":false,"S10":false,"S11":false,"S12":false}
+	DefaultSettings := {"coordMode":"TextSearch","c_compX":0,"c_compY":0,"c_skipX":0,"c_skipY":0,"c_restX":0,"c_restY":0,"S1":false,"S2":false,"S3":false,"S4":false,"S5":true,"S7":false,"S8":false,"S9":false,"S10":false,"S11":false,"S12":false}
 	Settings := {}
 	
 	SanityCheckedCustom := false
@@ -153,7 +153,7 @@ class IC_DMFishingMinigame_Component
 			GuiControl, ICScriptHub:, DMFM_Seat%A_Index%, % this.Settings["S"+A_Index]
 		}
 
-		GuiControl, ICScriptHub:Choose, DMFM_CoordMode, % this.Settings["coordsType"]
+		GuiControl, ICScriptHub:Choose, DMFM_CoordMode, % this.Settings["coordMode"]
 		this.SetCoordModeUI()
 	}
 	
@@ -176,7 +176,7 @@ class IC_DMFishingMinigame_Component
 		this.Settings["c_restY"] := DMFM_RestartCoordsY
 		
 		GuiControlGet,DMFM_CoordMode, ICScriptHub:, DMFM_CoordMode
-		this.Settings["coordsType"] := DMFM_CoordMode
+		this.Settings["coordMode"] := DMFM_CoordMode
 
 		loop, 12
 		{
@@ -340,17 +340,17 @@ class IC_DMFishingMinigame_Component
 			}
 		}
 
-		if (cMode == "Default")
+		if (cMode == "TextSearch")
 			g_DMFishingMinigameGUI.settingsCoordModeDDLB1.Show()
 		else
 			g_DMFishingMinigameGUI.settingsCoordModeDDLB1.Hide()
 
-		if (cMode == "Custom")
+		if (cMode == "Formulaic")
 			g_DMFishingMinigameGUI.settingsCoordModeDDLB2.Show()
 		else
 			g_DMFishingMinigameGUI.settingsCoordModeDDLB2.Hide()
 
-		if (cMode == "FindText")
+		if (cMode == "Custom")
 			g_DMFishingMinigameGUI.settingsCoordModeDDLB3.Show()
 		else
 			g_DMFishingMinigameGUI.settingsCoordModeDDLB3.Hide()

@@ -1,3 +1,6 @@
+ 7 September 2026 - v0.1.2
+ - Changed it so that `TextSearch` (previously `FindText`) mode is now the default mode.
+ - `Default` mode has been renamed to `Formulaic`.
  7 September 2026 - v0.1.1
  - Adding a mechanism where the script will try to reopen the Complete Adventure dialogue if clicking it takes too long.
  - If it continues to take too long it will close every dialogue with Shift+Esc and try again.

@@ -10,9 +10,9 @@ This is an addon that will retry an adventure until DM picks the Guest Star seat
 
 ___
 
-| Default Layout | Custom Layout |
+| Formulaic Layout | Custom Layout |
 |---|---|
-| ![DM Fishing Minigame Addon Preview Image: Default Layout](images/DMFishingMinigameAddonPreviewDefault.png) | ![DM Fishing Minigame Addon Preview Image: Custom Layout](images/DMFishingMinigameAddonPreviewCustom.png) |
+| ![DM Fishing Minigame Addon Preview Image: TextSearch Layout](images/DMFishingMinigameAddonPreviewTextSearch.png) | ![DM Fishing Minigame Addon Preview Image: Formulaic Layout](images/DMFishingMinigameAddonPreviewFormulaic.png) | ![DM Fishing Minigame Addon Preview Image: Custom Layout](images/DMFishingMinigameAddonPreviewCustom.png) |
 
 ___
 
@@ -38,9 +38,16 @@ These are the seats that you consider acceptable for DM to pick. If - during fis
 
 ### Mouse Coordinates
 
-This lets you change the coordinates for the buttons the script has to click. `Default` mode should work for most people - but it could fail on certain resolutions. If `Default` mode can't click certain buttons - swap to `Custom` mode.
+This lets you change the coordinates for the buttons the script has to click.
 
-#### Default
+#### TextSearch
+
+This is an image text search method (basically OCR) added in v0.0.7. It should be more reliable than Formulaic - but there is always the potential that your game looks just slightly wrong and the images simply can't be found. It is slightly faster than the other two methods though.
+
+> [!TIP]
+> *This is the recommended method - if it works.*
+
+#### Formulaic
 
 This uses a formulaic method for finding the required buttons. It should be accurate but I simply can't guarantee that.
 
@@ -77,13 +84,6 @@ Use Autohotkey's `Window Spy` tool to find the coordinates for each of the requi
 
 > [!CAUTION]
 > *Idle Champions **must** be selected when using `Window Spy` and you **must** use `Client` mouse position. If you do not do this - the resulting coordinates will be wrong.*
-
-#### FindText
-
-This is an image search method added in v0.0.7. It should be more reliable than Default - but there is always the potential that your game looks just slightly wrong and the images simply can't be found.
-
-> [!TIP]
-> *FindText mode is likely the fastest method - so at least give it a try.*
 
 ___
 

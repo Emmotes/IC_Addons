@@ -36,7 +36,7 @@ class IC_DMFishingMinigame_Functions
 
 	RestartAdventure(SanityChecked := false)
 	{
-		useOCR := g_DMFishingMinigame.Settings["coordsType"] == "FindText"
+		useOCR := g_DMFishingMinigame.Settings["coordMode"] == "TextSearch"
 		if (useOCR)
 			WinGetPos, pX, pY, pW, pH, % "ahk_id " g_SF.hwnd
 
@@ -79,7 +79,7 @@ class IC_DMFishingMinigame_Functions
 
 	SanityCheckCoordinates()
 	{
-		if (g_DMFishingMinigame.Settings["coordsType"] != "Custom")
+		if (g_DMFishingMinigame.Settings["coordMode"] != "Custom")
 			return true
 
 		gameWidth := g_DMFishingMinigame.GameWidth
@@ -268,7 +268,7 @@ class IC_DMFishingMinigame_Functions
 		local offsetY := 0
 		local actualX := 0
 		local actualY := 0
-		if (g_DMFishingMinigame.Settings["coordsType"] == "Custom")
+		if (g_DMFishingMinigame.Settings["coordMode"] == "Custom")
 			return [g_DMFishingMinigame.Settings[coordType "X"], g_DMFishingMinigame.Settings[coordType "Y"]]
 
 		local width := g_DMFishingMinigame.GameWidth
