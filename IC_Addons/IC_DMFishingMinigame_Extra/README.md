@@ -10,8 +10,8 @@ This is an addon that will retry an adventure until DM picks the Guest Star seat
 
 ___
 
-| Formulaic Layout | Custom Layout |
-|---|---|
+| Text Search | Formulaic Layout | Custom Layout |
+|---|---|---|
 | ![DM Fishing Minigame Addon Preview Image: TextSearch Layout](images/DMFishingMinigameAddonPreviewTextSearch.png) | ![DM Fishing Minigame Addon Preview Image: Formulaic Layout](images/DMFishingMinigameAddonPreviewFormulaic.png) | ![DM Fishing Minigame Addon Preview Image: Custom Layout](images/DMFishingMinigameAddonPreviewCustom.png) |
 
 ___
