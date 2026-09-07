@@ -106,12 +106,14 @@ class IC_DMFishingMinigame_Functions
 		return true
 	}
 	
-	ClickCompleteAdventure(DMFM_status, DMFM_timeout := 15000)
+	ClickCompleteAdventure(DMFM_status, DMFM_timeout := 25000)
 	{
 		local compCoords := this.GetCoordinates("c_comp")
 		if (compCoords == "")
 			return false
-		local triedReopenComplete := false
+		local reopenAttempts := 0
+		local thirdTimeout := DMFM_timeout * (1/3)
+		local twoThirdTimeout := DMFM_timeout * (2/3)
 		local startTime := this.GetTickCount()
 		local elapsed := 0
 		loop
@@ -123,10 +125,17 @@ class IC_DMFishingMinigame_Functions
 			if (g_SF.Memory.ReadCurrentZone() == -1)
 				return true
 			elapsed := this.GetTickCount() - startTime
-			if (!triedReopenComplete && elapsed*2 >= DMFM_timeout)
+			if (elapsed >= DMFM_timeout * ((reopenAttempts+1) / 5))
 			{
+				reopenAttempts++
+				if (Mod(reopenAttempts,2) == 0)
+				{
+					IC_DMFishingMinigame_Component.UpdateMainStatus("Attempting to close every open dialogue." . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
+					this.CloseEveryDialogue()
+				}
+				IC_DMFishingMinigame_Component.UpdateMainStatus("Attempting to reopen Complete Adventure dialogue." . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
 				this.OpenCompleteAdventure()
-				triedReopenComplete := true
+				triedReopenComplete1 := true
 			}
 			if (elapsed >= DMFM_timeout)
 				break
@@ -161,8 +170,9 @@ class IC_DMFishingMinigame_Functions
 		return false
 	}
 
-	ClickCompleteAdventureOCR(DMFM_status, pX, pY, pW, pH, DMFM_timeout := 20000)
+	ClickCompleteAdventureOCR(DMFM_status, pX, pY, pW, pH, DMFM_timeout := 25000)
 	{
+		local reopenAttempts := 0
 		local startTime := this.GetTickCount()
 		local elapsed := 0
 		loop
@@ -174,6 +184,18 @@ class IC_DMFishingMinigame_Functions
 			{
 				compCoords := this.ConvertScreenToClientAndCentre(ocrResult[1])
 				this.ClickTheMouse(compCoords[1], compCoords[2])
+			}
+			if (elapsed >= DMFM_timeout * ((reopenAttempts+1) / 5))
+			{
+				reopenAttempts++
+				if (Mod(reopenAttempts,2) == 0)
+				{
+					IC_DMFishingMinigame_Component.UpdateMainStatus("Attempting to close every open dialogue." . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
+					this.CloseEveryDialogue()
+				}
+				IC_DMFishingMinigame_Component.UpdateMainStatus("Attempting to reopen Complete Adventure dialogue." . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
+				this.OpenCompleteAdventure()
+				triedReopenComplete1 := true
 			}
 			Sleep, 200
 			if (g_SF.Memory.ReadCurrentZone() == -1)
@@ -293,10 +315,30 @@ class IC_DMFishingMinigame_Functions
 		return FindText(rX, rY, pX, pY+Round(pH*0.5,0), pX+pW, pY+pH, 0.05, 0.05, textToFind, scrnShot, 0)
 	}
 
+	CloseEveryDialogue()
+	{
+		this.ToggleShift(True)
+		g_SF.DirectedInput(,, "{Esc}" )
+		this.ToggleShift()
+		Sleep, 500
+	}
+
 	ConvertScreenToClientAndCentre(found)
 	{
 		FindText().ScreenToClient(rX, rY, found[1], found[2], g_SF.hwnd)
 		return [rX + Round(found[3]*0.5,0), rY + Round(found[4]*0.5,0)]
+	}
+	
+	ToggleShift(shiftKeyDown := false)
+	{
+		g_SF.DirectedInput(shiftKeyDown ? 1 : 0, shiftKeyDown ? 0 : 1, "{Shift}")
+		startTime := this.GetTickCount()
+		elapsedTime := 0
+		while (g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].Screen.uiController.bottomBar.heroPanel.activeBoxes[0].levelUpInfoHandler.OverrideLevelUpAmount.Read() AND elapsedTime < 100) ;Allow 100ms for the keypress to apply at maximum to avoid getting stuck. On a fast PC it only took AHK tick (15ms) extra when needed
+		{
+			Sleep, 1
+			elapsedTime := this.GetTickCount() - startTime
+		}
 	}
 	
 }

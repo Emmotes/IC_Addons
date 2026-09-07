@@ -1,3 +1,6 @@
+ 7 September 2026 - v0.1.1
+ - Adding a mechanism where the script will try to reopen the Complete Adventure dialogue if clicking it takes too long.
+ - If it continues to take too long it will close every dialogue with Shift+Esc and try again.
  5 September 2026 - v0.1.0
  - Hotfixing two bugs with FindText mode.
  - And I am now satisfied with the state of the addon to call it v0.1.0.
