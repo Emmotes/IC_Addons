@@ -10,10 +10,14 @@ class IC_DMFishingMinigame_Functions
 	TickFrequency := -1
 	PreviousInstanceId := ""
 
-    ReadDMSpecialGuest()
+    ReadDMSpecialGuest(DMFM_status := "Reading DM's seat.", DMFM_timeout := 5000)
     {
+		local currSeat, startTime, elapsed
+
         if (this.IsGameClosed())
 			return
+
+		IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status)
 		
 		currInstanceId := g_SF.Memory.ReadInstanceID()
 		if (this.PreviousInstanceId == "" || currInstanceId == "" || this.PreviousInstanceId != currInstanceId)
@@ -27,7 +31,22 @@ class IC_DMFishingMinigame_Functions
             g_SF.Memory.GameManager.game.gameInstances.ResetCollections()
         }
 
-        return g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].StatHandler.DSpec1SlotId.Read()
+		startTime := this.GetTickCount()
+		elapsed := 0
+		loop
+		{
+			currSeat := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].StatHandler.DSpec1SlotId.Read()
+			if (IC_DMFishingMinigame_Component.IsNumber(currSeat) && currSeat >= 1 && currSeat <= 12 && currSeat != 6) {
+				IC_DMFishingMinigame_Component.UpdateMainStatus("DM's seat is " . currSeat . ".")
+				return currSeat
+			}
+			IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
+			Sleep, 100
+			elapsed := this.GetTickCount() - startTime
+			if (elapsed >= DMFM_timeout)
+				break
+		}
+        return currSeat
     }
 
 	; =======================================

@@ -1,3 +1,5 @@
+13 September 2026 - v0.1.3
+ - Attempting to fix a potential race condition with reading DM's seat. It appears that his Special Guest Star is sometimes not chosen by the time the script wants to read it. It now has a timeout of 5 seconds to read his seat.
  7 September 2026 - v0.1.2
  - Changed it so that `TextSearch` (previously `FindText`) mode is now the default mode.
  - `Default` mode has been renamed to `Formulaic`.
