@@ -1,3 +1,5 @@
+14 September 2026 - v0.2.1
+ - Fixing some UI update bugs.
 14 September 2026 - v0.2.0
  - Adding checks for which seats it is possible for DM to pick.
 13 September 2026 - v0.1.3

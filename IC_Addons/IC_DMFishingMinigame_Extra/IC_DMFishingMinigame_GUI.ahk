@@ -107,6 +107,7 @@ class IC_DMFishingMinigame_GUI
 			this.seatControls[A_Index].Push(ctrlSeatCb)
 			this.seatControls[A_Index].Push(ctrlSeatH)
 			this.disableWhileRunningControls.Push(ctrlSeatCb)
+			this.disableWhileRunningControls.Push(ctrlSeatH)
 			seatCounter++
 		}
 		this.AddControl("DMFM_SeatBH", "Text", "xs15 y+" DMFM_lineDiff " w" DMFM_col1w " +Right", "Impossible Seats:")

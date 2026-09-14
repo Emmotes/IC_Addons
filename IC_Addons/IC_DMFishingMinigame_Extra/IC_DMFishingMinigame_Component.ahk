@@ -48,7 +48,7 @@ class IC_DMFishingMinigame_Component
 			this.StopFishing()
 			return
 		}
-		this.DisableAllImpossibleSeats()
+		this.UpdateGUI()
 
 		anAcceptableIsPossible := false
 		for k,v in this.PossibleSeats
@@ -311,13 +311,27 @@ class IC_DMFishingMinigame_Component
 	{
 		GuiControl, ICScriptHub:, DMFM_CurrSeat, % this.CurrSeat == "" ? "Can't read memory." : this.CurrSeat == "0" ? "Special Guest Star not available." : this.CurrSeat
 		GuiControl, ICScriptHub:, DMFM_NumResets, % this.TotalResets
-		this.DisableAllImpossibleSeats()
+
+		this.ToggleBetweenRunningStates()
+		this.UpdateImpossibleSeatGUI()
 	}
 
-	DisableAllImpossibleSeats()
+	ToggleBetweenRunningStates()
 	{
-		if (this.PossibleSeats == "")
-			return
+		for k,v in g_DMFishingMinigameGUI.disableWhileRunningControls
+			if (this.Running)
+				v.Disable()
+			else
+				v.Enable()
+		for k,v in g_DMFishingMinigameGUI.disableWhileNotRunningControls
+			if (this.Running)
+				v.Enable()
+			else
+				v.Disable()
+	}
+
+	UpdateImpossibleSeatGUI()
+	{
 		impossBlurb := ""
 		impossAdded := 0
 		for k,v in this.PossibleSeats
@@ -392,20 +406,6 @@ class IC_DMFishingMinigame_Component
 		g_DMFishingMinigameGUI.currentCoordMode := cMode
 	}
 
-	ToggleUIBetweenRunningStates()
-	{
-		for k,v in g_DMFishingMinigameGUI.disableWhileRunningControls
-			if (this.Running)
-				v.Disable()
-			else
-				v.Enable()
-		for k,v in g_DMFishingMinigameGUI.disableWhileNotRunningControls
-			if (this.Running)
-				v.Enable()
-			else
-				v.Disable()
-	}
-	
 	; =========================
 	; ===== RUNNING STUFF =====
 	; =========================
@@ -416,16 +416,14 @@ class IC_DMFishingMinigame_Component
 		this.SaveSettings()
 		this.Running := true
 		this.SanityCheckedCustom := false
-		this.ToggleUIBetweenRunningStates("Disable", "Enable")
-		this.DisableAllImpossibleSeats()
+		this.UpdateGUI()
 		this.DMFishingMinigame()
 	}
 	
 	StopFishing()
 	{
 		this.Running := false
-		this.ToggleUIBetweenRunningStates("Enable", "Disable")
-		this.DisableAllImpossibleSeats()
+		this.UpdateGUI()
 	}
 	
 	GetTickCount()
