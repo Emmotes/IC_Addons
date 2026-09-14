@@ -346,7 +346,7 @@ class IC_DMFishingMinigame_Component
 				impossAdded++
 			}
 		}
-		GuiControl, ICScriptHub:, DMFM_SeatB, % impossBlurb
+		GuiControl, ICScriptHub:, DMFM_SeatB, % impossAdded == 0 ? "None" : impossBlurb
 		GuiControl, ICScriptHub:, DMFM_SeatBH, % "Impossible Seat" (impossAdded!=1 ? "s" : "") ":"
 	}
 
