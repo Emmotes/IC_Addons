@@ -1,3 +1,7 @@
+14 September 2026 - v0.2.2
+ - Improving impossible seat detection to account for forced champions.
+ - Adding the option to fish regardless of whether you have chosen an impossible acceptable seat or not. Just-in-case the script is wrong.
+ - Adding an x under acceptable seat checkboxes if they are impossible rather than disabling them.
 14 September 2026 - v0.2.1
  - Fixing some UI update bugs.
 14 September 2026 - v0.2.0

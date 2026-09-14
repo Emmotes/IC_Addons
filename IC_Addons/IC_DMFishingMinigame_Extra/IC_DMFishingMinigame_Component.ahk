@@ -61,9 +61,13 @@ class IC_DMFishingMinigame_Component
 		}
 		if (!anAcceptableIsPossible)
 		{
-			this.UpdateMainStatus("None of the seats you have set as acceptable are possible. Stopping.")
-			this.StopFishing()
-			return
+			MsgBox, 0x124, Potentially No Possible Acceptable Seats, It appears that none of the seats you have marked as acceptable are possible for DM to pull.`n`nBe aware that the script can get this wrong.`n`nDo you wish to fish anyway?
+			IfMsgBox No
+			{
+				this.UpdateMainStatus("None of the seats you have set as acceptable are possible. Stopping.")
+				this.StopFishing()
+				return
+			}
 		}
 
 		this.TotalResets := 0
@@ -338,10 +342,9 @@ class IC_DMFishingMinigame_Component
 		{
 			if (k == 6)
 				continue
+			GuiControl, ICScriptHub:, DMFM_Seat%A_Index%Imp, % v ? "" : "x"
 			if (v == false)
 			{
-				for l,b in g_DMFishingMinigameGUI.seatControls[k]
-					b.Disable()
 				impossBlurb .= impossBlurb == "" ? k : ", " k
 				impossAdded++
 			}
