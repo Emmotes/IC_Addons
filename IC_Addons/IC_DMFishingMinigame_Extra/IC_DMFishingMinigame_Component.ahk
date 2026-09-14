@@ -19,6 +19,7 @@ class IC_DMFishingMinigame_Component
 	Settings := {}
 	
 	SanityCheckedCustom := false
+	PossibleSeats := {}
 	CurrSeat := 0
 	TotalResets := 0
 
@@ -38,6 +39,31 @@ class IC_DMFishingMinigame_Component
 		{
         	g_SF.Memory.OpenProcessReader()
 			this.PreviousInstanceId := g_SF.Memory.ReadInstanceID()
+		}
+
+		this.PossibleSeats := IC_DMFishingMinigame_Functions.DeterminePossibleSeats()
+		if (this.PossibleSeats == "")
+		{
+			this.UpdateMainStatus("Couldn't read which seats DM can choose. Stopping.")
+			this.StopFishing()
+			return
+		}
+		this.DisableAllImpossibleSeats()
+
+		anAcceptableIsPossible := false
+		for k,v in this.PossibleSeats
+		{
+			if (this.Settings["S"+k] == true && v == true)
+			{
+				anAcceptableIsPossible := true
+				break
+			}
+		}
+		if (!anAcceptableIsPossible)
+		{
+			this.UpdateMainStatus("None of the seats you have set as acceptable are possible. Stopping.")
+			this.StopFishing()
+			return
 		}
 
 		this.TotalResets := 0
@@ -98,7 +124,7 @@ class IC_DMFishingMinigame_Component
 			Sleep, 100
 		}
 		this.UpdateMainStatus("Stopped.")
-		this.ToggleAllSettingsUI("Enable")
+		this.StopFishing()
 	}
 	
 	IsNumber(inputText)
@@ -115,6 +141,7 @@ class IC_DMFishingMinigame_Component
 	Init()
 	{
 		this.LoadSettings()
+		this.PossibleSeats := IC_DMFishingMinigame_Functions.DeterminePossibleSeats()
 		this.CurrSeat := IC_DMFishingMinigame_Functions.ReadDMSpecialGuest()
 		this.TotalResets := 0
 		this.UpdateGUI()
@@ -284,22 +311,29 @@ class IC_DMFishingMinigame_Component
 	{
 		GuiControl, ICScriptHub:, DMFM_CurrSeat, % this.CurrSeat == "" ? "Can't read memory." : this.CurrSeat == "0" ? "Special Guest Star not available." : this.CurrSeat
 		GuiControl, ICScriptHub:, DMFM_NumResets, % this.TotalResets
+		this.DisableAllImpossibleSeats()
 	}
 
-	ToggleAllSettingsUI(dmfm_enableType)
+	DisableAllImpossibleSeats()
 	{
-		GuiControl, ICScriptHub:%dmfm_enableType%, DMFM_CoordMode
-		for k,v in ["Complete", "Skip", "Restart"]
+		if (this.PossibleSeats == "")
+			return
+		impossBlurb := ""
+		impossAdded := 0
+		for k,v in this.PossibleSeats
 		{
-			GuiControl, ICScriptHub:%dmfm_enableType%, DMFM_%v%CoordsX
-			GuiControl, ICScriptHub:%dmfm_enableType%, DMFM_%v%CoordsY
+			if (k == 6)
+				continue
+			if (v == false)
+			{
+				for l,b in g_DMFishingMinigameGUI.seatControls[k]
+					b.Disable()
+				impossBlurb .= impossBlurb == "" ? k : ", " k
+				impossAdded++
+			}
 		}
-		loop, 12
-		{
-			if (A_Index == 6)
-				Continue
-			GuiControl, ICScriptHub:%dmfm_enableType%, DMFM_Seat%A_Index%
-		}
+		GuiControl, ICScriptHub:, DMFM_SeatB, % impossBlurb
+		GuiControl, ICScriptHub:, DMFM_SeatBH, % "Impossible Seat" (impossAdded!=1 ? "s" : "") ":"
 	}
 
 	SetCoordModeUI()
@@ -382,16 +416,16 @@ class IC_DMFishingMinigame_Component
 		this.SaveSettings()
 		this.Running := true
 		this.SanityCheckedCustom := false
-		this.ToggleAllSettingsUI("Disable")
 		this.ToggleUIBetweenRunningStates("Disable", "Enable")
+		this.DisableAllImpossibleSeats()
 		this.DMFishingMinigame()
 	}
 	
 	StopFishing()
 	{
 		this.Running := false
-		this.ToggleAllSettingsUI("Enable")
 		this.ToggleUIBetweenRunningStates("Enable", "Disable")
+		this.DisableAllImpossibleSeats()
 	}
 	
 	GetTickCount()

@@ -10,6 +10,63 @@ class IC_DMFishingMinigame_Functions
 	TickFrequency := -1
 	PreviousInstanceId := ""
 
+	DeterminePossibleSeats()
+	{
+		local ahp := g_SF.Memory.GameManager.game.gameInstances[g_SF.Memory.GameInstance].HeroHandler.allowHeroPurchase.QuickClone()
+		local size = ahp.size.Read()
+		if (!IC_DMFishingMinigame_Component.IsNumber(size) || size < 0 || size > 5000)
+			return
+		
+		local ownedBySeat := {}
+		local availableBySeat := {}
+		local possibleSeats := {}
+		local i, seat, owned, allowed
+		loop, 12
+		{
+			possibleSeats[A_Index] := false
+			if (A_Index == 6)
+				continue
+			ownedBySeat[A_Index] := 0
+			availableBySeat[A_Index] := 0
+		}
+		loop, %size%
+		{
+			i := A_Index - 1
+			local heroId := ahp["key", i].Read()
+			seat := g_SF.Memory.ReadChampSeatByID(heroId)
+			if (seat == 6)
+				continue
+			owned := g_SF.Memory.ReadHeroIsOwned(heroId)
+			if (!owned)
+				continue
+			allowed := ahp["value", i].Read()
+			ownedBySeat[seat]++
+			if (allowed)
+				availableBySeat[seat]++
+		}
+
+		local hasUnavailableSeat := false
+		loop, 12
+		{
+			if (A_Index == 6)
+				continue
+			if (availableBySeat[A_Index] == 0)
+				hasUnavailableSeat := true
+		}
+
+		loop, 12
+		{
+			if (A_Index == 6)
+				continue
+			seat := A_Index
+			if (hasUnavailableSeat)
+				possibleSeats[seat] := availableBySeat[seat] == 0
+			else
+				possibleSeats[seat] := availableBySeat[seat] < ownedBySeat[seat]
+		}
+		return possibleSeats
+	}
+
     ReadDMSpecialGuest(DMFM_status := "Reading DM's seat.", DMFM_timeout := 5000)
     {
 		local currSeat, startTime, elapsed
@@ -41,7 +98,7 @@ class IC_DMFishingMinigame_Functions
 				return currSeat
 			}
 			IC_DMFishingMinigame_Component.UpdateMainStatus(DMFM_status . " Timeout: " . Round((DMFM_timeout - elapsed)/1000, 3) . "s.")
-			Sleep, 100
+			Sleep, 50
 			elapsed := this.GetTickCount() - startTime
 			if (elapsed >= DMFM_timeout)
 				break
