@@ -1,3 +1,6 @@
+21 September 2026 - v0.3.2
+ - Making LevelupAmountIndex and Swap x25/x100 settings forced and unchangeable.
+ - Making the Fix Settings Now button save the current settings before applying.
 02 September 2026 - v0.3.1
  - Adding some extra message boxes in-case of bad data.
 02 September 2026 - v0.3.0

@@ -127,10 +127,12 @@ class IC_GameSettingsFix_Component
 		}
 		if (this.CheckMissingOrExtraSettings())
 			writeSettings := true
-		if (!this.Settings["NarrowHeroBoxes"] || !this.Settings["HKsRequired"])
+		if (this.Settings["LevelupAmountIndex"] != 3 || !this.Settings["NarrowHeroBoxes"] || !this.Settings["HKsRequired"] || !this.Settings["HKsSwap25100"])
 		{
+			this.Settings["LevelupAmountIndex"] := 3
 			this.Settings["NarrowHeroBoxes"] := true
 			this.Settings["HKsRequired"] := true
+			this.Settings["HKsSwap25100"] := true
 			writeSettings := true
 		}
 		if(writeSettings)
